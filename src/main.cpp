@@ -62,7 +62,6 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
 	
 	// define as log window
-	//wxTextCtrl * myTextCtrl = ;
 	wxLog::SetActiveTarget (new wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,this)));
 	
 	// programm started
