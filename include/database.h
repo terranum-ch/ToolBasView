@@ -76,10 +76,64 @@ public:
 	*/
 	wxArrayString DataBaseListTables();
 	
+	/*!
+    @function 
+    @brief   Return a wxString containing the version of the embedded server
+	
+	This function is the only one who may be called before DataBaseOpen().
+    @result  a wxString containing the version number
+	*/
+	wxString DatabaseGetVersion();
+	
+	/*!
+    @function 
+    @brief Return an array containing all the selected table fields
+    @param      sTable a String containing the table name
+    @result     an array of string containing the fields name.
+	*/
+	wxArrayString DatabaseListFields(wxString sTable);
+	
+	/*!
+    @function 
+    @brief Get all data stored in a table.
+	
+	This function just process the request, to get the result row
+	by row, call the DataBaseGetNextResult() function.
+	
+    @param      sTable a String containing the table name
+    @result     TRUE if the request is valid.
+	*/	
+	bool DataBaseGetAllTableContent(wxString sTable);
+	
+	/*!
+    @function 
+    @brief Return the result of the last request.
+	
+    @result     An array of strings containing the values of one row.
+	*/		
+	wxArrayString DataBaseGetNextResult();
+	
+	/*!
+    @function 
+    @brief Used to execute a query on the database
+	
+	This function is mainly created to execute a query without results
+    @param     myQuery the string containing the query
+    @result    return 0 if the query works and the MYSQL error code otherwise.
+	*/
+	int DataBaseQuery(wxString myQuery);
+
+	
    
     
 private:
 	MYSQL * pMySQL;
+	
+	// for storing restults 
+	MYSQL_RES * pResults;
+	int m_resultNumber;
+	
+	
 	bool IsDatabaseOpen;
 
 };

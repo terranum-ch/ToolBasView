@@ -11,6 +11,11 @@
     <li><a href="annotated.html"><span>Classes</span></a></li>
     <li id="current"><a href="files.html"><span>Files</span></a></li>
   </ul></div>
+<div class="tabs">
+  <ul>
+    <li><a href="files.html"><span>File&nbsp;List</span></a></li>
+    <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
+  </ul></div>
 <h1>/Users/Lucien/DATA/PROGRAMATION/ToolBasView/trunk/src/interface.cpp</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
 <a name="l00008"></a>00008 <span class="preprocessor">#if defined(__GNUG__) &amp;&amp; !defined(NO_GCC_PRAGMA)</span>
 <a name="l00009"></a>00009 <span class="preprocessor"></span><span class="preprocessor">    #pragma implementation "../include/interface.h"</span>
@@ -175,20 +180,27 @@
 <a name="l00175"></a>00175 <span class="keyword">const</span> <span class="keywordtype">int</span> ID_OPEN_DB = wxNewId();
 <a name="l00176"></a>00176 <span class="keyword">const</span> <span class="keywordtype">int</span> ID_MENU = wxNewId();
 <a name="l00177"></a>00177 <span class="keyword">const</span> <span class="keywordtype">int</span> ID_FILE_MENU = wxNewId();
-<a name="l00178"></a>00178 wxMenuBar *MENU()
-<a name="l00179"></a>00179 {
-<a name="l00180"></a>00180     wxMenuBar *item0 = <span class="keyword">new</span> wxMenuBar;
-<a name="l00181"></a>00181     
-<a name="l00182"></a>00182     wxMenu* item1 = <span class="keyword">new</span> wxMenu;
-<a name="l00183"></a>00183     item1-&gt;Append( ID_OPEN_DB, _(<span class="stringliteral">"Open database...\tCtrl-O"</span>), _(<span class="stringliteral">"Display the dialog box for selecting the database to open"</span>) );
-<a name="l00184"></a>00184     item1-&gt;AppendSeparator();
-<a name="l00185"></a>00185     item1-&gt;Append( wxID_EXIT, _(<span class="stringliteral">"Exit program"</span>), _(<span class="stringliteral">"Quit the program"</span>) );
-<a name="l00186"></a>00186     item0-&gt;Append( item1, _(<span class="stringliteral">"File"</span>) );
-<a name="l00187"></a>00187     
-<a name="l00188"></a>00188     <span class="keywordflow">return</span> item0;
-<a name="l00189"></a>00189 }
-<a name="l00190"></a>00190 
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Jul 18 15:30:25 2007 for ToolBaseView by&nbsp;
+<a name="l00178"></a>00178 <span class="keyword">const</span> <span class="keywordtype">int</span> ID_PROCESS_MENU = wxNewId();
+<a name="l00179"></a>00179 <span class="keyword">const</span> <span class="keywordtype">int</span> ID_OP_MENU = wxNewId();
+<a name="l00180"></a>00180 wxMenuBar *MENU()
+<a name="l00181"></a>00181 {
+<a name="l00182"></a>00182     wxMenuBar *item0 = <span class="keyword">new</span> wxMenuBar;
+<a name="l00183"></a>00183     
+<a name="l00184"></a>00184     wxMenu* item1 = <span class="keyword">new</span> wxMenu;
+<a name="l00185"></a>00185     item1-&gt;Append( ID_OPEN_DB, _(<span class="stringliteral">"Open database...\tCtrl-O"</span>), _(<span class="stringliteral">"Display the dialog box for selecting the database to open"</span>) );
+<a name="l00186"></a>00186     item1-&gt;AppendSeparator();
+<a name="l00187"></a>00187     item1-&gt;Append( wxID_EXIT, _(<span class="stringliteral">"Exit program"</span>), _(<span class="stringliteral">"Quit the program"</span>) );
+<a name="l00188"></a>00188     item0-&gt;Append( item1, _(<span class="stringliteral">"File"</span>) );
+<a name="l00189"></a>00189     
+<a name="l00190"></a>00190     wxMenu* item2 = <span class="keyword">new</span> wxMenu;
+<a name="l00191"></a>00191     item2-&gt;Append( ID_PROCESS_MENU, _(<span class="stringliteral">"Process SQL Request...\tCtrl-P"</span>), _(<span class="stringliteral">"Allow user to edit a personalized SQL request"</span>) );
+<a name="l00192"></a>00192     item0-&gt;Append( item2, _(<span class="stringliteral">"Operations"</span>) );
+<a name="l00193"></a>00193     
+<a name="l00194"></a>00194     <span class="keywordflow">return</span> item0;
+<a name="l00195"></a>00195 }
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Thu Jul 19 16:05:46 2007 for ToolBaseView by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

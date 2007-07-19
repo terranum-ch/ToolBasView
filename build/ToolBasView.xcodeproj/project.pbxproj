@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DF0EF9120C4F3F3100504559 /* gridoperation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0EF9110C4F3F3100504559 /* gridoperation.cpp */; };
+		DF0EFA780C4F687500504559 /* Dialogs_ops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0EFA760C4F687500504559 /* Dialogs_ops.cpp */; };
+		DF0EFA790C4F687500504559 /* dialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0EFA770C4F687500504559 /* dialogs.cpp */; };
 		DF12AE6E0C4E066B00A43B2D /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF12AE6D0C4E066B00A43B2D /* database.cpp */; };
 		DF4402B60C4CFDDF00DC749D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF4402A90C4CFDB100DC749D /* main.cpp */; };
 		DF4403200C4D02AC00DC749D /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF44028E0C4CF75300DC749D /* interface.cpp */; };
@@ -14,6 +17,12 @@
 
 /* Begin PBXFileReference section */
 		DF0AE3AB0C4D227700C4335F /* TBVClass.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = TBVClass.xcclassmodel; sourceTree = "<group>"; };
+		DF0EF9100C4F3F2800504559 /* gridoperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gridoperation.h; path = ../include/gridoperation.h; sourceTree = SOURCE_ROOT; };
+		DF0EF9110C4F3F3100504559 /* gridoperation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gridoperation.cpp; path = ../src/gridoperation.cpp; sourceTree = SOURCE_ROOT; };
+		DF0EFA760C4F687500504559 /* Dialogs_ops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dialogs_ops.cpp; path = ../src/Dialogs_ops.cpp; sourceTree = SOURCE_ROOT; };
+		DF0EFA770C4F687500504559 /* dialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dialogs.cpp; path = ../src/dialogs.cpp; sourceTree = SOURCE_ROOT; };
+		DF0EFA7A0C4F687F00504559 /* Dialogs_ops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dialogs_ops.h; path = ../include/Dialogs_ops.h; sourceTree = SOURCE_ROOT; };
+		DF0EFA7B0C4F687F00504559 /* dialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dialogs.h; path = ../include/dialogs.h; sourceTree = SOURCE_ROOT; };
 		DF12AE6D0C4E066B00A43B2D /* database.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = database.cpp; path = ../src/database.cpp; sourceTree = SOURCE_ROOT; };
 		DF12AE6F0C4E067400A43B2D /* database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = database.h; path = ../include/database.h; sourceTree = SOURCE_ROOT; };
 		DF44028E0C4CF75300DC749D /* interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = interface.cpp; path = ../src/interface.cpp; sourceTree = SOURCE_ROOT; };
@@ -48,6 +57,12 @@
 		DF44028B0C4CF72C00DC749D /* sources */ = {
 			isa = PBXGroup;
 			children = (
+				DF0EFA760C4F687500504559 /* Dialogs_ops.cpp */,
+				DF0EFA770C4F687500504559 /* dialogs.cpp */,
+				DF0EFA7A0C4F687F00504559 /* Dialogs_ops.h */,
+				DF0EFA7B0C4F687F00504559 /* dialogs.h */,
+				DF0EF9100C4F3F2800504559 /* gridoperation.h */,
+				DF0EF9110C4F3F3100504559 /* gridoperation.cpp */,
 				DF12AE6F0C4E067400A43B2D /* database.h */,
 				DF12AE6D0C4E066B00A43B2D /* database.cpp */,
 				DF44028F0C4CF75800DC749D /* interface.h */,
@@ -120,6 +135,9 @@
 				DF4403200C4D02AC00DC749D /* interface.cpp in Sources */,
 				DF4402B60C4CFDDF00DC749D /* main.cpp in Sources */,
 				DF12AE6E0C4E066B00A43B2D /* database.cpp in Sources */,
+				DF0EF9120C4F3F3100504559 /* gridoperation.cpp in Sources */,
+				DF0EFA780C4F687500504559 /* Dialogs_ops.cpp in Sources */,
+				DF0EFA790C4F687500504559 /* dialogs.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

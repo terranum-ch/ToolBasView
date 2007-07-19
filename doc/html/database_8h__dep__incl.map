@@ -1,3 +1,4 @@
 base referer
-rect $main_8h-source.html 560,5 1030,32
-rect $database_8cpp-source.html 552,56 1038,83
+rect $_dialogs__ops_8h.html 554,6 1068,32
+rect $main_8h-source.html 1119,31 1588,58
+rect $database_8cpp-source.html 568,107 1054,134

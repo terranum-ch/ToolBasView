@@ -140,6 +140,8 @@ wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit, bool set_sizer )
 const int ID_OPEN_DB = wxNewId();
 const int ID_MENU = wxNewId();
 const int ID_FILE_MENU = wxNewId();
+const int ID_PROCESS = wxNewId();
+const int ID_OP_MENU = wxNewId();
 wxMenuBar *MENU()
 {
     wxMenuBar *item0 = new wxMenuBar;
@@ -149,6 +151,10 @@ wxMenuBar *MENU()
     item1->AppendSeparator();
     item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
     item0->Append( item1, _("File") );
+    
+    wxMenu* item2 = new wxMenu;
+    item2->Append( ID_PROCESS, _("Process SQL Request...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
+    item0->Append( item2, _("Operations") );
     
     return item0;
 }

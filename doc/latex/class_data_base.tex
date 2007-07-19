@@ -24,7 +24,17 @@ bool {\bf Data\-Base\-Is\-Open} ()\label{class_data_base_0c190151b6e1e0b822b4d8f
 wx\-Array\-String {\bf Data\-Base\-List\-Tables} ()
 \begin{CompactList}\small\item\em return an array of string containing all the database tables \begin{Desc}
 \item[Returns:]an array of string (wx\-Array\-String) containing all the tables names \end{Desc}
-\item\end{CompactList}\end{CompactItemize}
+\item\end{CompactList}\item 
+wx\-String {\bf Database\-Get\-Version} ()
+\begin{CompactList}\small\item\em Return a wx\-String containing the version of the embedded server. \item\end{CompactList}\item 
+wx\-Array\-String {\bf Database\-List\-Fields} (wx\-String s\-Table)
+\begin{CompactList}\small\item\em Return an array containing all the selected table fields. \item\end{CompactList}\item 
+bool {\bf Data\-Base\-Get\-All\-Table\-Content} (wx\-String s\-Table)
+\begin{CompactList}\small\item\em Get all data stored in a table. \item\end{CompactList}\item 
+wx\-Array\-String {\bf Data\-Base\-Get\-Next\-Result} ()
+\begin{CompactList}\small\item\em Return the result of the last request. \item\end{CompactList}\item 
+int {\bf Data\-Base\-Query} (wx\-String my\-Query)
+\begin{CompactList}\small\item\em Used to execute a query on the database. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -96,7 +106,79 @@ return an array of string containing all the database tables \begin{Desc}
 
 
 
-Definition at line 89 of file database.cpp.
+Definition at line 89 of file database.cpp.\index{DataBase@{Data\-Base}!DatabaseGetVersion@{DatabaseGetVersion}}
+\index{DatabaseGetVersion@{DatabaseGetVersion}!DataBase@{Data\-Base}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}wx\-String Data\-Base::Database\-Get\-Version ()}\label{class_data_base_55eb77cbe46727752dc12c064c80bde6}
+
+
+Return a wx\-String containing the version of the embedded server. 
+
+This function is the only one who may be called before \doxyref{Data\-Base\-Open()}{p.}{class_data_base_c49c112c59d7dcf4d501f3b8cf4295e7}. \begin{Desc}
+\item[Returns:]a wx\-String containing the version number \end{Desc}
+
+
+Definition at line 112 of file database.cpp.\index{DataBase@{Data\-Base}!DatabaseListFields@{DatabaseListFields}}
+\index{DatabaseListFields@{DatabaseListFields}!DataBase@{Data\-Base}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}wx\-Array\-String Data\-Base::Database\-List\-Fields (wx\-String {\em s\-Table})}\label{class_data_base_204e8cb696403a43552c1d99149aaf93}
+
+
+Return an array containing all the selected table fields. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em s\-Table}]a String containing the table name \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]an array of string containing the fields name. \end{Desc}
+
+
+Definition at line 121 of file database.cpp.\index{DataBase@{Data\-Base}!DataBaseGetAllTableContent@{DataBaseGetAllTableContent}}
+\index{DataBaseGetAllTableContent@{DataBaseGetAllTableContent}!DataBase@{Data\-Base}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}bool Data\-Base::Data\-Base\-Get\-All\-Table\-Content (wx\-String {\em s\-Table})}\label{class_data_base_6cd29581ced205fd7b2d121d1c306c38}
+
+
+Get all data stored in a table. 
+
+This function just process the request, to get the result row by row, call the \doxyref{Data\-Base\-Get\-Next\-Result()}{p.}{class_data_base_7713539e7f3dd9f26dbcd0133f83717c} function.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em s\-Table}]a String containing the table name \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]TRUE if the request is valid. \end{Desc}
+
+
+Definition at line 145 of file database.cpp.\index{DataBase@{Data\-Base}!DataBaseGetNextResult@{DataBaseGetNextResult}}
+\index{DataBaseGetNextResult@{DataBaseGetNextResult}!DataBase@{Data\-Base}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}wx\-Array\-String Data\-Base::Data\-Base\-Get\-Next\-Result ()}\label{class_data_base_7713539e7f3dd9f26dbcd0133f83717c}
+
+
+Return the result of the last request. 
+
+\begin{Desc}
+\item[Returns:]An array of strings containing the values of one row. \end{Desc}
+
+
+Definition at line 158 of file database.cpp.\index{DataBase@{Data\-Base}!DataBaseQuery@{DataBaseQuery}}
+\index{DataBaseQuery@{DataBaseQuery}!DataBase@{Data\-Base}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int Data\-Base::Data\-Base\-Query (wx\-String {\em my\-Query})}\label{class_data_base_d87652993e6afca2933792f07c8384c9}
+
+
+Used to execute a query on the database. 
+
+This function is mainly created to execute a query without results \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em my\-Query}]the string containing the query \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]return 0 if the query works and the MYSQL error code otherwise. \end{Desc}
+
+
+Definition at line 186 of file database.cpp.
 
 The documentation for this class was generated from the following files:\begin{CompactItemize}
 \item 

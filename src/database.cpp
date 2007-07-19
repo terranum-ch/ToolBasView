@@ -61,7 +61,7 @@ bool DataBase::DataBaseOpen (wxString path)
 	{
 		pMySQL = mysql_init(NULL);
 		
-		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,_T("essai"),3309,NULL,0))
+		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,_T("i4418575"),3309,NULL,0))
 		{
 			IsDatabaseOpen = TRUE;
 			return TRUE;
@@ -107,4 +107,89 @@ wxArrayString DataBase::DataBaseListTables()
 	}
 	return myStingArray;
 }
+
+
+wxString DataBase::DatabaseGetVersion()
+{
+	wxString myVersionString;
+	myVersionString.Printf(_T("%s"),mysql_get_client_info());
+	return myVersionString;
+}
+
+
+
+wxArrayString DataBase::DatabaseListFields(wxString sTable)
+{
+	MYSQL_RES *results;
+	MYSQL_ROW record;
+	wxArrayString myStingArray;
+	
+	if(mysql_query(pMySQL,_T("SHOW COLUMNS FROM ") + sTable)==0)
+	{
+		results = mysql_store_result(pMySQL);
+		while((record = mysql_fetch_row(results)))
+		{
+			myStingArray.Add(record[0]);
+		}
+		
+		
+		
+		// clean
+		mysql_free_result(results);
+		
+	}
+	return myStingArray;
+
+}
+
+bool DataBase::DataBaseGetAllTableContent(wxString sTable)
+{
+	m_resultNumber = 0;
+	if (mysql_query(pMySQL,_T("SELECT * FROM ") + sTable)==0) 
+	{
+		pResults = mysql_store_result(pMySQL);
+		m_resultNumber = mysql_field_count(pMySQL);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+wxArrayString DataBase::DataBaseGetNextResult()
+{
+	MYSQL_ROW record;
+	wxArrayString myRowResult;
+	
+	if (m_resultNumber > 0 && pResults != NULL); 
+	{
+		if(record = mysql_fetch_row(pResults))
+		{
+			for (int i = 0; i<m_resultNumber; i++) 
+			{
+				myRowResult.Add(record[i]);
+			}
+		}
+		else 
+		{
+			// clean
+			m_resultNumber=0;
+			mysql_free_result(pResults);
+		}
+		
+	}
+	
+	return myRowResult;
+
+}
+
+
+int DataBase::DataBaseQuery(wxString myQuery)
+{
+	MYSQL_RES *results;
+	int iRetour = mysql_query(pMySQL,myQuery);
+	results = mysql_store_result(pMySQL);
+	mysql_free_result(results);
+	return iRetour;
+}
+
 

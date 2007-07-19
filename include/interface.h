@@ -51,6 +51,8 @@ wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRU
 extern const int ID_FILE_MENU;
 extern const int ID_OPEN_DB;
 extern const int ID_MENU;
+extern const int ID_OP_MENU;
+extern const int ID_PROCESS_MENU;
 wxMenuBar *MENU();
 
 #endif

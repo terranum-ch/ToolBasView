@@ -1,0 +1,91 @@
+\section{Grid\-Operation Class Reference}
+\label{class_grid_operation}\index{GridOperation@{GridOperation}}
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+{\bf Grid\-Operation} (wx\-Grid $\ast$fgrid)
+\begin{CompactList}\small\item\em contructor of the grid operation class \item\end{CompactList}\item 
+virtual {\bf $\sim$Grid\-Operation} ()\label{class_grid_operation_622c8c83a53a6f5cd4ca247098f7d8a5}
+
+\item 
+void {\bf Grid\-Op\-Change\-Column\-Text} (wx\-String Column\-Text, int i\-Column, bool b\-Size=TRUE)
+\begin{CompactList}\small\item\em Allow to change one column name. \item\end{CompactList}\item 
+void {\bf Grid\-Op\-Set\-Number\-Of\-Column} (int i\-Number)
+\begin{CompactList}\small\item\em change the number of columns \item\end{CompactList}\item 
+void {\bf Grid\-Op\-Add\-Data\-Row} (int i\-Column, wx\-Array\-String $\ast$my\-Array)
+\begin{CompactList}\small\item\em This function will append a new row of data. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+
+
+Definition at line 21 of file gridoperation.h.
+
+\subsection{Constructor \& Destructor Documentation}
+\index{GridOperation@{Grid\-Operation}!GridOperation@{GridOperation}}
+\index{GridOperation@{GridOperation}!GridOperation@{Grid\-Operation}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}Grid\-Operation::Grid\-Operation (wx\-Grid $\ast$ {\em fgrid})}\label{class_grid_operation_bf7693786c3ae789ff360491b1904b3c}
+
+
+contructor of the grid operation class 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fgrid}]pointer to an existing wx\-Grid \end{description}
+\end{Desc}
+
+
+Definition at line 22 of file gridoperation.cpp.
+
+\subsection{Member Function Documentation}
+\index{GridOperation@{Grid\-Operation}!GridOpChangeColumnText@{GridOpChangeColumnText}}
+\index{GridOpChangeColumnText@{GridOpChangeColumnText}!GridOperation@{Grid\-Operation}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Grid\-Operation::Grid\-Op\-Change\-Column\-Text (wx\-String {\em Column\-Text}, int {\em i\-Column}, bool {\em b\-Size} = {\tt TRUE})}\label{class_grid_operation_d7fbf23501fb4af4755d1c993c666d00}
+
+
+Allow to change one column name. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em Column\-Text}]The new name of the column \item[{\em i\-Column}]The column index to be changed, 0 is the first column. \item[{\em b\-Size}]If b\-Size = TRUE, we resize the cols to fit the content otherwise the col is not resized. b\-Size is set to TRUE ( default). \end{description}
+\end{Desc}
+
+
+Definition at line 31 of file gridoperation.cpp.\index{GridOperation@{Grid\-Operation}!GridOpSetNumberOfColumn@{GridOpSetNumberOfColumn}}
+\index{GridOpSetNumberOfColumn@{GridOpSetNumberOfColumn}!GridOperation@{Grid\-Operation}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Grid\-Operation::Grid\-Op\-Set\-Number\-Of\-Column (int {\em i\-Number})}\label{class_grid_operation_5694a561dd9815ebcc2a27dbf3f3ee9d}
+
+
+change the number of columns 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i\-Number}]the new number of columns \end{description}
+\end{Desc}
+
+
+Definition at line 48 of file gridoperation.cpp.\index{GridOperation@{Grid\-Operation}!GridOpAddDataRow@{GridOpAddDataRow}}
+\index{GridOpAddDataRow@{GridOpAddDataRow}!GridOperation@{Grid\-Operation}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void Grid\-Operation::Grid\-Op\-Add\-Data\-Row (int {\em i\-Column}, wx\-Array\-String $\ast$ {\em my\-Array})}\label{class_grid_operation_06152d56a01aed59eccb2a90cd51380b}
+
+
+This function will append a new row of data. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i\-Column}]the number of column we want to add data to \item[{\em my\-Array}]a pointer to the structure containing the data. \end{description}
+\end{Desc}
+
+
+Definition at line 71 of file gridoperation.cpp.
+
+The documentation for this class was generated from the following files:\begin{CompactItemize}
+\item 
+/Users/Lucien/DATA/PROGRAMATION/Tool\-Bas\-View/trunk/include/{\bf gridoperation.h}\item 
+/Users/Lucien/DATA/PROGRAMATION/Tool\-Bas\-View/trunk/src/{\bf gridoperation.cpp}\end{CompactItemize}

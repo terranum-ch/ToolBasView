@@ -15,6 +15,8 @@ const int ID_STATUS = 10003;
 
 #include "../include/database.h"
 #include <wx/treectrl.h> // for tree control
+#include "../include/gridoperation.h" // for grid operation.
+#include "../include/Dialogs_ops.h" // for dialogs operations.
 
 
 const wxString sProgName = _("ToolBasView version 1.0");
@@ -59,6 +61,7 @@ private:
 	void OnQuit(wxCloseEvent & event);
 	void OnAbout(wxCommandEvent& event);
 	void OnOpenDatabase(wxCommandEvent & event);
+	void OnProcessRequest (wxCommandEvent & event);
 	/*!
     @function 
     @brief Called when user double click on the treectrl
@@ -70,6 +73,10 @@ private:
 	
 	
 	DataBase myDatabase;
+	
+	wxTreeCtrl * pTreeCtrl;
+	
+	GridOperation * pGridOp;
 	
 };
 

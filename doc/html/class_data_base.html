@@ -45,6 +45,21 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">return an array of string containing all the database tables <dl class="return" compact><dt><b>Returns:</b></dt><dd>an array of string (wxArrayString) containing all the tables names </dd></dl>
  <a href="#48f6ee62c3eecd5af867b98f2ff13426"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">wxString&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_data_base.html#55eb77cbe46727752dc12c064c80bde6">DatabaseGetVersion</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return a wxString containing the version of the embedded server.  <a href="#55eb77cbe46727752dc12c064c80bde6"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">wxArrayString&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_data_base.html#204e8cb696403a43552c1d99149aaf93">DatabaseListFields</a> (wxString sTable)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return an array containing all the selected table fields.  <a href="#204e8cb696403a43552c1d99149aaf93"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_data_base.html#6cd29581ced205fd7b2d121d1c306c38">DataBaseGetAllTableContent</a> (wxString sTable)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get all data stored in a table.  <a href="#6cd29581ced205fd7b2d121d1c306c38"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">wxArrayString&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_data_base.html#7713539e7f3dd9f26dbcd0133f83717c">DataBaseGetNextResult</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the result of the last request.  <a href="#7713539e7f3dd9f26dbcd0133f83717c"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_data_base.html#d87652993e6afca2933792f07c8384c9">DataBaseQuery</a> (wxString myQuery)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Used to execute a query on the database.  <a href="#d87652993e6afca2933792f07c8384c9"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Used for connecting to an embedded MySQL Database. 
@@ -179,9 +194,148 @@ return an array of string containing all the database tables <dl class="return" 
 Definition at line <a class="el" href="database_8cpp-source.html#l00089">89</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
 </div>
 </div><p>
+<a class="anchor" name="55eb77cbe46727752dc12c064c80bde6"></a><!-- doxytag: member="DataBase::DatabaseGetVersion" ref="55eb77cbe46727752dc12c064c80bde6" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wxString DataBase::DatabaseGetVersion           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return a wxString containing the version of the embedded server. 
+<p>
+This function is the only one who may be called before <a class="el" href="class_data_base.html#c49c112c59d7dcf4d501f3b8cf4295e7">DataBaseOpen()</a>. <dl class="return" compact><dt><b>Returns:</b></dt><dd>a wxString containing the version number </dd></dl>
+
+<p>
+Definition at line <a class="el" href="database_8cpp-source.html#l00112">112</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
+</div>
+</div><p>
+<a class="anchor" name="204e8cb696403a43552c1d99149aaf93"></a><!-- doxytag: member="DataBase::DatabaseListFields" ref="204e8cb696403a43552c1d99149aaf93" args="(wxString sTable)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wxArrayString DataBase::DatabaseListFields           </td>
+          <td>(</td>
+          <td class="paramtype">wxString&nbsp;</td>
+          <td class="paramname"> <em>sTable</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return an array containing all the selected table fields. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>sTable</em>&nbsp;</td><td>a String containing the table name </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>an array of string containing the fields name. </dd></dl>
+
+<p>
+Definition at line <a class="el" href="database_8cpp-source.html#l00121">121</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
+</div>
+</div><p>
+<a class="anchor" name="6cd29581ced205fd7b2d121d1c306c38"></a><!-- doxytag: member="DataBase::DataBaseGetAllTableContent" ref="6cd29581ced205fd7b2d121d1c306c38" args="(wxString sTable)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool DataBase::DataBaseGetAllTableContent           </td>
+          <td>(</td>
+          <td class="paramtype">wxString&nbsp;</td>
+          <td class="paramname"> <em>sTable</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get all data stored in a table. 
+<p>
+This function just process the request, to get the result row by row, call the <a class="el" href="class_data_base.html#7713539e7f3dd9f26dbcd0133f83717c">DataBaseGetNextResult()</a> function.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>sTable</em>&nbsp;</td><td>a String containing the table name </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>TRUE if the request is valid. </dd></dl>
+
+<p>
+Definition at line <a class="el" href="database_8cpp-source.html#l00145">145</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
+</div>
+</div><p>
+<a class="anchor" name="7713539e7f3dd9f26dbcd0133f83717c"></a><!-- doxytag: member="DataBase::DataBaseGetNextResult" ref="7713539e7f3dd9f26dbcd0133f83717c" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wxArrayString DataBase::DataBaseGetNextResult           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return the result of the last request. 
+<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>An array of strings containing the values of one row. </dd></dl>
+
+<p>
+Definition at line <a class="el" href="database_8cpp-source.html#l00158">158</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
+</div>
+</div><p>
+<a class="anchor" name="d87652993e6afca2933792f07c8384c9"></a><!-- doxytag: member="DataBase::DataBaseQuery" ref="d87652993e6afca2933792f07c8384c9" args="(wxString myQuery)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int DataBase::DataBaseQuery           </td>
+          <td>(</td>
+          <td class="paramtype">wxString&nbsp;</td>
+          <td class="paramname"> <em>myQuery</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Used to execute a query on the database. 
+<p>
+This function is mainly created to execute a query without results <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>myQuery</em>&nbsp;</td><td>the string containing the query </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>return 0 if the query works and the MYSQL error code otherwise. </dd></dl>
+
+<p>
+Definition at line <a class="el" href="database_8cpp-source.html#l00186">186</a> of file <a class="el" href="database_8cpp-source.html">database.cpp</a>.
+</div>
+</div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
 <li>/Users/Lucien/DATA/PROGRAMATION/ToolBasView/trunk/include/<a class="el" href="database_8h-source.html">database.h</a><li>/Users/Lucien/DATA/PROGRAMATION/ToolBasView/trunk/src/<a class="el" href="database_8cpp-source.html">database.cpp</a></ul>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Jul 18 15:30:25 2007 for ToolBaseView by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Thu Jul 19 16:05:47 2007 for ToolBaseView by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>

@@ -11,6 +11,11 @@
     <li><a href="annotated.html"><span>Classes</span></a></li>
     <li id="current"><a href="files.html"><span>Files</span></a></li>
   </ul></div>
+<div class="tabs">
+  <ul>
+    <li><a href="files.html"><span>File&nbsp;List</span></a></li>
+    <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
+  </ul></div>
 <h1>/Users/Lucien/DATA/PROGRAMATION/ToolBasView/trunk/src/main.cpp</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 
 <a name="l00007"></a>00007 <span class="preprocessor">#include &lt;wx/wxprec.h&gt;</span>
 <a name="l00008"></a>00008 
@@ -47,110 +52,196 @@
 <a name="l00039"></a>00039   EVT_MENU (ID_OPEN_DB,<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::OnOpenDatabase)
 <a name="l00040"></a>00040   EVT_CLOSE(<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::OnQuit)
 <a name="l00041"></a>00041   EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::OnDoubleClickListe)
-<a name="l00042"></a>00042 END_EVENT_TABLE()
-<a name="l00043"></a>00043 
+<a name="l00042"></a>00042   EVT_MENU (ID_PROCESS_MENU,<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::OnProcessRequest)
+<a name="l00043"></a>00043 END_EVENT_TABLE()
 <a name="l00044"></a>00044 
-<a name="l00045"></a>00045 <span class="comment">/* Frame initialisation */</span>
-<a name="l00046"></a><a class="code" href="class_t_b_v_frame.html#aa1d418070a0187e1e77a346b3e68722">00046</a> <a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>(wxFrame *frame, const wxString&amp; title,wxPoint pos, wxSize size)
-<a name="l00047"></a>00047                         : wxFrame(frame, -1, title,pos,size)
-<a name="l00048"></a>00048 {
-<a name="l00049"></a>00049     <span class="comment">// Loading icon</span>
-<a name="l00050"></a>00050         <span class="comment">// wxIcon icon(sirs_xpm);</span>
-<a name="l00051"></a>00051     <span class="comment">//SetIcon(icon);</span>
-<a name="l00052"></a>00052         
-<a name="l00053"></a>00053     <span class="comment">// adding status bar</span>
-<a name="l00054"></a>00054         CreateStatusBar(2,0,ID_STATUS);
-<a name="l00055"></a>00055         
-<a name="l00056"></a>00056         <span class="comment">// dessin de l'interface</span>
-<a name="l00057"></a>00057         wxPanel * top_panel = <span class="keyword">new</span> wxPanel (<span class="keyword">this</span>, -1,wxDefaultPosition,wxDefaultSize );
-<a name="l00058"></a>00058         INTERFACE(top_panel, FALSE);
-<a name="l00059"></a>00059         
-<a name="l00060"></a>00060         <span class="comment">// create the menu</span>
-<a name="l00061"></a>00061         SetMenuBar(MENU());
-<a name="l00062"></a>00062         
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 <span class="comment">/* Frame initialisation */</span>
+<a name="l00047"></a><a class="code" href="class_t_b_v_frame.html#aa1d418070a0187e1e77a346b3e68722">00047</a> <a class="code" href="class_t_b_v_frame.html">TBVFrame</a>::<a class="code" href="class_t_b_v_frame.html">TBVFrame</a>(wxFrame *frame, const wxString&amp; title,wxPoint pos, wxSize size)
+<a name="l00048"></a>00048                         : wxFrame(frame, -1, title,pos,size)
+<a name="l00049"></a>00049 {
+<a name="l00050"></a>00050     <span class="comment">// Loading icon</span>
+<a name="l00051"></a>00051         <span class="comment">// wxIcon icon(sirs_xpm);</span>
+<a name="l00052"></a>00052     <span class="comment">//SetIcon(icon);</span>
+<a name="l00053"></a>00053         
+<a name="l00054"></a>00054     <span class="comment">// adding status bar</span>
+<a name="l00055"></a>00055         CreateStatusBar(2,0,ID_STATUS);
+<a name="l00056"></a>00056         
+<a name="l00057"></a>00057         <span class="comment">// dessin de l'interface</span>
+<a name="l00058"></a>00058         wxPanel * top_panel = <span class="keyword">new</span> wxPanel (<span class="keyword">this</span>, -1,wxDefaultPosition,wxDefaultSize );
+<a name="l00059"></a>00059         INTERFACE(top_panel, FALSE);
+<a name="l00060"></a>00060         
+<a name="l00061"></a>00061         <span class="comment">// create the menu</span>
+<a name="l00062"></a>00062         SetMenuBar(MENU());
 <a name="l00063"></a>00063         
-<a name="l00064"></a>00064         <span class="comment">// define as log window</span>
-<a name="l00065"></a>00065         <span class="comment">//wxTextCtrl * myTextCtrl = ;</span>
+<a name="l00064"></a>00064         
+<a name="l00065"></a>00065         <span class="comment">// define as log window</span>
 <a name="l00066"></a>00066         wxLog::SetActiveTarget (<span class="keyword">new</span> wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,<span class="keyword">this</span>)));
 <a name="l00067"></a>00067         
 <a name="l00068"></a>00068         <span class="comment">// programm started</span>
 <a name="l00069"></a>00069         wxLogMessage(_(<span class="stringliteral">"Program started"</span>));
 <a name="l00070"></a>00070         
-<a name="l00071"></a>00071 }
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 
-<a name="l00074"></a>00074 <span class="comment">/* Frame destruction */</span>
-<a name="l00075"></a><a class="code" href="class_t_b_v_frame.html#729c2bc9310ec2954ec388663bd43241">00075</a> <a class="code" href="class_t_b_v_frame.html#729c2bc9310ec2954ec388663bd43241">TBVFrame::~TBVFrame</a>()
-<a name="l00076"></a>00076 {
-<a name="l00077"></a>00077 }
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079 <span class="keywordtype">void</span> TBVFrame::OnOpenDatabase(wxCommandEvent &amp; event)
-<a name="l00080"></a>00080 {
-<a name="l00081"></a>00081         wxArrayString myStringArray;
-<a name="l00082"></a>00082         
-<a name="l00083"></a>00083         <span class="keywordflow">if</span>(myDatabase.<a class="code" href="class_data_base.html#c49c112c59d7dcf4d501f3b8cf4295e7">DataBaseOpen</a>(_(<span class="stringliteral">"/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data/"</span>)))
-<a name="l00084"></a>00084         {
-<a name="l00085"></a>00085                 wxLogMessage(_(<span class="stringliteral">"Database opened"</span>));
-<a name="l00086"></a>00086                 
-<a name="l00087"></a>00087                 myStringArray = myDatabase.<a class="code" href="class_data_base.html#48f6ee62c3eecd5af867b98f2ff13426">DataBaseListTables</a>();
-<a name="l00088"></a>00088                 
-<a name="l00089"></a>00089                 <span class="comment">// add database name</span>
-<a name="l00090"></a>00090                 <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TreeAddItem</a>(_(<span class="stringliteral">"essai"</span>),0);
-<a name="l00091"></a>00091                 
-<a name="l00092"></a>00092                 <span class="comment">// add tables names</span>
-<a name="l00093"></a>00093                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;myStringArray.Count(); i++) 
-<a name="l00094"></a>00094                 {
-<a name="l00095"></a>00095                         <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TreeAddItem</a>(myStringArray.Item(i),1);
-<a name="l00096"></a>00096                 }
-<a name="l00097"></a>00097                 
-<a name="l00098"></a>00098         }
-<a name="l00099"></a>00099         <span class="keywordflow">else</span>
-<a name="l00100"></a>00100         {
-<a name="l00101"></a>00101                 wxLogError(_(<span class="stringliteral">"Error opening the database"</span>));
-<a name="l00102"></a>00102         }
-<a name="l00103"></a>00103         
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 }
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109 <span class="keywordtype">void</span> TBVFrame::OnQuit(wxCloseEvent &amp; event)
-<a name="l00110"></a>00110 {
-<a name="l00111"></a>00111                 <span class="comment">// if the database is opened, we close the database.</span>
-<a name="l00112"></a>00112                 <span class="keywordflow">if</span> (myDatabase.<a class="code" href="class_data_base.html#0c190151b6e1e0b822b4d8f410ca0df0">DataBaseIsOpen</a>()) 
-<a name="l00113"></a>00113                 {
-<a name="l00114"></a>00114                         myDatabase.<a class="code" href="class_data_base.html#102228775263b0936f914f0454933d9e">DataBaseClose</a>();
-<a name="l00115"></a>00115                 }
-<a name="l00116"></a>00116                 
-<a name="l00117"></a>00117                 this-&gt;Destroy();
+<a name="l00071"></a>00071         <span class="comment">// get the client version</span>
+<a name="l00072"></a>00072         SetStatusText(_(<span class="stringliteral">"MySQL embedded version : "</span>) + myDatabase.DatabaseGetVersion(),1);
+<a name="l00073"></a>00073         
+<a name="l00074"></a>00074         
+<a name="l00075"></a>00075         <span class="comment">// getting the tree ctrl</span>
+<a name="l00076"></a>00076         pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,<span class="keyword">this</span>);
+<a name="l00077"></a>00077         
+<a name="l00078"></a>00078         <span class="comment">// Creating the gridoperation object</span>
+<a name="l00079"></a>00079         pGridOp = <span class="keyword">new</span> <a class="code" href="class_grid_operation.html">GridOperation</a>((wxGrid *) FindWindowById(ID_GRID,<span class="keyword">this</span>));
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081         
+<a name="l00082"></a>00082 }
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 <span class="comment">/* Frame destruction */</span>
+<a name="l00086"></a><a class="code" href="class_t_b_v_frame.html#729c2bc9310ec2954ec388663bd43241">00086</a> <a class="code" href="class_t_b_v_frame.html#729c2bc9310ec2954ec388663bd43241">TBVFrame::~TBVFrame</a>()
+<a name="l00087"></a>00087 {
+<a name="l00088"></a>00088 }
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090 <span class="keywordtype">void</span> TBVFrame::OnOpenDatabase(wxCommandEvent &amp; event)
+<a name="l00091"></a>00091 {
+<a name="l00092"></a>00092         wxArrayString myStringArray;
+<a name="l00093"></a>00093         
+<a name="l00094"></a>00094         <span class="keywordflow">if</span>(myDatabase.<a class="code" href="class_data_base.html#c49c112c59d7dcf4d501f3b8cf4295e7">DataBaseOpen</a>(_(<span class="stringliteral">"/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data/"</span>)))
+<a name="l00095"></a>00095         {
+<a name="l00096"></a>00096                 wxLogMessage(_(<span class="stringliteral">"Database opened"</span>));
+<a name="l00097"></a>00097                                 
+<a name="l00098"></a>00098                 myStringArray = myDatabase.<a class="code" href="class_data_base.html#48f6ee62c3eecd5af867b98f2ff13426">DataBaseListTables</a>();
+<a name="l00099"></a>00099                 
+<a name="l00100"></a>00100                 <span class="comment">// add database name</span>
+<a name="l00101"></a>00101                 <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TreeAddItem</a>(_(<span class="stringliteral">"i4418575"</span>),0);
+<a name="l00102"></a>00102                 
+<a name="l00103"></a>00103                 <span class="comment">// add tables names</span>
+<a name="l00104"></a>00104                 <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;myStringArray.Count(); i++) 
+<a name="l00105"></a>00105                 {
+<a name="l00106"></a>00106                         <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TreeAddItem</a>(myStringArray.Item(i),1);
+<a name="l00107"></a>00107                 }
+<a name="l00108"></a>00108                 
+<a name="l00109"></a>00109         }
+<a name="l00110"></a>00110         <span class="keywordflow">else</span>
+<a name="l00111"></a>00111         {
+<a name="l00112"></a>00112                 wxLogError(_(<span class="stringliteral">"Error opening the database"</span>));
+<a name="l00113"></a>00113         }
+<a name="l00114"></a>00114         
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116 }
+<a name="l00117"></a>00117 
 <a name="l00118"></a>00118 
-<a name="l00119"></a>00119 }
-<a name="l00120"></a>00120 
-<a name="l00121"></a><a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">00121</a> <span class="keywordtype">void</span> <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TBVFrame::TreeAddItem</a> (wxString tname, <span class="keywordtype">int</span> parent)
-<a name="l00122"></a>00122 {
-<a name="l00123"></a>00123         wxTreeCtrl * myTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,<span class="keyword">this</span>);
-<a name="l00124"></a>00124         
-<a name="l00125"></a>00125         <span class="keywordflow">if</span> (parent == 0) 
-<a name="l00126"></a>00126         {
-<a name="l00127"></a>00127                 myTreeCtrl-&gt;AddRoot (tname); 
-<a name="l00128"></a>00128         }
-<a name="l00129"></a>00129         <span class="keywordflow">else</span> 
-<a name="l00130"></a>00130                 myTreeCtrl-&gt;AppendItem(myTreeCtrl-&gt;GetRootItem(),tname);
-<a name="l00131"></a>00131         
-<a name="l00132"></a>00132 }
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134 <span class="keywordtype">void</span> TBVFrame::OnDoubleClickListe (wxTreeEvent &amp; event)
-<a name="l00135"></a>00135 {
-<a name="l00136"></a>00136         
-<a name="l00137"></a>00137 
-<a name="l00138"></a>00138 }
-<a name="l00139"></a>00139 
-<a name="l00140"></a>00140 <span class="comment">//void TBVFrame::OnAbout(wxCommandEvent &amp;event)</span>
-<a name="l00141"></a>00141 <span class="comment">//{</span>
-<a name="l00142"></a>00142 <span class="comment">//      wxMessageDialog * dialog = new wxMessageDialog (this,"coucou","Essai");</span>
-<a name="l00143"></a>00143 <span class="comment">//      dialog-&gt;ShowModal();</span>
-<a name="l00144"></a>00144 <span class="comment">//}</span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Jul 18 15:30:25 2007 for ToolBaseView by&nbsp;
+<a name="l00119"></a>00119 <span class="keywordtype">void</span> TBVFrame::OnQuit(wxCloseEvent &amp; event)
+<a name="l00120"></a>00120 {
+<a name="l00121"></a>00121                 <span class="comment">// if the database is opened, we close the database.</span>
+<a name="l00122"></a>00122                 <span class="keywordflow">if</span> (myDatabase.<a class="code" href="class_data_base.html#0c190151b6e1e0b822b4d8f410ca0df0">DataBaseIsOpen</a>()) 
+<a name="l00123"></a>00123                 {
+<a name="l00124"></a>00124                         myDatabase.<a class="code" href="class_data_base.html#102228775263b0936f914f0454933d9e">DataBaseClose</a>();
+<a name="l00125"></a>00125                 }
+<a name="l00126"></a>00126                 
+<a name="l00127"></a>00127                 this-&gt;Destroy();
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 }
+<a name="l00130"></a>00130 
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132 <span class="keywordtype">void</span> TBVFrame::OnProcessRequest (wxCommandEvent &amp; event)
+<a name="l00133"></a>00133 {
+<a name="l00134"></a>00134         <span class="keywordflow">if</span> (myDatabase.<a class="code" href="class_data_base.html#0c190151b6e1e0b822b4d8f410ca0df0">DataBaseIsOpen</a>()) 
+<a name="l00135"></a>00135         {
+<a name="l00136"></a>00136                         
+<a name="l00137"></a>00137                 <span class="comment">// create and display the SQLPROCESS dialog box.</span>
+<a name="l00138"></a>00138                 <a class="code" href="class_s_q_l_p_r_o_c_e_s_s___d_l_g___o_p.html">SQLPROCESS_DLG_OP</a> * myDlg = <span class="keyword">new</span> <a class="code" href="class_s_q_l_p_r_o_c_e_s_s___d_l_g___o_p.html">SQLPROCESS_DLG_OP</a>(<span class="keyword">this</span>,
+<a name="l00139"></a>00139                                                                                                                   -1, _(<span class="stringliteral">"Process SQL User Request"</span>),
+<a name="l00140"></a>00140                                                                                                                   wxDefaultPosition,wxDefaultSize,
+<a name="l00141"></a>00141                                                                                                                   wxDEFAULT_DIALOG_STYLE        | wxRESIZE_BORDER);
+<a name="l00142"></a>00142                 
+<a name="l00143"></a>00143                 myDlg-&gt;SetDataBase(&amp;myDatabase);                                                                                                        
+<a name="l00144"></a>00144                 myDlg-&gt;SetMinSize(wxSize(300,200));
+<a name="l00145"></a>00145                 myDlg-&gt;CentreOnParent();
+<a name="l00146"></a>00146                 myDlg-&gt;ShowModal();     
+<a name="l00147"></a>00147         }
+<a name="l00148"></a>00148         <span class="keywordflow">else</span>
+<a name="l00149"></a>00149         {
+<a name="l00150"></a>00150                 wxLogError(_(<span class="stringliteral">"No Database opened, please open a database first"</span>));
+<a name="l00151"></a>00151         }
+<a name="l00152"></a>00152         
+<a name="l00153"></a>00153 }
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 
+<a name="l00156"></a><a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">00156</a> <span class="keywordtype">void</span> <a class="code" href="class_t_b_v_frame.html#5b35fee9a0c0f4d9c5eb5bc71bf4730c">TBVFrame::TreeAddItem</a> (wxString tname, <span class="keywordtype">int</span> parent)
+<a name="l00157"></a>00157 {
+<a name="l00158"></a>00158         <span class="keywordflow">if</span> (parent == 0) 
+<a name="l00159"></a>00159         {
+<a name="l00160"></a>00160                 pTreeCtrl-&gt;AddRoot (tname); 
+<a name="l00161"></a>00161         }
+<a name="l00162"></a>00162         <span class="keywordflow">else</span> 
+<a name="l00163"></a>00163                 pTreeCtrl-&gt;AppendItem(pTreeCtrl-&gt;GetRootItem(),tname);  
+<a name="l00164"></a>00164 }
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167 
+<a name="l00168"></a>00168 <span class="keywordtype">void</span> TBVFrame::OnDoubleClickListe (wxTreeEvent &amp; event)
+<a name="l00169"></a>00169 {
+<a name="l00170"></a>00170         wxArrayString myFieldArray;
+<a name="l00171"></a>00171         <span class="keywordtype">int</span> i; <span class="comment">// loop</span>
+<a name="l00172"></a>00172         
+<a name="l00173"></a>00173         wxTreeItemId myItemID = event.GetItem();
+<a name="l00174"></a>00174         <span class="comment">// get the table name</span>
+<a name="l00175"></a>00175         wxString myTempString = pTreeCtrl-&gt;GetItemText(myItemID);
+<a name="l00176"></a>00176         myFieldArray = myDatabase.<a class="code" href="class_data_base.html#204e8cb696403a43552c1d99149aaf93">DatabaseListFields</a>(myTempString);
+<a name="l00177"></a>00177         
+<a name="l00178"></a>00178         <span class="comment">// check for field numbers (may be not a table)</span>
+<a name="l00179"></a>00179         <span class="keywordflow">if</span> (myFieldArray.Count() &gt; 0)
+<a name="l00180"></a>00180         {
+<a name="l00181"></a>00181                 <span class="comment">// debug message...</span>
+<a name="l00182"></a>00182                 wxLogMessage(_(<span class="stringliteral">"%d fields readed from the table '%s'"</span>),
+<a name="l00183"></a>00183                                          myFieldArray.Count(),myTempString.c_str());
+<a name="l00184"></a>00184                 
+<a name="l00185"></a>00185                 <span class="comment">// change the number of cols</span>
+<a name="l00186"></a>00186                 pGridOp-&gt;<a class="code" href="class_grid_operation.html#5694a561dd9815ebcc2a27dbf3f3ee9d">GridOpSetNumberOfColumn</a>(myFieldArray.Count());
+<a name="l00187"></a>00187                 
+<a name="l00188"></a>00188                 <span class="keywordflow">for</span> (i = 0; i&lt;myFieldArray.Count(); i++) 
+<a name="l00189"></a>00189                 {
+<a name="l00190"></a>00190                         pGridOp-&gt;<a class="code" href="class_grid_operation.html#d7fbf23501fb4af4755d1c993c666d00">GridOpChangeColumnText</a>(myFieldArray.Item(i),i,TRUE);
+<a name="l00191"></a>00191                 }
+<a name="l00192"></a>00192                 
+<a name="l00193"></a>00193                 <span class="comment">// get the data....</span>
+<a name="l00194"></a>00194                 <span class="keywordflow">if</span>(myDatabase.<a class="code" href="class_data_base.html#6cd29581ced205fd7b2d121d1c306c38">DataBaseGetAllTableContent</a>(myTempString))
+<a name="l00195"></a>00195                 {
+<a name="l00196"></a>00196                         wxLogMessage(_(<span class="stringliteral">"Reading table '%s' OK"</span>),myTempString.c_str());
+<a name="l00197"></a>00197                         
+<a name="l00198"></a>00198                         <span class="keywordtype">int</span> iArrayCount = 0;
+<a name="l00199"></a>00199                         
+<a name="l00200"></a>00200                         <span class="keywordflow">while</span> (1) 
+<a name="l00201"></a>00201                         {
+<a name="l00202"></a>00202                                 myFieldArray = myDatabase.<a class="code" href="class_data_base.html#7713539e7f3dd9f26dbcd0133f83717c">DataBaseGetNextResult</a>();
+<a name="l00203"></a>00203                                 iArrayCount = myFieldArray.Count();
+<a name="l00204"></a>00204                                 <span class="keywordflow">if</span> (iArrayCount == 0) 
+<a name="l00205"></a>00205                                 {
+<a name="l00206"></a>00206                                         <span class="keywordflow">break</span>;
+<a name="l00207"></a>00207                                 }
+<a name="l00208"></a>00208                                 
+<a name="l00209"></a>00209                                 <span class="comment">// add a new line</span>
+<a name="l00210"></a>00210                                 pGridOp-&gt;<a class="code" href="class_grid_operation.html#06152d56a01aed59eccb2a90cd51380b">GridOpAddDataRow</a>(iArrayCount,
+<a name="l00211"></a>00211                                                                                   &amp;myFieldArray);
+<a name="l00212"></a>00212                         }
+<a name="l00213"></a>00213                 
+<a name="l00214"></a>00214                 }
+<a name="l00215"></a>00215                 <span class="keywordflow">else</span> 
+<a name="l00216"></a>00216                 {
+<a name="l00217"></a>00217                         wxLogError(_(<span class="stringliteral">"Error reading the table '%s'"</span>),myTempString.c_str());
+<a name="l00218"></a>00218                 }
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220                 
+<a name="l00221"></a>00221                 
+<a name="l00222"></a>00222         }
+<a name="l00223"></a>00223         
+<a name="l00224"></a>00224 }
+<a name="l00225"></a>00225 
+<a name="l00226"></a>00226 <span class="comment">//void TBVFrame::OnAbout(wxCommandEvent &amp;event)</span>
+<a name="l00227"></a>00227 <span class="comment">//{</span>
+<a name="l00228"></a>00228 <span class="comment">//      wxMessageDialog * dialog = new wxMessageDialog (this,"coucou","Essai");</span>
+<a name="l00229"></a>00229 <span class="comment">//      dialog-&gt;ShowModal();</span>
+<a name="l00230"></a>00230 <span class="comment">//}</span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Thu Jul 19 16:05:46 2007 for ToolBaseView by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1 </small></address>
 </body>
