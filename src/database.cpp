@@ -17,6 +17,8 @@
 #endif
 
 #include "../include/database.h"
+#include <wx/filename.h> // to create the database path and name.
+
 
 //----------------------------------------------------------------------------
 // DataBase
@@ -34,17 +36,21 @@ DataBase::~DataBase()
 
 bool DataBase::DataBaseOpen (wxString path)
 {
+	// conversion from path
+	DataBaseConvertFullPath(path);
+	wxString datadir = _T("--datadir=") + m_DBPath;
+	
 	static char *server_args[] = {
 		"this_program",       /* this string is not used */
-		"--datadir=/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data/",
+		(char*) datadir.c_str(),
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets", 
 		//"--default-charcater-set=latin1"
-		//"--language=french",
-		//
-		//"--defaults-file=/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/my.ini"
+		
+		// "--datadir=/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data"
+		
 	};
 	static char *server_groups[] = {
 		"embedded",
@@ -61,7 +67,7 @@ bool DataBase::DataBaseOpen (wxString path)
 	{
 		pMySQL = mysql_init(NULL);
 		
-		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,_T("i4418575"),3309,NULL,0))
+		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,m_DBName,3309,NULL,0))
 		{
 			IsDatabaseOpen = TRUE;
 			return TRUE;
@@ -192,4 +198,23 @@ int DataBase::DataBaseQuery(wxString myQuery)
 	return iRetour;
 }
 
+
+bool DataBase::DataBaseConvertFullPath(wxString fullpath)
+{
+	wxArrayString myDirArray;
+	
+	wxFileName dirname = wxFileName(fullpath,wxEmptyString);
+	
+	int iNumDir = dirname.GetDirCount();
+	myDirArray = dirname.GetDirs();
+	m_DBName = myDirArray.Last();
+	dirname.RemoveLastDir(); 
+	m_DBPath = dirname.GetPath();
+	
+	if (m_DBPath.IsEmpty() || m_DBName.IsEmpty())
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
 

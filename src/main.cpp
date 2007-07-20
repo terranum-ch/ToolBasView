@@ -91,27 +91,35 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 {
 	wxArrayString myStringArray;
 	
-	if(myDatabase.DataBaseOpen(_("/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data/")))
+	const wxString & dir = wxDirSelector (_("Choose the database folder"));
+	if (!dir.empty())
 	{
-		wxLogMessage(_("Database opened"));
-				
-		myStringArray = myDatabase.DataBaseListTables();
 		
-		// add database name
-		TreeAddItem(_("i4418575"),0);
-		
-		// add tables names
-		for (int i=0; i<myStringArray.Count(); i++) 
+		if(myDatabase.DataBaseOpen(dir))
 		{
-			TreeAddItem(myStringArray.Item(i),1);
+			wxLogMessage(_("Database opened"));
+			
+			wxLogMessage(_("Path : %s, Name : %s"),
+						 myDatabase.DataBaseGetPath().c_str(),
+						 myDatabase.DataBaseGetName().c_str());
+			
+			myStringArray = myDatabase.DataBaseListTables();
+			
+			// add database name
+			TreeAddItem(_( myDatabase.DataBaseGetName()),0);
+			
+			// add tables names
+			for (int i=0; i<myStringArray.Count(); i++) 
+			{
+				TreeAddItem(myStringArray.Item(i),1);
+			}
+			
 		}
-		
+		else
+		{
+			wxLogError(_("Error opening the database"));
+		}
 	}
-	else
-	{
-		wxLogError(_("Error opening the database"));
-	}
-	
 
 }
 

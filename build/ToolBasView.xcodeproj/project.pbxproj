@@ -13,6 +13,7 @@
 		DF12AE6E0C4E066B00A43B2D /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF12AE6D0C4E066B00A43B2D /* database.cpp */; };
 		DF4402B60C4CFDDF00DC749D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF4402A90C4CFDB100DC749D /* main.cpp */; };
 		DF4403200C4D02AC00DC749D /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF44028E0C4CF75300DC749D /* interface.cpp */; };
+		DF5B41640C50BEF30039907B /* fish.icns in Resources */ = {isa = PBXBuildFile; fileRef = DF5B41630C50BEF30039907B /* fish.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		DF4402AE0C4CFDD000DC749D /* ToolBasView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToolBasView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF4402B10C4CFDD000DC749D /* ToolBasView-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ToolBasView-Info.plist"; sourceTree = "<group>"; };
 		DF4402F80C4CFF6300DC749D /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = ../include/main.h; sourceTree = SOURCE_ROOT; };
+		DF5B41630C50BEF30039907B /* fish.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = fish.icns; path = ../art/fish.icns; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 		DF4402AF0C4CFDD000DC749D /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				DF5B41630C50BEF30039907B /* fish.icns */,
 				DF4402AE0C4CFDD000DC749D /* ToolBasView.app */,
 			);
 			name = Products;
@@ -122,6 +125,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF5B41640C50BEF30039907B /* fish.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

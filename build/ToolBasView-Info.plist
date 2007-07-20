@@ -6,6 +6,8 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string>fish</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.yourcompany.ToolBasView</string>
 	<key>CFBundleInfoDictionaryVersion</key>

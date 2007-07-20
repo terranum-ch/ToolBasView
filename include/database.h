@@ -122,6 +122,23 @@ public:
     @result    return 0 if the query works and the MYSQL error code otherwise.
 	*/
 	int DataBaseQuery(wxString myQuery);
+	
+	/*!
+    @brief  return the path of the database
+	
+	This function must be called only after DataBaseOpen().
+	@result return the path of the database
+	*/	
+	wxString DataBaseGetPath() {return m_DBPath;} 
+
+	/*!
+    @brief  return the Name of the database
+	
+	This function must be called only after DataBaseOpen().
+	@result return the name of the database
+	*/	
+	wxString DataBaseGetName() {return m_DBName;}
+	
 
 	
    
@@ -133,8 +150,21 @@ private:
 	MYSQL_RES * pResults;
 	int m_resultNumber;
 	
+	// storing database path and name.
+	wxString m_DBPath;
+	wxString m_DBName;
+	
 	
 	bool IsDatabaseOpen;
+	
+	/*!
+    @brief  convert the path into path and database name
+
+	@result true if all is OK.
+	*/	
+	bool DataBaseConvertFullPath(wxString fullpath);
+	
+	
 
 };
 
