@@ -40,19 +40,21 @@ bool DataBase::DataBaseOpen (wxString path)
 	DataBaseConvertFullPath(path);
 	wxString datadir = _T("--datadir=") + m_DBPath;
 
+	// convertion const char * to char *.... no other way ?
+	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
+	char temps[datadir.Length()];
+	strcpy(temps,myPath);
 	
-	static char *server_args[] = {
+	static char *server_args[] = 
+	{
 		"this_program",       /* this string is not used */
-		"--datadir=/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data",
+		temps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets"
-		//"--default-charcater-set=utf8"
-		
-		// "--datadir=/Users/Lucien/DATA/PRJ/TOOLMAP/TestBDD/BDD/data"
-		//( char*)datadir.c_str()
 	};
+	
 	static char *server_groups[] = {
 		"embedded",
 		"server",
@@ -68,8 +70,6 @@ bool DataBase::DataBaseOpen (wxString path)
 	if(mysql_server_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);
-		
-		//(char*)m_DBName.c_str()
 		
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,(const char *)m_DBName.mb_str(wxConvUTF8),3309,NULL,0))
 		{
