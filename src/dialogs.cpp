@@ -80,7 +80,7 @@ wxSizer *ABOUT( wxWindow *parent, bool call_fit, bool set_sizer )
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item2 = new wxStaticText( parent, ID_SQL_BMP, "No image", wxDefaultPosition, wxDefaultSize );
+    wxStaticText *item2 = new wxStaticText( parent, ID_SQL_BMP, _T("No image"), wxDefaultPosition, wxDefaultSize );
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticLine *item3 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );

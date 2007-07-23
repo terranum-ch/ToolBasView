@@ -69,7 +69,8 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxLogMessage(_("Program started"));
 	
 	// get the client version
-	SetStatusText(_("MySQL embedded version : ") + myDatabase.DatabaseGetVersion(),1);
+	wxString myVersion = _("MySQL embedded version : ") +  myDatabase.DatabaseGetVersion();
+	SetStatusText(myVersion ,1);
 	
 	
 	// getting the tree ctrl
@@ -103,10 +104,13 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 						 myDatabase.DataBaseGetPath().c_str(),
 						 myDatabase.DataBaseGetName().c_str());
 			
+			wxLogMessage(_("Character set used : %s"),
+						 myDatabase.DatabaseGetCharacterSet().c_str());
+			
 			myStringArray = myDatabase.DataBaseListTables();
 			
 			// add database name
-			TreeAddItem(_( myDatabase.DataBaseGetName()),0);
+			TreeAddItem((myDatabase.DataBaseGetName()),0);
 			
 			// add tables names
 			for (int i=0; i<myStringArray.Count(); i++) 

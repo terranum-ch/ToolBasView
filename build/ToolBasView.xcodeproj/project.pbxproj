@@ -178,7 +178,7 @@
 				INFOPLIST_FILE = "ToolBasView-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_CPLUSPLUSFLAGS = (
-					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/wx/include/mac-ansi-release-static-2.8",
+					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/wx/include/mac-unicode-release-static-2.8",
 					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/include/wx-2.8",
 					"-D_FILE_OFFSET_BITS=64",
 					"-D_LARGE_FILES",
@@ -197,11 +197,12 @@
 					Cocoa,
 					"-framework",
 					System,
-					"/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/libwx_mac-2.8.a",
+					"/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/libwx_macu-2.8.a",
 					"-lpng",
 					"-lz",
 					"-framework",
 					WebKit,
+					"-lwxregexu-2.8",
 					"-lwxexpat-2.8",
 					"-lwxtiff-2.8",
 					"-lwxjpeg-2.8",

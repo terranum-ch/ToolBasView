@@ -20,6 +20,7 @@
 
 #include "mysql.h"
 #include <wx/arrstr.h> // array string
+#include <wx/strconv.h> // unicode conversion
 
 //----------------------------------------------------------------------------
 // DataBase
@@ -138,6 +139,14 @@ public:
 	@result return the name of the database
 	*/	
 	wxString DataBaseGetName() {return m_DBName;}
+	
+	/*!
+    @brief  return the character set used for the transaction
+	
+	This function must be called only after DataBaseOpen().
+	@result return the name of the character set used.
+	*/	
+	wxString DatabaseGetCharacterSet();
 	
 
 	
