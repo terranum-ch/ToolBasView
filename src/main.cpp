@@ -40,6 +40,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_CLOSE(TBVFrame::OnQuit)
   EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
   EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
+  EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
 END_EVENT_TABLE()
 
 
@@ -233,6 +234,24 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 		
 	}
 	
+}
+
+
+void TBVFrame::OnNewDataBase (wxCommandEvent & event)
+{
+	NEWDBASE_OP * myDlg = new NEWDBASE_OP(this,-1,_("Create a new database"),
+										  wxDefaultPosition, wxDefaultSize);
+	myDlg->CenterOnParent();
+	if (myDlg->ShowModal()==wxID_OK)
+	{
+		// create realy the database...
+		myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
+		
+		wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
+		
+		// add database name
+		TreeAddItem((myDlg->m_DLG_DB_NAME),0);
+	}
 }
 
 //void TBVFrame::OnAbout(wxCommandEvent &event)

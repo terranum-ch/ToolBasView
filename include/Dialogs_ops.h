@@ -16,9 +16,13 @@
 
 #include "../include/dialogs.h"
 #include "../include/database.h" 
+#include <wx/dirdlg.h>
+#include <wx/filename.h> // for verification purpose
 
 
-
+//----------------------------------------------------------------------------
+// SQLPROCESS_DLG_OP
+//----------------------------------------------------------------------------
 class SQLPROCESS_DLG_OP: public wxDialog
 {
 public:
@@ -48,6 +52,37 @@ private:
 
 private:
     DECLARE_EVENT_TABLE()
+};
+
+
+//----------------------------------------------------------------------------
+// NEWDBASE_OP
+//----------------------------------------------------------------------------
+class NEWDBASE_OP: public wxDialog
+{
+public:
+    // constructors and destructors
+    NEWDBASE_OP( wxWindow *parent, wxWindowID id, const wxString &title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_DIALOG_STYLE );
+    virtual ~NEWDBASE_OP();
+    
+ 
+    virtual bool TransferDataFromWindow();
+    
+	wxString m_DLG_DB_NAME;
+	wxString m_DLG_DB_PATH;
+
+    
+private:
+    void OnOk( wxCommandEvent &event );
+    void OnCancel( wxCommandEvent &event );
+	void OnDisplayDirectory (wxCommandEvent &event);
+
+private:
+    DECLARE_EVENT_TABLE()
+		
 };
 
 

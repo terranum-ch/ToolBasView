@@ -68,6 +68,12 @@ private:
 	*/
 	void OnDoubleClickListe (wxTreeEvent & event);
 
+	/*!
+    @function 
+    @brief function called when user select 'create new database'
+	*/	
+	void OnNewDataBase (wxCommandEvent & event);
+
 	
 	DECLARE_EVENT_TABLE();
 	

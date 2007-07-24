@@ -148,6 +148,15 @@ public:
 	*/	
 	wxString DatabaseGetCharacterSet();
 	
+	/*!
+    @brief  create a new database
+	
+	@param DataBasePath a wxString containing the Path for the new Database
+	@param DataBaseName a wxString containing the new database name.
+	@result return TRUE if the new database was created succesfully.
+	*/	
+	bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName);
+	
 
 	
    

@@ -237,3 +237,66 @@ wxString DataBase::DatabaseGetCharacterSet()
 
 }
 
+
+bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
+{
+	wxString datadir = _T("--datadir=") + DataBasePath;
+
+	// convertion const char * to char *.... no other way ?
+	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
+	char temps[datadir.Length()];
+	strcpy(temps,myPath);
+	
+	static char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		temps,
+		"--language=./share/english",
+		"--skip-innodb",
+		"--port=3309",
+		"--character-sets-dir=./share/charsets"
+	};
+	
+	static char *server_groups[] = {
+		"embedded",
+		"server",
+		"this_program_SERVER",
+		(char *)NULL
+	};
+
+	
+	
+	int num_elements = (sizeof(server_args) / sizeof(char *));
+	
+	
+	if(mysql_server_init(num_elements, server_args, server_groups)==0)
+	{
+		pMySQL = mysql_init(NULL);
+		
+		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,NULL,3309,NULL,0))
+		{
+			wxString myDBName (DataBaseName);
+			myDBName.Prepend(_T("CREATE DATABASE "));
+	
+			if(mysql_query(pMySQL,(const char *)myDBName.mb_str(wxConvUTF8)) ==0)
+			{
+				wxLogMessage(_("Creating database ... OK"));
+				
+				m_DBPath = DataBasePath;
+				m_DBName = DataBaseName;
+				IsDatabaseOpen = TRUE;
+				return TRUE;
+			}
+			return FALSE;
+		
+		}	
+		
+	}
+	
+	
+	// if something goes wrong
+	return FALSE;
+
+
+}
+

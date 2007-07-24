@@ -39,7 +39,11 @@ const int ID_ABOUT_TEXT = 10004;
 const int ID_SQL_BMP = 10005;
 wxSizer *ABOUT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-
+const int ID_TEXT2 = 10006;
+const int ID_TXT_DB_PATH = 10007;
+const int ID_BTN_CHOOSE_PATH = 10008;
+const int ID_TXT_DB_NAME = 10009;
+wxSizer *NEWDBASE( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #endif
 
