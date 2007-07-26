@@ -151,8 +151,7 @@ void NEWDBASE_OP::OnOk(wxCommandEvent &event)
 			event.Skip();
 		}
 		else 
-			wxMessageBox(_("Please fill the database Path and Name\n"
-						   "N.B. The database path must exist"),
+			wxMessageBox(_("Please fill the database Path and Name\nN.B. The database path must exist"),
 						 _("Error"),wxICON_ERROR | wxOK);
 		
 	}

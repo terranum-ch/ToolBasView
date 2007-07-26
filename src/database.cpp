@@ -45,20 +45,23 @@ bool DataBase::DataBaseOpen (wxString path)
 	// conversion from path
 	DataBaseConvertFullPath(path);
 	wxString datadir = _T("--datadir=") + m_DBPath;
+	
+	wxLogMessage (datadir + _("  ") + m_DBName);
 
 	// convertion const char * to char *.... no other way ?
 	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
-	char temps[datadir.Length()];
+	char * temps = new char[datadir.Length()];
 	strcpy(temps,myPath);
 	
 	static char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		temps,
+		"--datadir=C:/Documents and Settings/LUCSCH/Bureau",//temps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
-		"--character-sets-dir=./share/charsets"
+		"--character-sets-dir=./share/charsets",
+		"--default-character-set=cp1250"
 	};
 	
 	static char *server_groups[] = {
@@ -98,6 +101,7 @@ bool DataBase::DataBaseClose()
 {
 	mysql_server_end();
 	IsDatabaseOpen = FALSE;
+	return TRUE;
 }
 
 
@@ -180,7 +184,7 @@ wxArrayString DataBase::DataBaseGetNextResult()
 	MYSQL_ROW record;
 	wxArrayString myRowResult;
 	
-	if (m_resultNumber > 0 && pResults != NULL); 
+	if (m_resultNumber > 0 && pResults != NULL)
 	{
 		if(record = mysql_fetch_row(pResults))
 		{
@@ -234,11 +238,14 @@ bool DataBase::DataBaseConvertFullPath(wxString fullpath)
 
 wxString DataBase::DatabaseGetCharacterSet()
 {
-	 MY_CHARSET_INFO cs;
-	 mysql_get_character_set_info(pMySQL,&cs);
+	// MY_CHARSET_INFO cs;
+	// mysql_get_character_set_info(pMySQL,&cs);
 	 
-	 wxString sCharName(cs.csname, wxConvUTF8);
-	 
+	// wxString sCharName(cs.csname, wxConvUTF8);
+	 wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
+	
+
+	 //wxString sCharName = wxEmptyString; 
 	 return sCharName;
 
 }
@@ -257,13 +264,13 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 
 	// convertion const char * to char *.... no other way ?
 	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
-	char temps[datadir.Length()];
+	char * temps = new char[datadir.Length()];
 	strcpy(temps,myPath);
 	
 	static char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		temps,
+		"--datadir=C:/Documents and Settings/LUCSCH/Bureau/",//temps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
