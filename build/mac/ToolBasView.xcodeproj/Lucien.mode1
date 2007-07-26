@@ -190,24 +190,24 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>DFD453710C574A4D006E668C</string>
+				<string>DFCD3A180C589929006F65CD</string>
 				<key>PBXProjectModuleLabel</key>
-				<string>TBVClass.xcclassmodel</string>
+				<string>Class.xcclassmodel</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
 				<dict>
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
-						<string>DFD4537A0C574A6D006E668C</string>
+						<string>DFCD3A1B0C58992E006F65CD</string>
 						<key>PBXProjectModuleLabel</key>
-						<string>TBVClass.xcclassmodel</string>
+						<string>Class.xcclassmodel</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>DF91312E0C588FD800B26D5F</string>
+						<string>DFCD3A1D0C58992E006F65CD</string>
 						<key>history</key>
 						<array>
-							<string>DF9131010C588F6200B26D5F</string>
+							<string>DFCD3A1C0C58992E006F65CD</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -219,11 +219,11 @@
 			<key>Geometry</key>
 			<dict>
 				<key>Frame</key>
-				<string>{{0, 20}, {784, 641}}</string>
+				<string>{{0, 20}, {741, 833}}</string>
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
-				<string>28 320 784 682 0 0 1280 1002 </string>
+				<string>15 123 741 874 0 0 1280 1002 </string>
 			</dict>
 		</dict>
 	</array>
@@ -301,15 +301,13 @@
 								<string>DF44028B0C4CF72C00DC749D</string>
 								<string>DF4402AF0C4CFDD000DC749D</string>
 								<string>DF4402AE0C4CFDD000DC749D</string>
-								<string>DF91310A0C588F7300B26D5F</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>15</integer>
-									<integer>14</integer>
+									<integer>19</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -414,9 +412,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>DF91310F0C588F9300B26D5F</string>
+				<string>DFCD3A190C58992E006F65CD</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>DF9131100C588F9300B26D5F</string>
+				<string>DFCD3A1A0C58992E006F65CD</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -529,7 +527,7 @@
 	<key>PerspectivesBarVisible</key>
 	<false/>
 	<key>PinnedNavigatorIdentifier</key>
-	<string>DFD453730C574A52006E668C</string>
+	<string>DFCD3A180C589929006F65CD</string>
 	<key>ShelfIsVisible</key>
 	<false/>
 	<key>SourceDescription</key>
@@ -552,8 +550,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>DF4402C90C4CFE4D00DC749D</string>
-		<string>DFD453710C574A4D006E668C</string>
+		<string>DFCD3A180C589929006F65CD</string>
 		<string>/Users/Lucien/DATA/PROGRAMATION/ToolBasView/trunk/build/mac/ToolBasView.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

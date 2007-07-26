@@ -17,7 +17,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DF0AE3AB0C4D227700C4335F /* TBVClass.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = TBVClass.xcclassmodel; sourceTree = "<group>"; };
 		DF4402AE0C4CFDD000DC749D /* ToolBasView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToolBasView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF4402B10C4CFDD000DC749D /* ToolBasView-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ToolBasView-Info.plist"; sourceTree = "<group>"; };
 		DF9131120C588FA500B26D5F /* database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = database.h; path = ../../include/database.h; sourceTree = SOURCE_ROOT; };
@@ -33,6 +32,7 @@
 		DF91311C0C588FAF00B26D5F /* interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = interface.cpp; path = ../../src/interface.cpp; sourceTree = SOURCE_ROOT; };
 		DF91311D0C588FAF00B26D5F /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 		DF9131290C588FBD00B26D5F /* fish.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = fish.icns; path = ../../art/fish.icns; sourceTree = SOURCE_ROOT; };
+		DFCD3A170C589929006F65CD /* Class.xcclassmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcclassmodel; path = Class.xcclassmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +52,7 @@
 				DF44028B0C4CF72C00DC749D /* sources */,
 				DF4402AF0C4CFDD000DC749D /* Products */,
 				DF4402B10C4CFDD000DC749D /* ToolBasView-Info.plist */,
-				DF0AE3AB0C4D227700C4335F /* TBVClass.xcclassmodel */,
+				DFCD3A170C589929006F65CD /* Class.xcclassmodel */,
 			);
 			sourceTree = "<group>";
 		};
