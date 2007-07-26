@@ -56,6 +56,13 @@ public:
  	*/
 	void TreeAddItem (wxString tname, int parent = 0);
 	
+	/*!
+    @function
+	@brief Delete all tree item content and call deletion of all
+	the grid table.
+	*/
+	void ClearCtrls();
+	
 	
 private:
 	void OnQuit(wxCloseEvent & event);

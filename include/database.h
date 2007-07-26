@@ -21,6 +21,7 @@
 #include "mysql.h"
 #include <wx/arrstr.h> // array string
 #include <wx/strconv.h> // unicode conversion
+#include <wx/tokenzr.h> // tokenizer of string
 
 //----------------------------------------------------------------------------
 // DataBase
@@ -156,6 +157,18 @@ public:
 	@result return TRUE if the new database was created succesfully.
 	*/	
 	bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName);
+	
+	
+	/*!
+    @brief  cut a big request into unique request.
+	
+	A big request implying multiple operations could not be proceed in one operation
+	one must cut this request into multiple small operations.
+	
+	@param theRequest a wxString containing the full request.
+	@result a wxArrayString containing a unique request for each array.
+	*/	
+	wxArrayString DataBaseCutRequest (wxString theRequest);
 	
 
 	

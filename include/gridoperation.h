@@ -55,6 +55,15 @@ public:
 	*/
 	void GridOpAddDataRow(int iColumn, wxArrayString * myArray);
 	
+	/*!
+    @function 
+    @brief This function clear the grid to default
+    
+    @param     iColumn number of defaults cols (default is 10)
+    @param     iRow number of defaults rows (default is 10)
+	*/
+	void GridClear (int iColumn=10,int iRows=10);
+	
     
     
     

@@ -43,6 +43,8 @@ public:
     
 private:
 	DataBase * m_DataBase;
+	
+	bool m_hasRequest;
 
     
 private:

@@ -96,6 +96,8 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	const wxString & dir = wxDirSelector (_("Choose the database folder"));
 	if (!dir.empty())
 	{
+		// clear all the controls.
+		ClearCtrls();
 		
 		if(myDatabase.DataBaseOpen(dir))
 		{
@@ -146,7 +148,8 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 {
 	if (myDatabase.DataBaseIsOpen()) 
 	{
-			
+		wxArrayString myStringArray;	
+		
 		// create and display the SQLPROCESS dialog box.
 		SQLPROCESS_DLG_OP * myDlg = new SQLPROCESS_DLG_OP(this,
 														  -1, _("Process SQL User Request"),
@@ -156,7 +159,21 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		myDlg->SetDataBase(&myDatabase);													
 		myDlg->SetMinSize(wxSize(300,200));
 		myDlg->CentreOnParent();
-		myDlg->ShowModal();	
+		if ( myDlg->ShowModal()==ID_PROCESS) 
+		{
+			// clear all the controls.
+			ClearCtrls();
+			myStringArray = myDatabase.DataBaseListTables();
+			
+			// add database name
+			TreeAddItem((myDatabase.DataBaseGetName()),0);
+			
+			// add tables names
+			for (int i=0; i<myStringArray.Count(); i++) 
+			{
+				TreeAddItem(myStringArray.Item(i),1);
+			}
+		}	
 	}
 	else
 	{
@@ -174,6 +191,14 @@ void TBVFrame::TreeAddItem (wxString tname, int parent)
 	}
 	else 
 		pTreeCtrl->AppendItem(pTreeCtrl->GetRootItem(),tname);	
+}
+
+
+void TBVFrame::ClearCtrls ()
+{
+	pTreeCtrl->DeleteAllItems();
+	
+	pGridOp->GridClear();
 }
 
 
@@ -244,6 +269,9 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 	myDlg->CenterOnParent();
 	if (myDlg->ShowModal()==wxID_OK)
 	{
+		// clean the tree ctrl
+		ClearCtrls();
+		
 		// create realy the database...
 		myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
 		

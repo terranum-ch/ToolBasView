@@ -32,6 +32,7 @@ SQLPROCESS_DLG_OP::SQLPROCESS_DLG_OP( wxWindow *parent, wxWindowID id, const wxS
 {
     // WDR: dialog function SQLPROCESS for SQLPROCESS_DLG_OP
     SQLPROCESS( this, TRUE ); 
+	m_hasRequest = FALSE;
 }
 
 SQLPROCESS_DLG_OP::~SQLPROCESS_DLG_OP()
@@ -48,28 +49,60 @@ void SQLPROCESS_DLG_OP::SetDataBase(DataBase * pDatabase)
 
 void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 {
+	wxArrayString myRequestArray; // contain multiple request if needed
+	wxString myComment;
+	wxArrayInt myErrorsArray;
+	
 	// get the text to process.
 	wxString myRequest = ((wxTextCtrl*) FindWindow(ID_TEXTCTRL))->GetValue();
 	
 	if (!myRequest.IsEmpty()) 
 	{
 		wxLogMessage(_("Processing Request..."));
-		if (m_DataBase->DataBaseQuery(myRequest)==0)
+		
+		myRequestArray = m_DataBase->DataBaseCutRequest(myRequest);
+		
+		myComment.Printf(_("%d Request found"),myRequestArray.Count());
+		
+		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->
+				SetLabel(myComment);
+		
+		for (int i=1; i< myRequestArray.Count(); i++) 
 		{
-			((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->
-				SetLabel(_("Results : OK Request passed."));
+			if (m_DataBase->DataBaseQuery(myRequestArray.Item(i-1))!=0)
+			{
+				myErrorsArray.Add(i);
+			}
 		}
+		
+		// if errors found
+		if (myErrorsArray.Count() > 0) 
+		{
+			myComment.Printf(_("Results : Request failed on request n°: "));
+			for (int j=0; j < myErrorsArray.Count(); j++) 
+			{
+				myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
+			}
+		}
+		// no errors found
 		else 
 		{
-			((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->
-				SetLabel(_("Results : Request Failed."));
+			myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count()-1);
+			m_hasRequest = TRUE;
 		}
+
+		// display results
+		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);		
 	}
 	
 }
 
 void SQLPROCESS_DLG_OP::OnCancel(wxCommandEvent &event)
 {
+	if (m_hasRequest) 
+	{
+		SetReturnCode(ID_PROCESS);
+	}
 	this->Destroy();
     event.Skip();
 }

@@ -36,6 +36,12 @@ DataBase::~DataBase()
 
 bool DataBase::DataBaseOpen (wxString path)
 {
+	// closing database if open...
+	if (DataBaseIsOpen())
+	{
+		DataBaseClose();		
+	}
+	
 	// conversion from path
 	DataBaseConvertFullPath(path);
 	wxString datadir = _T("--datadir=") + m_DBPath;
@@ -240,6 +246,13 @@ wxString DataBase::DatabaseGetCharacterSet()
 
 bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 {
+	// closing database if open...
+	if (DataBaseIsOpen())
+	{
+		DataBaseClose();		
+	}
+
+	
 	wxString datadir = _T("--datadir=") + DataBasePath;
 
 	// convertion const char * to char *.... no other way ?
@@ -277,26 +290,39 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 		{
 			wxString myDBName (DataBaseName);
 			myDBName.Prepend(_T("CREATE DATABASE "));
-	
+			
 			if(mysql_query(pMySQL,(const char *)myDBName.mb_str(wxConvUTF8)) ==0)
 			{
 				wxLogMessage(_("Creating database ... OK"));
 				
-				m_DBPath = DataBasePath;
-				m_DBName = DataBaseName;
-				IsDatabaseOpen = TRUE;
-				return TRUE;
+				
+				mysql_close(pMySQL);
+				
+				// connect to the database
+				if(mysql_real_connect(pMySQL,NULL,NULL,NULL,
+					(const char *)DataBaseName.mb_str(wxConvUTF8),3309,NULL,0))
+				{		
+					m_DBPath = DataBasePath;
+					m_DBName = DataBaseName;
+					IsDatabaseOpen = TRUE;
+					return TRUE;
+				}
 			}
 			return FALSE;
-		
+			
 		}	
 		
 	}
-	
-	
 	// if something goes wrong
 	return FALSE;
-
-
 }
+
+
+wxArrayString DataBase::DataBaseCutRequest (wxString theRequest)
+{
+	wxArrayString myArrayRequest;
+	myArrayRequest = wxStringTokenize (theRequest,_T(";"));
+	return myArrayRequest;
+}
+
 

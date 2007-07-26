@@ -232,9 +232,43 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				INFOPLIST_FILE = "ToolBasView-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = NO;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/wx/include/mac-unicode-release-static-2.8",
+					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/include/wx-2.8",
+					"-D_FILE_OFFSET_BITS=64",
+					"-D_LARGE_FILES",
+					"-D__WXMAC__",
+					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB_SQL/include/mysql",
+				);
 				OTHER_LDFLAGS = (
+					"-L/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib",
+					"-framework",
+					QuickTime,
+					"-framework",
+					IOKit,
 					"-framework",
 					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					System,
+					"/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/libwx_macu-2.8.a",
+					"-lpng",
+					"-lz",
+					"-framework",
+					WebKit,
+					"-lwxregexu-2.8",
+					"-lwxexpat-2.8",
+					"-lwxtiff-2.8",
+					"-lwxjpeg-2.8",
+					"-lz",
+					"-lpthread",
+					"-liconv",
+					"-L/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB_SQL/lib/mysql",
+					"-lmysqld",
+					"-lz",
+					"-lm",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = ToolBasView;
