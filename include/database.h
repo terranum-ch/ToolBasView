@@ -24,6 +24,17 @@
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
+/*!
+    @enumeration 
+    @brief enumeration of allowed values for
+	inisialisation.
+	*/
+enum Lang_Flag
+{
+	LANG_UTF8,
+	LANG_LATIN1
+};
+
 //----------------------------------------------------------------------------
 // DataBase
 //----------------------------------------------------------------------------
@@ -56,7 +67,7 @@ public:
     @param      path wxString containing the directory where live the database
     @result     return true if library and connexion to the database ok
 	*/
-    bool DataBaseOpen(wxString path);
+    bool DataBaseOpen(wxString path,enum Lang_Flag flag);
 	
 	/*!
     @brief   Function called to close the database and free the library
@@ -155,9 +166,11 @@ public:
 	
 	@param DataBasePath a wxString containing the Path for the new Database
 	@param DataBaseName a wxString containing the new database name.
+	@param Flag a Lang_Flag used for selecting the character set, 
+	allowed values are (default)LANG_UTF8, LANG_LATIN1, 
 	@result return TRUE if the new database was created succesfully.
 	*/	
-	bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName);
+	bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag=LANG_UTF8);
 	
 	
 	/*!
@@ -207,7 +220,7 @@ private:
 	
 	/*!
     @function 
-    @abrief Function used in windows to convert all the '\' path separator
+    @brief Function used in windows to convert all the '\' path separator
 	into a '/' separator.
 	
 	If the path allready contain '/' separator, this function does nothing
@@ -216,8 +229,18 @@ private:
 	loading the MYSQL server.
 	*/
 	wxString DataBaseConvertMYSQLPath(wxString originalPath);
+
+	/*!
+    @function 
+    @brief Function used to set the character set used by the embedded server
 	
-	
+	This function is call by DataBaseOpen(), do not call it directly.
+	*/
+	bool DataBaseSetCharacterSet (enum Lang_Flag myFlag);
+
+
+
+
 
 };
 

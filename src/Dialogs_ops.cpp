@@ -52,33 +52,39 @@ void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 	wxArrayString myRequestArray; // contain multiple request if needed
 	wxString myComment;
 	wxArrayInt myErrorsArray;
+	wxString myTempRequest;
 	
 	// get the text to process.
 	wxString myRequest = ((wxTextCtrl*) FindWindow(ID_TEXTCTRL))->GetValue();
 	
 	if (!myRequest.IsEmpty()) 
 	{
-		wxLogMessage(_("Processing Request..."));
+		// busy cursor
+		wxBeginBusyCursor();
 		
 		myRequestArray = m_DataBase->DataBaseCutRequest(myRequest);
 		
-		myComment.Printf(_("%d Request found"),myRequestArray.Count());
-		
-		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->
-				SetLabel(myComment);
-		
-		for (int i=1; i< myRequestArray.Count(); i++) 
+		wxLogMessage(_("Processing Request... %d Request Found"),myRequestArray.Count());
+			
+		for (int i=0; i< myRequestArray.Count(); i++) 
 		{
-			if (m_DataBase->DataBaseQuery(myRequestArray.Item(i-1))!=0)
+			myTempRequest = myRequestArray.Item(i);
+			if (myTempRequest.IsEmpty())
+				break;
+			if (m_DataBase->DataBaseQuery(myTempRequest)!=0)
 			{
-				myErrorsArray.Add(i);
+				myErrorsArray.Add(i+1);
+			}
+			else
+			{
+				m_hasRequest = TRUE;
 			}
 		}
 		
 		// if errors found
 		if (myErrorsArray.Count() > 0) 
 		{
-			myComment.Printf(_("Results : Request failed on request n°: "));
+			myComment.Printf(_("Results : Request failed on request n : "));
 			for (int j=0; j < myErrorsArray.Count(); j++) 
 			{
 				myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
@@ -87,12 +93,15 @@ void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 		// no errors found
 		else 
 		{
-			myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count()-1);
+			myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count());
 			m_hasRequest = TRUE;
 		}
 
 		// display results
-		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);		
+		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);	
+
+		// end busy...
+		wxEndBusyCursor();
 	}
 	
 }
@@ -106,6 +115,7 @@ void SQLPROCESS_DLG_OP::OnCancel(wxCommandEvent &event)
 	this->Destroy();
     event.Skip();
 }
+
 
 
 //----------------------------------------------------------------------------

@@ -40,6 +40,12 @@ public:
 	@param      pointerMySQL a MYSQL pointer to an existing MYSQL database.
 	*/
 	void SetDataBase(DataBase * pDatabase);
+	
+	/*!
+    @function 
+    @brief Return true if a request was made correctely 
+	*/
+	bool GetSuccess (){return m_hasRequest;}
     
     
 private:

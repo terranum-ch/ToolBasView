@@ -17,7 +17,7 @@
 // Include private header
 #include "../include/dialogs.h"
 
-#include "../art/myslq.xpm" // the mysql logo
+
 
 
 // Euro sign hack of the year
@@ -76,11 +76,7 @@ wxSizer *ABOUT( wxWindow *parent, bool call_fit, bool set_sizer )
 	wxBitmap myBmp(myslq_xpm);
 
     wxStaticText *item1 = new wxStaticText( parent, ID_ABOUT_TEXT, 
-        _("ToolBasView\n"
-          "A small tool used to open\n"
-          "enbedded MySQL Databases\n"
-          "\n"
-          "(c) Lucien Schreiber CREALP 2007"),
+        _("ToolBasView\n A small tool used to open\nenbedded MySQL Databases\n\n(c) Lucien Schreiber CREALP 2007"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

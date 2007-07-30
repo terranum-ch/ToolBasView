@@ -34,8 +34,10 @@ DataBase::~DataBase()
 
 
 
-bool DataBase::DataBaseOpen (wxString path)
+bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 {
+	bool Bsucces = FALSE;
+	
 	// closing database if open...
 	if (DataBaseIsOpen())
 	{
@@ -51,15 +53,19 @@ bool DataBase::DataBaseOpen (wxString path)
 	
 	wxString datadir = _T("--datadir=") + myCorrectPathName;
 	
-	// convertion const char * to char *.... no other way ?
-	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
-	char * temps = new char[datadir.Length()];
-	strcpy(temps,myPath);
+	// convertion to char *.... no other way ?
+	int iLen = datadir.Len();
+	char * stemps = new char[iLen+1];
+	for (int i =0;i<=iLen;i++)
+	{
+		stemps[i] = datadir.GetChar(i);
+	}
 	
-	char *server_args[] = 
+	
+	static char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		temps,
+		stemps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
@@ -67,7 +73,7 @@ bool DataBase::DataBaseOpen (wxString path)
 		"--default-character-set=cp1250"
 	};
 	
-	char *server_groups[] = {
+	static char *server_groups[] = {
 		"embedded",
 		"server",
 		"this_program_SERVER",
@@ -81,20 +87,21 @@ bool DataBase::DataBaseOpen (wxString path)
 	if(mysql_server_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);
-		
+		//
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,(const char *)m_DBName.mb_str(wxConvUTF8),3309,NULL,0))
 		{
-			delete temps;
+			// change character set...
+					
 			IsDatabaseOpen = TRUE;
-			return TRUE;
+			if(DataBaseSetCharacterSet(flag))
+				Bsucces = TRUE;
 		}	
 		
 	}
 	
-	
-	// if something goes wrong
-	delete temps;
-	return FALSE;
+	// if something goes wrong we return FALSE
+	delete [] stemps;
+	return Bsucces;
 	
 }
 
@@ -251,8 +258,9 @@ wxString DataBase::DatabaseGetCharacterSet()
 }
 
 
-bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
+bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag)
 {
+	bool BSucces = FALSE;
 	// closing database if open...
 	if (DataBaseIsOpen())
 	{
@@ -265,15 +273,18 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 	
 	wxString datadir = _T("--datadir=") + myCorrectPathName;
 
-	// convertion const char * to char *.... no other way ?
-	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
-	char * temps = new char[datadir.Length()];
-	strcpy(temps,myPath);
+	// convertion to char *.... no other way ?
+	int iLen = datadir.Len();
+	char * stemps = new char[iLen+1];
+	for (int i =0;i<=iLen;i++)
+	{
+		stemps[i] = datadir.GetChar(i);
+	}
 	
 	char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		temps,
+		stemps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
@@ -294,9 +305,7 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 	
 	if(mysql_server_init(num_elements, server_args, server_groups)==0)
 	{
-		pMySQL = mysql_init(NULL);
-		delete temps;
-		
+		pMySQL = mysql_init(NULL);	
 		
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,NULL,3309,NULL,0))
 		{
@@ -305,8 +314,6 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 			
 			if(mysql_query(pMySQL,(const char *)myDBName.mb_str(wxConvUTF8)) ==0)
 			{
-				mysql_close(pMySQL);
-				
 				// connect to the database
 				if(mysql_real_connect(pMySQL,NULL,NULL,NULL,
 					(const char *)DataBaseName.mb_str(wxConvUTF8),3309,NULL,0))
@@ -314,17 +321,16 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 					m_DBPath = DataBasePath;
 					m_DBName = DataBaseName;
 					IsDatabaseOpen = TRUE;
-					return TRUE;
+					if(DataBaseSetCharacterSet(Flag))
+						BSucces = TRUE;
 				}
 			}
-			return FALSE;
-			
 		}	
 		
 	}
 	// if something goes wrong
-	delete temps;
-	return FALSE;
+	delete stemps;
+	return BSucces;
 }
 
 
@@ -360,7 +366,7 @@ wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
 		return originalPath;
 	}
 
-
+	return myReturnPath;
 }
 
 
@@ -383,5 +389,31 @@ wxString DataBase::DataBaseGetSize (int iPrecision)
 	
 	return _("The Directory dosen't exist.");
 	
+}
+
+bool DataBase::DataBaseSetCharacterSet (enum Lang_Flag myFlag)
+{
+	wxString myRequest;
+
+	switch(myFlag)
+	{
+
+	case LANG_LATIN1:
+		myRequest = _T("SET CHARACTER SET 'latin1'");
+		break;
+
+	default:
+	case LANG_UTF8:
+		myRequest = _T("SET CHARACTER SET 'utf8'");
+		break;
+	};
+
+	if(mysql_query(pMySQL,(const char*)myRequest.mb_str(wxConvUTF8))==0)
+	{
+		return TRUE;
+	}
+
+
+	return FALSE;
 }
 

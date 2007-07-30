@@ -19,6 +19,9 @@ const int ID_STATUS = 10003;
 #include "../include/Dialogs_ops.h" // for dialogs operations.
 
 
+// ART FILES
+#include "../art/Fish_sml.xpm"
+
 const wxString sProgName = _("ToolBasView version 1.0");
 
 /*!
@@ -70,6 +73,7 @@ private:
 	void OnProcessRequest (wxCommandEvent & event);
 	void OnDisplayStatistics (wxCommandEvent & event);
 	void OnAboutDlg (wxCommandEvent & event);
+	void OnMenuExit (wxCommandEvent & event);
 	/*!
     @function 
     @brief Called when user double click on the treectrl

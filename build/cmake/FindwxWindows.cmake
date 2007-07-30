@@ -137,7 +137,7 @@ IF(WIN32_STYLE_FIND)
       DOC "wxWindows static release build library" ) 
     
     FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY
-      NAMES wxd wxmswd wxmsw26d  wxmsw27d wxmsw28d
+      NAMES wxd wxmswd wxmsw26d  wxmsw27d wxmsw28d wxmsw28ud wxmsw28d
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS}       
@@ -163,14 +163,14 @@ IF(WIN32_STYLE_FIND)
     ## gl lib is always build separate:
     ##
     FIND_LIBRARY(WXWINDOWS_STATIC_LIBRARY_GL
-      NAMES wx_gl wxmsw_gl wxmsw26_gl 
+      NAMES wx_gl wxmsw_gl wxmsw26_gl wxmsw28_gl
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
       DOC "wxWindows static release build GL library" )
 
     FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY_GL
-      NAMES wxd_gl wxmswd_gl wxmsw26d_gl 
+      NAMES wxd_gl wxmswd_gl wxmsw26d_gl wxmsw28d_gl 
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 

@@ -28,6 +28,9 @@
 #include <wx/toolbar.h>
 #include <wx/tglbtn.h>
 
+// ICON
+#include "../art/myslq.xpm" // the mysql logo
+
 
 const int ID_TEXTCTRL = 10000;
 const int ID_REQUEST_RESULT = 10001;

@@ -25,7 +25,7 @@ bool TBVApp::OnInit()
 	
 	
 	
-	TBVFrame* frame = new TBVFrame(0L, sProgName,wxPoint(50,50), wxSize(620,480));
+	TBVFrame* frame = new TBVFrame(0L, sProgName,wxPoint(50,50), wxSize(620,520));
 	
 	
 	frame->Show();
@@ -36,6 +36,7 @@ bool TBVApp::OnInit()
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
+  EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
   EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
   EVT_CLOSE(TBVFrame::OnQuit)
   EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
@@ -50,8 +51,8 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 			: wxFrame(frame, -1, title,pos,size)
 {
     // Loading icon
-	// wxIcon icon(sirs_xpm);
-    //SetIcon(icon);
+	wxIcon icon(Fish_sml_xpm);
+    SetIcon(icon);
 	
     // adding status bar
 	CreateStatusBar(2,0,ID_STATUS);
@@ -100,7 +101,7 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 		// clear all the controls.
 		ClearCtrls();
 		
-		if(myDatabase.DataBaseOpen(dir))
+		if(myDatabase.DataBaseOpen(dir,LANG_UTF8))
 		{
 			wxLogMessage(_("Database opened"));
 			
@@ -108,8 +109,8 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 						 myDatabase.DataBaseGetPath().c_str(),
 						 myDatabase.DataBaseGetName().c_str());
 			
-			wxLogMessage(_("Character set used : %s"),
-						 myDatabase.DatabaseGetCharacterSet().c_str());
+			//wxLogMessage(_("Character set used : %s"),
+			//			 myDatabase.DatabaseGetCharacterSet().c_str());
 			
 			myStringArray = myDatabase.DataBaseListTables();
 			
@@ -132,6 +133,12 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 		}
 	}
 
+}
+
+
+void TBVFrame::OnMenuExit(wxCommandEvent & event)
+{
+	Close();
 }
 
 
@@ -163,7 +170,8 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		myDlg->SetDataBase(&myDatabase);													
 		myDlg->SetMinSize(wxSize(300,200));
 		myDlg->CentreOnParent();
-		if ( myDlg->ShowModal()==ID_PROCESS) 
+		myDlg->ShowModal();
+		if ( myDlg->GetSuccess()) 
 		{
 			// clear all the controls.
 			ClearCtrls();
@@ -181,7 +189,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 	}
 	else
 	{
-		wxLogError(_("No Database opened, please open a database first"));
+		wxLogError(_("No Database open, please open a database first"));
 	}
  	
 }
@@ -304,7 +312,7 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 	}
 	else 
 	{
-		wxLogMessage(_("No database open, please open a database first"));
+		wxLogError(_("No database open, please open a database first"));
 	}
 
 	

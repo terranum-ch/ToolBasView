@@ -116,7 +116,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 	item1->Initialize(BottomWindow);
 	BottomWindow->Show(true);
 	
-	item1->SplitHorizontally (TopWindow,BottomWindow,350);
+	item1->SplitHorizontally (TopWindow,BottomWindow,300);
 	item1->SetMinimumPaneSize(20);
 
 	
