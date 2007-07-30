@@ -17,6 +17,8 @@
 // Include private header
 #include "../include/dialogs.h"
 
+#include "../art/myslq.xpm" // the mysql logo
+
 
 // Euro sign hack of the year
 #if wxUSE_UNICODE
@@ -70,23 +72,25 @@ wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit, bool set_sizer )
 wxSizer *ABOUT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+	
+	wxBitmap myBmp(myslq_xpm);
 
     wxStaticText *item1 = new wxStaticText( parent, ID_ABOUT_TEXT, 
-        wxT("ToolBasView\n")
-        wxT("A small tool used to open\n")
-        wxT("enbedded MySQL Databases\n")
-        wxT("\n")
-        wxT("(c) Lucien Schreiber CREALP 2007"),
+        _("ToolBasView\n"
+          "A small tool used to open\n"
+          "enbedded MySQL Databases\n"
+          "\n"
+          "(c) Lucien Schreiber CREALP 2007"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item2 = new wxStaticText( parent, ID_SQL_BMP, _T("No image"), wxDefaultPosition, wxDefaultSize );
+    wxStaticBitmap *item2 = new wxStaticBitmap( parent, ID_SQL_BMP, myBmp, wxDefaultPosition, wxDefaultSize );
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticLine *item3 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
     item0->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item4 = new wxButton( parent, wxID_YES, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item4 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
@@ -98,6 +102,7 @@ wxSizer *ABOUT( wxWindow *parent, bool call_fit, bool set_sizer )
     
     return item0;
 }
+
 
 wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
 {

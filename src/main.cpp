@@ -35,12 +35,13 @@ bool TBVApp::OnInit()
 }
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
-//EVT_MENU (ID_RUN, TBVFrame::OnAbout)
+  EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
   EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
   EVT_CLOSE(TBVFrame::OnQuit)
   EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
   EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
   EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
+  EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
 END_EVENT_TABLE()
 
 
@@ -120,6 +121,9 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 			{
 				TreeAddItem(myStringArray.Item(i),1);
 			}
+			
+			// get the database size
+			wxLogMessage( myDatabase.DataBaseGetSize());
 			
 		}
 		else
@@ -282,8 +286,34 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 	}
 }
 
-//void TBVFrame::OnAbout(wxCommandEvent &event)
-//{
-//	wxMessageDialog * dialog = new wxMessageDialog (this,"coucou","Essai");
-//	dialog->ShowModal();
-//}
+void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
+{
+	// checking if a database is open ?
+	if (myDatabase.DataBaseIsOpen()) 
+	{
+		// getting the stats...
+		wxArrayString myTablesList = myDatabase.DataBaseListTables();
+		wxString myDataBaseSize = myDatabase.DataBaseGetSize();
+		
+		wxString myText = wxString::Format(_("Database : '%s' open \n"),myDatabase.DataBaseGetName().c_str());
+		myText.Append(wxString::Format(_("Number of table(s) : %d \n"),myTablesList.Count()));
+		myText.Append(_("Size of the database : ") + myDataBaseSize);
+		//show a message box displaying statistics
+		wxMessageBox(myText,_("Database statistics"),wxOK | wxICON_INFORMATION,
+					 this);
+	}
+	else 
+	{
+		wxLogMessage(_("No database open, please open a database first"));
+	}
+
+	
+}
+
+void TBVFrame::OnAboutDlg(wxCommandEvent & event)
+{
+	ABOUTDLG_OP * myDlg = new ABOUTDLG_OP(this,wxID_ANY,_("About"),
+		wxDefaultPosition,wxDefaultSize);
+	myDlg->CenterOnParent();
+	myDlg->ShowModal();
+}

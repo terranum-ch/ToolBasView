@@ -66,9 +66,10 @@ public:
 	
 private:
 	void OnQuit(wxCloseEvent & event);
-	void OnAbout(wxCommandEvent& event);
 	void OnOpenDatabase(wxCommandEvent & event);
 	void OnProcessRequest (wxCommandEvent & event);
+	void OnDisplayStatistics (wxCommandEvent & event);
+	void OnAboutDlg (wxCommandEvent & event);
 	/*!
     @function 
     @brief Called when user double click on the treectrl

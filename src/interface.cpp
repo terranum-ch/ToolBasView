@@ -178,6 +178,7 @@ const int ID_FILE_MENU = wxNewId();
 const int ID_PROCESS_MENU = wxNewId();
 const int ID_OP_MENU = wxNewId();
 const int ID_NEW_DBASE = wxNewId();
+const int ID_MENU_STATISTICS = wxNewId();
 wxMenuBar *MENU()
 {
     wxMenuBar *item0 = new wxMenuBar;
@@ -185,7 +186,8 @@ wxMenuBar *MENU()
     wxMenu* item1 = new wxMenu;
 	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
     item1->Append( ID_OPEN_DB, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
-    item1->AppendSeparator();
+    item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
+	item1->AppendSeparator();
     item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
     item0->Append( item1, _("File") );
     
@@ -193,6 +195,10 @@ wxMenuBar *MENU()
     item2->Append( ID_PROCESS_MENU, _("Process SQL Request...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
     item0->Append( item2, _("Operations") );
     
+	wxMenu* item3 = new wxMenu;
+    item3->Append( wxID_ABOUT, _("About..."), _("Show the about dialog") );
+    item0->Append( item3, _("Help") );
+	
     return item0;
 }
 

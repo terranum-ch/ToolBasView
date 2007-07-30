@@ -22,6 +22,7 @@
 #include <wx/arrstr.h> // array string
 #include <wx/strconv.h> // unicode conversion
 #include <wx/tokenzr.h> // tokenizer of string
+#include <wx/dir.h> // directory operation (size)
 
 //----------------------------------------------------------------------------
 // DataBase
@@ -170,6 +171,15 @@ public:
 	*/	
 	wxArrayString DataBaseCutRequest (wxString theRequest);
 	
+	/*!
+    @function 
+    @brief   Compute the database file size
+	@param  iPrecision an integer giving the requested precision for the result 
+	(default is 2 decimals after the dot) 
+	@result  Return an human readable string containing the database size plus
+	the unit  (MB)
+	*/
+	wxString DataBaseGetSize (int iPrecision=2);
 
 	
    
@@ -194,6 +204,18 @@ private:
 	@result true if all is OK.
 	*/	
 	bool DataBaseConvertFullPath(wxString fullpath);
+	
+	/*!
+    @function 
+    @abrief Function used in windows to convert all the '\' path separator
+	into a '/' separator.
+	
+	If the path allready contain '/' separator, this function does nothing
+    @param      originalPath a wxSting containing the path to check/change
+    @result     the modified path in a wxString. This modified path may be used for
+	loading the MYSQL server.
+	*/
+	wxString DataBaseConvertMYSQLPath(wxString originalPath);
 	
 	
 

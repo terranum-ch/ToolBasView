@@ -54,6 +54,7 @@ extern const int ID_MENU;
 extern const int ID_OP_MENU;
 extern const int ID_PROCESS_MENU;
 extern const int ID_NEW_DBASE;
+extern const int ID_MENU_STATISTICS;
 wxMenuBar *MENU();
 
 #endif

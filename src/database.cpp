@@ -42,21 +42,24 @@ bool DataBase::DataBaseOpen (wxString path)
 		DataBaseClose();		
 	}
 	
-	// conversion from path
+	// conversion from path, return values in m_DBName and m_DBPath
 	DataBaseConvertFullPath(path);
-	wxString datadir = _T("--datadir=") + m_DBPath;
 	
-	wxLogMessage (datadir + _("  ") + m_DBName);
-
+	// converting the path for being compatible with mysql
+	// converting only in windows
+	wxString myCorrectPathName = DataBaseConvertMYSQLPath (m_DBPath);
+	
+	wxString datadir = _T("--datadir=") + myCorrectPathName;
+	
 	// convertion const char * to char *.... no other way ?
 	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
 	char * temps = new char[datadir.Length()];
 	strcpy(temps,myPath);
 	
-	static char *server_args[] = 
+	char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		"--datadir=C:/Documents and Settings/LUCSCH/Bureau",//temps,
+		temps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
@@ -64,14 +67,13 @@ bool DataBase::DataBaseOpen (wxString path)
 		"--default-character-set=cp1250"
 	};
 	
-	static char *server_groups[] = {
+	char *server_groups[] = {
 		"embedded",
 		"server",
 		"this_program_SERVER",
 		(char *)NULL
 	};
 
-	
 	
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 
@@ -82,6 +84,7 @@ bool DataBase::DataBaseOpen (wxString path)
 		
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,(const char *)m_DBName.mb_str(wxConvUTF8),3309,NULL,0))
 		{
+			delete temps;
 			IsDatabaseOpen = TRUE;
 			return TRUE;
 		}	
@@ -90,10 +93,8 @@ bool DataBase::DataBaseOpen (wxString path)
 	
 	
 	// if something goes wrong
+	delete temps;
 	return FALSE;
-	
-	
-	
 	
 }
 
@@ -242,10 +243,9 @@ wxString DataBase::DatabaseGetCharacterSet()
 	// mysql_get_character_set_info(pMySQL,&cs);
 	 
 	// wxString sCharName(cs.csname, wxConvUTF8);
+	 
+	 // compatibility with mysql 4...
 	 wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
-	
-
-	 //wxString sCharName = wxEmptyString; 
 	 return sCharName;
 
 }
@@ -259,25 +259,28 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 		DataBaseClose();		
 	}
 
+	// converting the path for being compatible with mysql
+	// converting only in windows
+	wxString myCorrectPathName = DataBaseConvertMYSQLPath (DataBasePath);
 	
-	wxString datadir = _T("--datadir=") + DataBasePath;
+	wxString datadir = _T("--datadir=") + myCorrectPathName;
 
 	// convertion const char * to char *.... no other way ?
 	const char * myPath = (const char *)datadir.mb_str(wxConvUTF8);
 	char * temps = new char[datadir.Length()];
 	strcpy(temps,myPath);
 	
-	static char *server_args[] = 
+	char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
-		"--datadir=C:/Documents and Settings/LUCSCH/Bureau/",//temps,
+		temps,
 		"--language=./share/english",
 		"--skip-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets"
 	};
 	
-	static char *server_groups[] = {
+	char *server_groups[] = {
 		"embedded",
 		"server",
 		"this_program_SERVER",
@@ -292,6 +295,8 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 	if(mysql_server_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);
+		delete temps;
+		
 		
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,NULL,3309,NULL,0))
 		{
@@ -300,9 +305,6 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 			
 			if(mysql_query(pMySQL,(const char *)myDBName.mb_str(wxConvUTF8)) ==0)
 			{
-				wxLogMessage(_("Creating database ... OK"));
-				
-				
 				mysql_close(pMySQL);
 				
 				// connect to the database
@@ -321,6 +323,7 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName)
 		
 	}
 	// if something goes wrong
+	delete temps;
 	return FALSE;
 }
 
@@ -332,4 +335,53 @@ wxArrayString DataBase::DataBaseCutRequest (wxString theRequest)
 	return myArrayRequest;
 }
 
+wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
+{
+	wxArrayString myNewName;
+	wxString myReturnPath;
+	wxFileName myOriginalName = wxFileName(originalPath,wxEmptyString);
+	
+	// get the separator
+	wxString mySeparator = myOriginalName.GetPathSeparator();
+	
+	// if separator != '/' we process the filename
+	if ( mySeparator != _T("/") )
+	{
+		myNewName = wxStringTokenize(originalPath,_T("\\"));
+		for (int i=0; i < myNewName.Count(); i++)
+		{
+		myReturnPath += myNewName.Item(i);
+		myReturnPath += _T("/");	
+		}
+		
+	}
+	else 
+	{
+		return originalPath;
+	}
+
+
+}
+
+
+wxString DataBase::DataBaseGetSize (int iPrecision)
+{
+	wxLongLong myBigSize;
+	double dMegaBytes = 0.0;
+	
+	wxFileName myDataBasePath = wxFileName(m_DBPath,wxEmptyString);
+	myDataBasePath.AppendDir(m_DBName);
+	wxString myDataBasePathName = myDataBasePath.GetPath();
+	if (wxDir::Exists(myDataBasePathName))
+	{
+		// compute the size
+		myBigSize = wxDir::GetTotalSize(myDataBasePathName);
+		// modifiy the size to be MB
+		dMegaBytes =  (myBigSize.ToDouble() / 1024) / 1024;
+		return  wxString::Format(_T("%.*f [MB]"),iPrecision,dMegaBytes);
+	}
+	
+	return _("The Directory dosen't exist.");
+	
+}
 

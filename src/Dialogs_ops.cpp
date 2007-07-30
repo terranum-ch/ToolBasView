@@ -169,7 +169,35 @@ void NEWDBASE_OP::OnDisplayDirectory (wxCommandEvent & event)
 	{
 		((wxTextCtrl*)FindWindow(ID_TXT_DB_PATH))->SetValue(dir);	
 	}
-	//wxLogMessage(dir);
+}
+
+
+
+//----------------------------------------------------------------------------
+// ABOUTDLG_OP
+//----------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ABOUTDLG_OP,wxDialog)
+    EVT_BUTTON( wxID_OK, ABOUTDLG_OP::OnOk )
+END_EVENT_TABLE()
+
+ABOUTDLG_OP::ABOUTDLG_OP( wxWindow *parent, wxWindowID id, const wxString &title,
+    const wxPoint &position, const wxSize& size, long style ) :
+    wxDialog( parent, id, title, position, size, style )
+{
+    ABOUT( this, TRUE );
+	
+}
+
+ABOUTDLG_OP::~ABOUTDLG_OP()
+{
+}
+
+
+
+void ABOUTDLG_OP::OnOk(wxCommandEvent &event)
+{
+	Destroy();
+	event.Skip();
 }
 
 
