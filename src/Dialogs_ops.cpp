@@ -21,8 +21,9 @@
 // SQLPROCESS_DLG_OP
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SQLPROCESS_DLG_OP,wxDialog)
-    EVT_BUTTON( wxID_CANCEL, SQLPROCESS_DLG_OP::OnCancel )
-    EVT_BUTTON( ID_PROCESS, SQLPROCESS_DLG_OP::OnProcess )
+    EVT_BUTTON( wxID_CANCEL, SQLPROCESS_DLG_OP::OnCancel)
+    EVT_BUTTON( ID_PROCESS, SQLPROCESS_DLG_OP::OnProcess)
+	EVT_BUTTON(ID_BTN_SHOWRESULTS, SQLPROCESS_DLG_OP::OnShowResult)
 END_EVENT_TABLE()
 
 
@@ -66,35 +67,60 @@ void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 		
 		wxLogMessage(_("Processing Request... %d Request Found"),myRequestArray.Count());
 			
-		for (int i=0; i< myRequestArray.Count(); i++) 
+		// check the number of Request for passing to multiple or single query
+		// needed if we wont the results back
+		
+		// SINGLE REQUEST
+		if (myRequestArray.Count() == 1) 
 		{
-			myTempRequest = myRequestArray.Item(i);
-			if (myTempRequest.IsEmpty())
-				break;
-			if (m_DataBase->DataBaseQuery(myTempRequest)!=0)
+			if (m_DataBase->DataBaseQuery(myRequestArray.Item(0))==0) 
 			{
-				myErrorsArray.Add(i+1);
+				// the button show result is valid now...
+				(wxButton*)FindWindow(ID_BTN_SHOWRESULTS)->Enable(TRUE);
+				
+				myComment = wxString(_("Result : One request passed OK"));
 			}
-			else
-			{
-				m_hasRequest = TRUE;
+			else {
+				myComment = wxString(_("Result : Request Error, please check syntax"));
 			}
+
+			
+			
 		}
 		
-		// if errors found
-		if (myErrorsArray.Count() > 0) 
+		// MULTIPLE REQUEST
+		else
 		{
-			myComment.Printf(_("Results : Request failed on request n : "));
-			for (int j=0; j < myErrorsArray.Count(); j++) 
+			for (int i=0; i< myRequestArray.Count(); i++) 
 			{
-				myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
+				myTempRequest = myRequestArray.Item(i);
+				if (myTempRequest.IsEmpty())
+					break;
+				if (m_DataBase->DataBaseQueryMultiple(myTempRequest)!=0)
+				{
+					myErrorsArray.Add(i+1);
+				}
+				else
+				{
+					m_hasRequest = TRUE;
+				}
 			}
-		}
-		// no errors found
-		else 
-		{
-			myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count());
-			m_hasRequest = TRUE;
+			
+			// if errors found
+			if (myErrorsArray.Count() > 0) 
+			{
+				myComment.Printf(_("Results : Request failed on request n : "));
+				for (int j=0; j < myErrorsArray.Count(); j++) 
+				{
+					myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
+				}
+			}
+			// no errors found
+			else 
+			{
+				myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count());
+				m_hasRequest = TRUE;
+			}
 		}
 
 		// display results
@@ -105,6 +131,12 @@ void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 	}
 	
 }
+
+void SQLPROCESS_DLG_OP::OnShowResult (wxCommandEvent & event)
+{
+	
+}
+
 
 void SQLPROCESS_DLG_OP::OnCancel(wxCommandEvent &event)
 {

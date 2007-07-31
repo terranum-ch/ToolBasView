@@ -169,6 +169,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		
 		myDlg->SetDataBase(&myDatabase);													
 		myDlg->SetMinSize(wxSize(300,200));
+		myDlg->SetSize(wxSize(500,400));
 		myDlg->CentreOnParent();
 		myDlg->ShowModal();
 		if ( myDlg->GetSuccess()) 

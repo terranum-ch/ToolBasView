@@ -129,12 +129,34 @@ public:
 	
 	/*!
     @function 
-    @brief Used to execute a query on the database
+    @brief Used to execute multiple query on the database
 	
-	This function is mainly created to execute a query without results
+	This function is mainly created to execute multiple query without results.
+	User have to split the multiple queries into unique query and loop this function
+	for each queries. Splitting queries could be made with the DataBaseCutRequest()
+	member function.
+	
+	@warning  This function process the query and then destroy the query results,
+	so no results could be see using DataBaseGetNextResult().
     @param     myQuery the string containing the query
     @result    return 0 if the query works and the MYSQL error code otherwise.
+	@see DataBaseCutRequest(), DataBaseQuery()
+	 
 	*/
+	int DataBaseQueryMultiple(wxString myQuery);
+	/*!
+	@function 
+	@brief Used to execute one query on the database and then get the result
+	
+	This function works in a similar way as the DataBaseQueryMultiple() but is able
+	to send back the result of a query.
+	
+	@param myQuery the string containing the query
+	@result true if the query was successfuly made otherwise false.
+	@warning User have to check the return value, and if false then one souldn't 
+	call the DataBaseGetNextResult()
+	@see DataBaseQueryMultiple()
+	 */
 	int DataBaseQuery(wxString myQuery);
 	
 	/*!

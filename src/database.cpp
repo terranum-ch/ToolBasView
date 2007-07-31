@@ -38,12 +38,6 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 {
 	bool Bsucces = FALSE;
 	
-	// closing database if open...
-	if (DataBaseIsOpen())
-	{
-		DataBaseClose();		
-	}
-	
 	// conversion from path, return values in m_DBName and m_DBPath
 	DataBaseConvertFullPath(path);
 	
@@ -214,12 +208,23 @@ wxArrayString DataBase::DataBaseGetNextResult()
 }
 
 
-int DataBase::DataBaseQuery(wxString myQuery)
+int DataBase::DataBaseQueryMultiple(wxString myQuery)
 {
 	MYSQL_RES *results;
 	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
 	results = mysql_store_result(pMySQL);
 	mysql_free_result(results);
+	return iRetour;
+}
+
+int DataBase::DataBaseQuery(wxString myQuery)
+{
+	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
+	if (iRetour == 0) 
+	{
+		pResults = mysql_store_result(pMySQL);
+		m_resultNumber = mysql_field_count(pMySQL);
+	}
 	return iRetour;
 }
 
@@ -261,11 +266,6 @@ wxString DataBase::DatabaseGetCharacterSet()
 bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag)
 {
 	bool BSucces = FALSE;
-	// closing database if open...
-	if (DataBaseIsOpen())
-	{
-		DataBaseClose();		
-	}
 
 	// converting the path for being compatible with mysql
 	// converting only in windows

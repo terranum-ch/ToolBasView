@@ -34,18 +34,19 @@
 
 const int ID_TEXTCTRL = 10000;
 const int ID_REQUEST_RESULT = 10001;
-const int ID_LINE = 10002;
-const int ID_PROCESS = 10003;
+const int ID_BTN_SHOWRESULTS = 10002;
+const int ID_LINE = 10003;
+const int ID_PROCESS = 10004;
 wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_ABOUT_TEXT = 10004;
-const int ID_SQL_BMP = 10005;
+const int ID_ABOUT_TEXT = 10005;
+const int ID_SQL_BMP = 10006;
 wxSizer *ABOUT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT2 = 10006;
-const int ID_TXT_DB_PATH = 10007;
-const int ID_BTN_CHOOSE_PATH = 10008;
-const int ID_TXT_DB_NAME = 10009;
+const int ID_TEXT2 = 10007;
+const int ID_TXT_DB_PATH = 10008;
+const int ID_BTN_CHOOSE_PATH = 10009;
+const int ID_TXT_DB_NAME = 10010;
 wxSizer *NEWDBASE( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #endif

@@ -58,6 +58,7 @@ private:
     // WDR: handler declarations for SQLPROCESS_DLG_OP
     void OnProcess( wxCommandEvent &event );
     void OnCancel( wxCommandEvent &event );
+	void OnShowResult (wxCommandEvent & event);
 
 private:
     DECLARE_EVENT_TABLE()
