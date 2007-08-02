@@ -17,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DF245DAF0C61D63D00F423F3 /* libmysqld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqld.a; path = ../../../../LIB_MAC/LIB_SQL/lib/mysql/libmysqld.a; sourceTree = SOURCE_ROOT; };
 		DF4402AE0C4CFDD000DC749D /* ToolBasView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToolBasView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF4402B10C4CFDD000DC749D /* ToolBasView-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ToolBasView-Info.plist"; sourceTree = "<group>"; };
 		DF9131120C588FA500B26D5F /* database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = database.h; path = ../../include/database.h; sourceTree = SOURCE_ROOT; };
@@ -49,6 +50,7 @@
 		DF4402740C4CCD4400DC749D = {
 			isa = PBXGroup;
 			children = (
+				DF245DAF0C61D63D00F423F3 /* libmysqld.a */,
 				DF44028B0C4CF72C00DC749D /* sources */,
 				DF4402AF0C4CFDD000DC749D /* Products */,
 				DF4402B10C4CFDD000DC749D /* ToolBasView-Info.plist */,
@@ -177,6 +179,11 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				INFOPLIST_FILE = "ToolBasView-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../../LIB_MAC/LIB_SQL/lib/mysql\"";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/wx/include/mac-unicode-release-static-2.8",
 					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/include/wx-2.8",
@@ -232,6 +239,11 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				INFOPLIST_FILE = "ToolBasView-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../../LIB_MAC/LIB_SQL/lib/mysql\"";
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-I/Users/Lucien/DATA/PROGRAMATION/LIB_MAC/LIB/lib/wx/include/mac-unicode-release-static-2.8",

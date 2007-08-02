@@ -134,6 +134,26 @@ void SQLPROCESS_DLG_OP::OnProcess( wxCommandEvent &event )
 
 void SQLPROCESS_DLG_OP::OnShowResult (wxCommandEvent & event)
 {
+		
+	// new dialog 
+	SHOWRESULT_OP * myDlg = new SHOWRESULT_OP(this,
+											  -1, _("SQL Results"),
+											  wxDefaultPosition,wxSize(500,500),
+											  wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	
+	
+	// transfert data to the window
+	myDlg->TransferDataToWindow(m_DataBase);
+	
+	// gray the button
+	(wxButton*)FindWindow(ID_BTN_SHOWRESULTS)->Enable(FALSE);
+	
+	
+	// show the window
+	myDlg->SetExtraStyle(wxDIALOG_EX_METAL);
+	myDlg->SetMinSize(wxSize(300,300));
+	myDlg->SetSize(wxSize(500,400));
+	myDlg->Show(TRUE);
 	
 }
 
@@ -242,4 +262,69 @@ void ABOUTDLG_OP::OnOk(wxCommandEvent &event)
 	event.Skip();
 }
 
+
+//----------------------------------------------------------------------------
+// SHOWRESULT_OP
+//----------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(SHOWRESULT_OP,wxDialog)
+    EVT_BUTTON( wxID_CANCEL, SHOWRESULT_OP::OnCancel )
+END_EVENT_TABLE()
+
+SHOWRESULT_OP::SHOWRESULT_OP( wxWindow *parent, wxWindowID id, const wxString &title,
+    const wxPoint &position, const wxSize& size, long style ) :
+    wxDialog( parent, id, title, position, size, style )
+{
+    SHOWRESULT( this, TRUE ); 
+}
+
+SHOWRESULT_OP::~SHOWRESULT_OP()
+{
+}
+
+bool SHOWRESULT_OP::TransferDataToWindow(DataBase * pmDataBase)
+{    
+	// storing query results
+	wxArrayString myResults;
+	int myResultsNumber = 0;
+   
+	//find the grid Ctrl 
+	wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
+	GridOperation * myGridOP = new GridOperation(myGridCtrl);
+	
+	myResults = pmDataBase->DataBaseGetNextResult();		
+	myResultsNumber = myResults.Count();
+	
+	if (myResultsNumber > 0) 
+	{
+		// changing number of cols
+		myGridOP->GridOpSetNumberOfColumn(myResultsNumber);
+		
+		// add the first line
+		myGridOP->GridOpAddDataRow(myResultsNumber,&myResults);
+		
+		while (1) 
+		{
+			myResults = pmDataBase->DataBaseGetNextResult();
+			myResultsNumber = myResults.Count();
+			if (myResultsNumber == 0) 
+			{
+				break;
+			}
+			// add a new line
+			myGridOP->GridOpAddDataRow(myResultsNumber,
+									  &myResults);
+		}
+	}
+	else 
+	{
+		wxLogMessage(_("No results returned by your request"));
+	}
+
+	return TRUE;
+}
+
+void SHOWRESULT_OP::OnCancel(wxCommandEvent &event)
+{
+    event.Skip();
+}
 

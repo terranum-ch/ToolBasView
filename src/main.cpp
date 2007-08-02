@@ -27,7 +27,7 @@ bool TBVApp::OnInit()
 	
 	TBVFrame* frame = new TBVFrame(0L, sProgName,wxPoint(50,50), wxSize(620,520));
 	
-	
+	frame->SetExtraStyle(wxDIALOG_EX_METAL);
 	frame->Show();
 	frame->Centre();
 	
@@ -165,13 +165,14 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		SQLPROCESS_DLG_OP * myDlg = new SQLPROCESS_DLG_OP(this,
 														  -1, _("Process SQL User Request"),
 														  wxDefaultPosition,wxDefaultSize,
-														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER);
+														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
 		
-		myDlg->SetDataBase(&myDatabase);													
+		myDlg->SetDataBase(&myDatabase);
+		myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
 		myDlg->SetMinSize(wxSize(300,200));
 		myDlg->SetSize(wxSize(500,400));
 		myDlg->CentreOnParent();
-		myDlg->ShowModal();
+		myDlg->Show();
 		if ( myDlg->GetSuccess()) 
 		{
 			// clear all the controls.

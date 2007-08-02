@@ -18,6 +18,7 @@
 #include "../include/database.h" 
 #include <wx/dirdlg.h>
 #include <wx/filename.h> // for verification purpose
+#include "../include/gridoperation.h"
 
 
 
@@ -117,6 +118,33 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+
+//----------------------------------------------------------------------------
+// SHOWRESULT_OP
+//----------------------------------------------------------------------------
+
+class SHOWRESULT_OP: public wxDialog
+{
+public:
+    // constructors and destructors
+    SHOWRESULT_OP( wxWindow *parent, wxWindowID id, const wxString &title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_DIALOG_STYLE );
+    virtual ~SHOWRESULT_OP();
+    
+	bool TransferDataToWindow(DataBase * pmDataBase);
+    
+private:
+    // WDR: member variable declarations for SHOWRESULT_OP
+    
+private:
+    // WDR: handler declarations for SHOWRESULT_OP
+    void OnCancel( wxCommandEvent &event );
+
+private:
+    DECLARE_EVENT_TABLE()
+};
 
 
 #endif

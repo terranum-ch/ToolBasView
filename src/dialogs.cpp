@@ -155,3 +155,26 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
 }
 
 
+
+wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxGrid *item1 = new wxGrid( parent, ID_GRID_PROCESS, wxDefaultPosition, wxSize(200,160), wxWANTS_CHARS );
+    item1->CreateGrid( 10, 10, wxGrid::wxGridSelectCells );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxButton *item2 = new wxButton( parent, wxID_CANCEL, _("Exit results"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+
