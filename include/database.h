@@ -2,8 +2,9 @@
     @file database.h
     @brief   Definition of class DataBase
 	
-	Class used to connect to manage the embedded MySQL server. This class need
+	Class used to connect and manage the embedded MySQL server. This class needs
 	mysql.h and the embedded MySql Library.
+	@author Lucien Schreiber (c) CREALP 2007
 */
 
 
@@ -58,7 +59,7 @@ public:
 	
 	@brief Destructor, do nothing
 	*/
-	virtual ~DataBase();
+	~DataBase();
 	/*!
     @function  
     @brief   Function used to init the MySql embedded server and to open a database
@@ -81,7 +82,7 @@ public:
     @brief  return TRUE if a database is open
 	@result return TRUE if the database is open
 	*/	
-	bool DataBaseIsOpen() {return IsDatabaseOpen;} 
+	bool DataBaseIsOpen();
 
 	/*!
     @function 
@@ -165,7 +166,7 @@ public:
 	This function must be called only after DataBaseOpen().
 	@result return the path of the database
 	*/	
-	wxString DataBaseGetPath() {return m_DBPath;} 
+	wxString DataBaseGetPath();
 
 	/*!
     @brief  return the Name of the database
@@ -173,7 +174,7 @@ public:
 	This function must be called only after DataBaseOpen().
 	@result return the name of the database
 	*/	
-	wxString DataBaseGetName() {return m_DBName;}
+	wxString DataBaseGetName();
 	
 	/*!
     @brief  return the character set used for the transaction

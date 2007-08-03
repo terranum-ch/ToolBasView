@@ -1,8 +1,9 @@
 /*!
-@header main.cpp
- @abstract   (description)
- @discussion (description)
- */
+@file main.cpp
+@brief   definition of TBVApp and TBVFrame Class
+@author Lucien Schreiber (c) CREALP 2007
+*/
+
 
 #include <wx/wxprec.h>
 
@@ -162,7 +163,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		wxArrayString myStringArray;	
 		
 		// create and display the SQLPROCESS dialog box.
-		SQLPROCESS_DLG_OP * myDlg = new SQLPROCESS_DLG_OP(this,
+		SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this,
 														  -1, _("Process SQL User Request"),
 														  wxDefaultPosition,wxDefaultSize,
 														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
@@ -278,8 +279,9 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 
 void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 {
-	NEWDBASE_OP * myDlg = new NEWDBASE_OP(this,-1,_("Create a new database"),
-										  wxDefaultPosition, wxDefaultSize);
+	wxLogMessage (_("New database"));
+	NEWDBASE_OP2 * myDlg = new NEWDBASE_OP2(this,-1,_("Create a new database"),
+				wxDefaultPosition, wxDefaultSize);
 	myDlg->CenterOnParent();
 	if (myDlg->ShowModal()==wxID_OK)
 	{
@@ -294,6 +296,7 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 		// add database name
 		TreeAddItem((myDlg->m_DLG_DB_NAME),0);
 	}
+	
 }
 
 void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
@@ -322,8 +325,10 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 
 void TBVFrame::OnAboutDlg(wxCommandEvent & event)
 {
-	ABOUTDLG_OP * myDlg = new ABOUTDLG_OP(this,wxID_ANY,_("About"),
+	wxLogMessage (_("About the program"));
+	ABOUTDLG_OP2 * myDlg = new ABOUTDLG_OP2(this,wxID_ANY,_("About"),
 		wxDefaultPosition,wxDefaultSize);
 	myDlg->CenterOnParent();
 	myDlg->ShowModal();
 }
+

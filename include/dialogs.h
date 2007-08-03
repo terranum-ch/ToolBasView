@@ -1,6 +1,7 @@
 /*!
     @file dialogs.h
     @brief definition of ressources dialogs
+    @author Lucien Schreiber (c) CREALP 2007
 */
 
 
@@ -8,7 +9,7 @@
 #define __dialogs_H__
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma interface "dialogs_wdr.h"
+    #pragma interface "dialogs.h"
 #endif
 
 
@@ -51,6 +52,16 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE
 
 const int ID_GRID_PROCESS = 10011;
 wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+//class AboutDialog : public wxDialog
+//{
+//	DECLARE_CLASS (AboutDialog)
+//public:
+//  AboutDialog (wxWindow * parent, const wxChar * title, int width, int height);
+  //~AboutDialog();	
+
+//};
+
 
 #endif
 

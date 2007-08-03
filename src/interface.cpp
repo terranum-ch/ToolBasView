@@ -1,7 +1,7 @@
 /*!
-    @header interface.cpp
-    @abstract   describ file for interface
-    @discussion this file is used to build the interface.
+@file interface.cpp
+@brief  code of sizer function for the interface.
+@author Lucien Schreiber (c) CREALP 2007
 */
 
 
@@ -35,15 +35,11 @@
 #endif
 
 
-const int ID_LEFT_SPLIT = wxNewId();
-
 
 /*!
-    @function	INTERFACE
-    @abstract   used to create the main interface
-    @discussion (description)
+    @brief   used to create the main interface
     @param      (name) (description)
-    @result     wxSizer *
+    @results     wxSizer *
 */
 wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 {
@@ -77,7 +73,6 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 }
 
 
-const int ID_LISTTABLE = wxNewId();
 wxSizer *LEFT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
@@ -97,7 +92,7 @@ wxSizer *LEFT( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-const int ID_RIGHT_SPLIT = wxNewId();
+
 wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
@@ -130,7 +125,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-const int ID_GRID = wxNewId();
+
 wxSizer *RIGHT_TOP( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
@@ -149,8 +144,7 @@ wxSizer *RIGHT_TOP( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-const int ID_TEXT = wxNewId();
-const int ID_LOG = wxNewId();
+
 wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
@@ -172,13 +166,7 @@ wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit, bool set_sizer )
 }
 
 
-const int ID_OPEN_DB = wxNewId();
-const int ID_MENU = wxNewId();
-const int ID_FILE_MENU = wxNewId();
-const int ID_PROCESS_MENU = wxNewId();
-const int ID_OP_MENU = wxNewId();
-const int ID_NEW_DBASE = wxNewId();
-const int ID_MENU_STATISTICS = wxNewId();
+;
 wxMenuBar *MENU()
 {
     wxMenuBar *item0 = new wxMenuBar;

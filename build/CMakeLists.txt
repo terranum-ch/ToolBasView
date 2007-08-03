@@ -42,7 +42,7 @@ IF (WIN32)
 ELSE (WIN32)
  
  	ADD_EXECUTABLE (ToolBasView ${SRC_FILES} ${HEAD_FILES} )
-       TARGET_LINK_LIBRARIES (ToolBasView `${MYSQL_LIB} --embedded`) 
+       TARGET_LINK_LIBRARIES (ToolBasView `${MYSQL_LIB}mysql_config --libmysqld-libs`) 
         
         #TARGET_LINK_LIBRARIES (ToolBasView ${WXAUI_THE_LIB} `${GDAL_LIB}/gdal-config --libs` `${GEOS_LIB}/geos-config --libs`)
 

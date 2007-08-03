@@ -1,7 +1,7 @@
 /*!
-    @header interface.h
-    @abstract   definition of interface	
-    @discussion this file is mainly used for interface definition
+@file interface.h
+@brief  definition of sizer function for the interface.
+@author Lucien Schreiber (c) CREALP 2007
 */
 
 
@@ -32,29 +32,29 @@
 
 // Declare window functions
 
-extern const int ID_LEFT_SPLIT;
+const int ID_LEFT_SPLIT = 10100;
 wxSizer *INTERFACE( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-extern const int ID_LISTTABLE;
+const int ID_LISTTABLE = 10101;
 wxSizer *LEFT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-extern const int ID_RIGHT_SPLIT;
+const int ID_RIGHT_SPLIT = 10102;
 wxSizer *RIGHT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-extern const int ID_GRID;
+const int ID_GRID = 10103;
 wxSizer *RIGHT_TOP( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-extern const int ID_TEXT;
-extern const int ID_LOG;
+const int ID_TEXT = 10104;
+const int ID_LOG = 10105;
 wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-extern const int ID_FILE_MENU;
-extern const int ID_OPEN_DB;
-extern const int ID_MENU;
-extern const int ID_OP_MENU;
-extern const int ID_PROCESS_MENU;
-extern const int ID_NEW_DBASE;
-extern const int ID_MENU_STATISTICS;
+const int ID_FILE_MENU = 10106;
+const int ID_OPEN_DB = 10107;
+const int ID_MENU = 10108;
+const int ID_OP_MENU = 10109;
+const int ID_PROCESS_MENU = 10110;
+const int ID_NEW_DBASE = 10111;
+const int ID_MENU_STATISTICS = 10112;
 wxMenuBar *MENU();
 
 #endif

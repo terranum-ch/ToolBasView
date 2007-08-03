@@ -1,10 +1,11 @@
 /*!
-    @file dialogs.cpp
-    @brief declaration of ressources dialogs
+    @file dialogs.h
+    @brief code of ressources dialogs
+    @author Lucien Schreiber (c) CREALP 2007
 */
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma implementation "../include/dialogs_wdr.h"
+    #pragma implementation "../include/dialogs.h"
 #endif
 
 // For compilers that support precompilation
@@ -177,4 +178,15 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+/*IMPLEMENT_CLASS (AboutDialog,wxDialog);
+AboutDialog::AboutDialog (wxWindow*,const wxChar* ,  int,int)
+{
+	wxLogMessage (_("Coucuo"));
 
+}
+
+//AboutDialog::~AboutDialog()
+//{
+//	wxLogMessage (_("Coucuo"));
+//	Destroy();
+//}*/

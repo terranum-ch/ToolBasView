@@ -1,8 +1,11 @@
 /*!
-@header database.cpp
- @abstract   (description)
- @discussion (description)
- */
+    @file database.cpp
+    @brief code for the class DataBase
+	
+	The Database class is used for Opening, creating and processing request
+	to a MySQL embedded Database.
+    @author Lucien Schreiber (c) CREALP 2007
+*/
 
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
@@ -106,7 +109,10 @@ bool DataBase::DataBaseClose()
 	return TRUE;
 }
 
-
+bool DataBase::DataBaseIsOpen()
+{
+return IsDatabaseOpen;
+}
 
 wxArrayString DataBase::DataBaseListTables()
 {
@@ -262,6 +268,15 @@ wxString DataBase::DatabaseGetCharacterSet()
 
 }
 
+wxString DataBase::DataBaseGetName()
+{
+	return m_DBName;
+}
+
+wxString DataBase::DataBaseGetPath()
+{
+	return m_DBPath;
+}
 
 bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag)
 {

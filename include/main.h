@@ -1,8 +1,7 @@
 /*!
-@header main.h
-@abstract   (description)
-@discussion (description)
-
+@file main.h
+@brief   declaration of TBVApp and TBVFrame Class
+@author Lucien Schreiber (c) CREALP 2007
 */
 
 
@@ -16,7 +15,7 @@ const int ID_STATUS = 10003;
 #include "../include/database.h"
 #include <wx/treectrl.h> // for tree control
 #include "../include/gridoperation.h" // for grid operation.
-#include "../include/Dialogs_ops.h" // for dialogs operations.
+#include "../include/dlg_operation.h" // for dialogs operations.
 
 
 // ART FILES
