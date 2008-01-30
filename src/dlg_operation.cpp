@@ -145,7 +145,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 		// MULTIPLE REQUEST
 		else
 		{
-			for (int i=0; i< myRequestArray.Count(); i++) 
+			for (unsigned int i=0; i< myRequestArray.Count(); i++) 
 			{
 				myTempRequest = myRequestArray.Item(i);
 				if (myTempRequest.IsEmpty())
@@ -164,7 +164,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 			if (myErrorsArray.Count() > 0) 
 			{
 				myComment.Printf(_("Results : Request failed on request n : "));
-				for (int j=0; j < myErrorsArray.Count(); j++) 
+				for (unsigned int j=0; j < myErrorsArray.Count(); j++) 
 				{
 					myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
 				}
@@ -204,7 +204,7 @@ void SQLPROCESS_DLG_OP2::OnShowResult (wxCommandEvent & event)
 	
 	
 	// show the window
-	myDlg->SetExtraStyle(wxDIALOG_EX_METAL);
+	//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);
 	myDlg->SetMinSize(wxSize(300,300));
 	myDlg->SetSize(wxSize(500,400));
 	myDlg->Show(TRUE);

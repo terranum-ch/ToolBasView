@@ -1,11 +1,28 @@
+/***************************************************************************
+ database.cpp
+ Basic function for connecting a MySQL embedded database 
+ -------------------
+ copyright            : (C) 2007 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 /*!
-    @file database.cpp
-    @brief code for the class DataBase
-	
-	The Database class is used for Opening, creating and processing request
-	to a MySQL embedded Database.
-    @author Lucien Schreiber (c) CREALP 2007
-*/
+ @file database.cpp
+ @brief code for the class DataBase
+ 
+ The Database class is used for Opening, creating and processing request
+ to a MySQL embedded Database.
+ @author Lucien Schreiber (c) CREALP 2007
+ */
 
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
@@ -58,17 +75,30 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 		stemps[i] = datadir.GetChar(i);
 	}
 	
-	
+#ifdef __WINDOWS__
 	static char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
 		stemps,
 		"--language=./share/english",
-		"--skip-innodb",
+		"--skip-plugin-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets",
 		"--default-character-set=cp1250"
 	};
+#else
+	static char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps,
+		//"--language=./share/english",
+		//"--skip-plugin-innodb",
+		"--port=3309",
+		//"--character-sets-dir=./share/charsets",
+		//"--default-character-set=cp1250"
+	};
+#endif
+	
 	
 	static char *server_groups[] = {
 		"embedded",
@@ -76,19 +106,19 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 		"this_program_SERVER",
 		(char *)NULL
 	};
-
+	
 	
 	int num_elements = (sizeof(server_args) / sizeof(char *));
-
 	
-	if(mysql_server_init(num_elements, server_args, server_groups)==0)
+	
+	if(mysql_library_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);
 		//
 		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,(const char *)m_DBName.mb_str(wxConvUTF8),3309,NULL,0))
 		{
 			// change character set...
-					
+			
 			IsDatabaseOpen = TRUE;
 			if(DataBaseSetCharacterSet(flag))
 				Bsucces = TRUE;
@@ -104,14 +134,14 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 
 bool DataBase::DataBaseClose()
 {
-	mysql_server_end();
+	mysql_library_end();
 	IsDatabaseOpen = FALSE;
 	return TRUE;
 }
 
 bool DataBase::DataBaseIsOpen()
 {
-return IsDatabaseOpen;
+	return IsDatabaseOpen;
 }
 
 wxArrayString DataBase::DataBaseListTables()
@@ -169,7 +199,7 @@ wxArrayString DataBase::DatabaseListFields(wxString sTable)
 		
 	}
 	return myStingArray;
-
+	
 }
 
 bool DataBase::DataBaseGetAllTableContent(wxString sTable)
@@ -210,7 +240,7 @@ wxArrayString DataBase::DataBaseGetNextResult()
 	}
 	
 	return myRowResult;
-
+	
 }
 
 
@@ -241,7 +271,7 @@ bool DataBase::DataBaseConvertFullPath(wxString fullpath)
 	
 	wxFileName dirname = wxFileName(fullpath,wxEmptyString);
 	
-	int iNumDir = dirname.GetDirCount();
+	//int iNumDir = dirname.GetDirCount();
 	myDirArray = dirname.GetDirs();
 	m_DBName = myDirArray.Last();
 	dirname.RemoveLastDir(); 
@@ -259,13 +289,13 @@ wxString DataBase::DatabaseGetCharacterSet()
 {
 	// MY_CHARSET_INFO cs;
 	// mysql_get_character_set_info(pMySQL,&cs);
-	 
+	
 	// wxString sCharName(cs.csname, wxConvUTF8);
-	 
-	 // compatibility with mysql 4...
-	 wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
-	 return sCharName;
-
+	
+	// compatibility with mysql 4...
+	wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
+	return sCharName;
+	
 }
 
 wxString DataBase::DataBaseGetName()
@@ -281,13 +311,13 @@ wxString DataBase::DataBaseGetPath()
 bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag)
 {
 	bool BSucces = FALSE;
-
+	
 	// converting the path for being compatible with mysql
 	// converting only in windows
 	wxString myCorrectPathName = DataBaseConvertMYSQLPath (DataBasePath);
 	
 	wxString datadir = _T("--datadir=") + myCorrectPathName;
-
+	
 	// convertion to char *.... no other way ?
 	int iLen = datadir.Len();
 	char * stemps = new char[iLen+1];
@@ -296,15 +326,36 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,en
 		stemps[i] = datadir.GetChar(i);
 	}
 	
+	
+	/*	if we uses the pre-compiled MySQL from MySQL A.B.
+	 then we need to skip the innodb engine and we
+	 alsa have to specify a path for language and
+	 character-sets even if we don't use it because
+	 of utf. Otherwise it leads to a crash without
+	 futher explanation.
+	 */
+#ifdef __WINDOWS__
 	char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
 		stemps,
 		"--language=./share/english",
-		"--skip-innodb",
+		"--skip-plugin-innodb",//"--skip-innodb", // dosen't exist in 5.1 --> lead to a crash
 		"--port=3309",
 		"--character-sets-dir=./share/charsets"
 	};
+	/*	Those server_args could be used for home-made
+	 MySQL libs (unix and mac) without innodb engine
+	 and with default character-set set to utf8
+	 */
+#else	
+	char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps, // "--language=./share/english", // not needed if home-made mySQL
+		"--port=3309" //,"--character-sets-dir=./share/charsets"
+	};
+#endif
 	
 	char *server_groups[] = {
 		"embedded",
@@ -312,13 +363,13 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,en
 		"this_program_SERVER",
 		(char *)NULL
 	};
-
+	
 	
 	
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 	
 	
-	if(mysql_server_init(num_elements, server_args, server_groups)==0)
+	if(mysql_library_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);	
 		
@@ -331,7 +382,7 @@ bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,en
 			{
 				// connect to the database
 				if(mysql_real_connect(pMySQL,NULL,NULL,NULL,
-					(const char *)DataBaseName.mb_str(wxConvUTF8),3309,NULL,0))
+									  (const char *)DataBaseName.mb_str(wxConvUTF8),3309,NULL,0))
 				{		
 					m_DBPath = DataBasePath;
 					m_DBName = DataBaseName;
@@ -369,10 +420,10 @@ wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
 	if ( mySeparator != _T("/") )
 	{
 		myNewName = wxStringTokenize(originalPath,_T("\\"));
-		for (int i=0; i < myNewName.Count(); i++)
+		for (int i=0; i < (int) myNewName.Count(); i++)
 		{
-		myReturnPath += myNewName.Item(i);
-		myReturnPath += _T("/");	
+			myReturnPath += myNewName.Item(i);
+			myReturnPath += _T("/");	
 		}
 		
 	}
@@ -380,7 +431,7 @@ wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
 	{
 		return originalPath;
 	}
-
+	
 	return myReturnPath;
 }
 
@@ -409,26 +460,26 @@ wxString DataBase::DataBaseGetSize (int iPrecision)
 bool DataBase::DataBaseSetCharacterSet (enum Lang_Flag myFlag)
 {
 	wxString myRequest;
-
+	
 	switch(myFlag)
 	{
-
-	case LANG_LATIN1:
-		myRequest = _T("SET CHARACTER SET 'latin1'");
-		break;
-
-	default:
-	case LANG_UTF8:
-		myRequest = _T("SET CHARACTER SET 'utf8'");
-		break;
+			
+		case LANG_LATIN1:
+			myRequest = _T("SET CHARACTER SET 'latin1'");
+			break;
+			
+		default:
+		case LANG_UTF8:
+			myRequest = _T("SET CHARACTER SET 'utf8'");
+			break;
 	};
-
+	
 	if(mysql_query(pMySQL,(const char*)myRequest.mb_str(wxConvUTF8))==0)
 	{
 		return TRUE;
 	}
-
-
+	
+	
 	return FALSE;
 }
 

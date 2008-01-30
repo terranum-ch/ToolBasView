@@ -18,17 +18,19 @@
 #include "../include/main.h"
 #include "../include/interface.h"
 
+// for svn version
+#include "../include/svn_version.h"
 
 
 /* Application initialisation */
 bool TBVApp::OnInit()
 {
+	wxString myProgFrameName = sProgName;
+	myProgFrameName.Append(_T(".") SVN_VERSION);
 	
+	TBVFrame* frame = new TBVFrame(0L, myProgFrameName,wxPoint(50,50), wxSize(620,520));
 	
-	
-	TBVFrame* frame = new TBVFrame(0L, sProgName,wxPoint(50,50), wxSize(620,520));
-	
-	frame->SetExtraStyle(wxDIALOG_EX_METAL);
+	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
 	frame->Show();
 	frame->Centre();
 	
@@ -119,7 +121,7 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 			TreeAddItem((myDatabase.DataBaseGetName()),0);
 			
 			// add tables names
-			for (int i=0; i<myStringArray.Count(); i++) 
+			for (unsigned int i=0; i<myStringArray.Count(); i++) 
 			{
 				TreeAddItem(myStringArray.Item(i),1);
 			}
@@ -169,7 +171,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
 		
 		myDlg->SetDataBase(&myDatabase);
-		myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
+		//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
 		myDlg->SetMinSize(wxSize(300,200));
 		myDlg->SetSize(wxSize(500,400));
 		myDlg->CentreOnParent();
@@ -184,7 +186,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 			TreeAddItem((myDatabase.DataBaseGetName()),0);
 			
 			// add tables names
-			for (int i=0; i<myStringArray.Count(); i++) 
+			for (unsigned int i=0; i<myStringArray.Count(); i++) 
 			{
 				TreeAddItem(myStringArray.Item(i),1);
 			}
@@ -221,7 +223,7 @@ void TBVFrame::ClearCtrls ()
 void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 {
 	wxArrayString myFieldArray;
-	int i; // loop
+	unsigned int i; // loop
 	
 	wxTreeItemId myItemID = event.GetItem();
 	// get the table name

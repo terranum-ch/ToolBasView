@@ -14,19 +14,43 @@ FILE (GLOB HEAD_FILES "../include/*.h")
 SOURCE_GROUP (header FILES ${HEAD_FILES})
 
 
+SET(TRUNK_PATH ${PROJECT_SOURCE_DIR}/.. CACHE PATH "Path to the trunk" )
+
+
 # WXWIDGETS
 # DEFINE ALL INCLUDES AND SO ON
- INCLUDE ("cmake/Use_wxWindows.cmake")
+INCLUDE ("cmake/Use_wxWindows.cmake")
 
 
-#ASK FOR MYSQL LIBRARY HEADERS
-SET(MYSQL_LIB_HEADERS "D:/LS/PROGRAMATION/LIB/mysql-4.1.22-win32/include" CACHE STRING
-	"MYSQL include directory")
-INCLUDE_DIRECTORIES (${MYSQL_LIB_HEADERS})
+#MYSQL EMBEDDED
+ INCLUDE ("cmake/findMySQLEmbedded.cmake")
 
-#ASK FOR THE MYSQL LIBRARY
-SET (MYSQL_LIB "D:/LS/PROGRAMATION/LIB/mysql-4.1.22-win32/Embedded/static/release/mysqlserver.lib" CACHE STRING
-	"MYSQL Library, under unix path to the mysql-config tool")
+
+# Getting the subversion number and
+# generating a file called svn_version.h
+IF (WIN32)
+	EXECUTE_PROCESS(
+		COMMAND version_svn_win.bat
+		WORKING_DIRECTORY ${TRUNK_PATH}/build/
+	)
+ELSE (WIN32)
+	EXECUTE_PROCESS(
+		COMMAND sh version_svn_unix.sh
+		WORKING_DIRECTORY ${TRUNK_PATH}/build/
+	)
+ENDIF(WIN32)
+
+
+
+#bundle variables for compilation under Mac OS
+SET(MACOSX_BUNDLE_INFO_STRING "Look into MySQL database")
+SET(MACOSX_BUNDLE_ICON_FILE ${TRUNK_PATH}/art/fish.icns)
+#MACOSX_BUNDLE_GUI_IDENTIFIER
+#MACOSX_BUNDLE_LONG_VERSION_STRING
+SET(MACOSX_BUNDLE_BUNDLE_NAME "ToolBasView")
+SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.1")
+SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.1")
+SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2008")
 
 
  
@@ -37,40 +61,9 @@ IF (WIN32)
 
 	SOURCE_GROUP (resource FILES ../src/ToolBasView.rc)
  	ADD_EXECUTABLE (ToolBasView WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
- 	TARGET_LINK_LIBRARIES (ToolBasView ${WXWINDOWS_LIBS} ${MYSQL_LIB})
+ 	TARGET_LINK_LIBRARIES (ToolBasView ${WXWINDOWS_LIBS})
 
 ELSE (WIN32)
+ 	ADD_EXECUTABLE (ToolBasView MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
  
- 	ADD_EXECUTABLE (ToolBasView ${SRC_FILES} ${HEAD_FILES} )
-       TARGET_LINK_LIBRARIES (ToolBasView `${MYSQL_LIB}mysql_config --libmysqld-libs`) 
-        
-        #TARGET_LINK_LIBRARIES (ToolBasView ${WXAUI_THE_LIB} `${GDAL_LIB}/gdal-config --libs` `${GEOS_LIB}/geos-config --libs`)
-
 ENDIF (WIN32)
-
-
-
-
-# ASK FOR GDAL LIB HEADERS
-#SET(GDAL_LIB_HEADERS "D:/PROGRAMATION/LIB/gdal-cvs-2006.08.21" CACHE STRING 
-#	"GDAL-OGR library headers directory,root directory")
-#SET (GDAL_LIB_HEADERS 
-#	${GDAL_LIB_HEADERS}/port 
-#	${GDAL_LIB_HEADERS}/ogr 
-#	${GDAL_LIB_HEADERS}/ogr/ogrsf_frmts 
-#	${GDAL_LIB_HEADERS}/gcore)
-#INCLUDE_DIRECTORIES(${GDAL_LIB_HEADERS})
-
-#ASK FOR GDAL LIB
-#SET(GDAL_LIB "D:/PROGRAMATION/LIB/gdal-cvs-2006.08.21/build/mswd/gdal_i.lib" CACHE STRING 
-#"GDAL-OGR library under unix system path to the gdal-config --libs program")
-
-
-# ASK FOR GEOS LIB HEADERS
-#SET(GEOS_LIB_HEADERS "D:/PROGRAMATION/LIB/geos_3_svn03/capi" CACHE STRING 
-#	"GEOS C library headers directory,root directory")
-#INCLUDE_DIRECTORIES(${GEOS_LIB_HEADERS})
-
-#ASK FOR GEOS LIB
-#SET(GEOS_LIB "D:/PROGRAMATION/LIB/geos_3_svn03/build/msvMT/geos_c.lib" CACHE STRING 
-#"GEOS-OGR library under unix system path to the GEOS-config --libs program")

@@ -137,7 +137,7 @@ IF(WIN32_STYLE_FIND)
       DOC "wxWindows static release build library" ) 
     
     FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY
-      NAMES wxd wxmswd wxmsw26d  wxmsw27d wxmsw28d wxmsw28ud wxmsw28d
+      NAMES wxd wxmswd wxmsw26d  wxmsw27d wxmsw28d wxmsw28ud
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS}       
@@ -163,14 +163,14 @@ IF(WIN32_STYLE_FIND)
     ## gl lib is always build separate:
     ##
     FIND_LIBRARY(WXWINDOWS_STATIC_LIBRARY_GL
-      NAMES wx_gl wxmsw_gl wxmsw26_gl wxmsw28_gl
+      NAMES wx_gl wxmsw_gl wxmsw26_gl wxmsw28u_gl wxmsw28_gl
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
       DOC "wxWindows static release build GL library" )
 
     FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY_GL
-      NAMES wxd_gl wxmswd_gl wxmsw26d_gl wxmsw28d_gl 
+      NAMES wxd_gl wxmswd_gl wxmsw26d_gl wxmsw28ud_gl wxmsw28d_gl
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
@@ -234,14 +234,14 @@ IF(WIN32_STYLE_FIND)
       DOC "wxWindows static zib library" )
 
     FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY_REGEX
-      NAMES wxregexd
+      NAMES wxregexd wxregexud
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
       DOC "wxWindows static debug regex library" )
 
     FIND_LIBRARY(WXWINDOWS_STATIC_LIBRARY_REGEX
-      NAMES wxregex
+      NAMES wxregex wxregexu
       PATHS 
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
@@ -604,41 +604,80 @@ ELSE(WIN32_STYLE_FIND)
         SET(WX_CONFIG_ARGS_LIBS "${WX_CONFIG_ARGS_LIBS} --gl-libs" )
       ENDIF(WXWINDOWS_USE_GL)
       ##MESSAGE("DBG: WX_CONFIG_ARGS_LIBS=${WX_CONFIG_ARGS_LIBS}===")
+
+      
+      SET(WX_CONFIG_CXXFLAGS_ARGS "--cxxflags")
+      
+      IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        SET(WX_CONFIG_ARGS_LIBS "${WX_CONFIG_ARGS_LIBS} --debug=yes" )
+        SET(WX_CONFIG_CXXFLAGS_ARGS "${WX_CONFIG_CXXFLAGS_ARGS} --debug=yes")
+      ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+      IF(CMAKE_BUILD_TYPE STREQUAL "Release")
+        SET(WX_CONFIG_ARGS_LIBS "${WX_CONFIG_ARGS_LIBS} --debug=no" )
+        SET(WX_CONFIG_CXXFLAGS_ARGS "${WX_CONFIG_CXXFLAGS_ARGS} --debug=no")
+      ENDIF(CMAKE_BUILD_TYPE STREQUAL "Release")
+
+      MESSAGE("DBG: WX_CONFIG_ARGS_LIBS=${WX_CONFIG_ARGS_LIBS}")
+      
+      #### LUCIEN CHANGE FOR XCODE COMPATIBILITY ############################################
       
       # set CXXFLAGS to be fed into CMAKE_CXX_FLAGS by the user:
-      SET(CMAKE_WXWINDOWS_CXX_FLAGS "`${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE} --cxxflags|sed -e s/-I/-isystem/g`")
+      #SET(CMAKE_WXWINDOWS_CXX_FLAGS "`${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE} --cxxflags|sed -e s/-I/-isystem/g`")
       ##MESSAGE("DBG: for compilation:
         ##CMAKE_WXWINDOWS_CXX_FLAGS=${CMAKE_WXWINDOWS_CXX_FLAGS}===")
 
       # keep the back-quoted string for clarity
-      SET(WXWINDOWS_LIBRARIES "`${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE} ${WX_CONFIG_ARGS_LIBS}`")
-      ##MESSAGE("DBG2: for linking:
-        ##WXWINDOWS_LIBRARIES=${WXWINDOWS_LIBRARIES}===")
+      #SET(WXWINDOWS_LIBRARIES "`${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE} ${WX_CONFIG_ARGS_LIBS}`")
+      #MESSAGE("DBG2: for linking WXWINDOWS_LIBRARIES=${WXWINDOWS_LIBRARIES}===")
       
       # evaluate wx-config output to separate linker flags and linkdirs for
       # rpath:
-      EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
-        ARGS ${WX_CONFIG_ARGS_LIBS}
-        OUTPUT_VARIABLE WX_CONFIG_LIBS )
+      #EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
+      #  ARGS ${WX_CONFIG_ARGS_LIBS}
+      #  OUTPUT_VARIABLE WX_CONFIG_LIBS )
       
       ## extract linkdirs (-L) for rpath
       ## use regular expression to match wildcard equivalent "-L*<endchar>"
       ## with <endchar> is a space or a semicolon
-      STRING(REGEX MATCHALL "[-][L]([^ ;])+" WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX "${WX_CONFIG_LIBS}" )
+      #STRING(REGEX MATCHALL "[-][L]([^ ;])+" WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX "${WX_CONFIG_LIBS}" )
       # MESSAGE("DBG  WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX=${WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX}")
       
       ## remove prefix -L because we need the pure directory for LINK_DIRECTORIES
       ## replace -L by ; because the separator seems to be lost otherwise (bug or
         ## feature?)
-      IF(WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX)
-        STRING(REGEX REPLACE "[-][L]" ";" WXWINDOWS_LINK_DIRECTORIES ${WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX} )
+      #IF(WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX)
+       # STRING(REGEX REPLACE "[-][L]" ";" WXWINDOWS_LINK_DIRECTORIES ${WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX} )
         # MESSAGE("DBG  WXWINDOWS_LINK_DIRECTORIES=${WXWINDOWS_LINK_DIRECTORIES}")
-      ENDIF(WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX)
+      #ENDIF(WXWINDOWS_LINK_DIRECTORIES_WITH_PREFIX)
       
       
       ## replace space separated string by semicolon separated vector to make it
       ## work with LINK_DIRECTORIES
-      SEPARATE_ARGUMENTS(WXWINDOWS_LINK_DIRECTORIES)
+      #SEPARATE_ARGUMENTS(WXWINDOWS_LINK_DIRECTORIES)
+      
+      
+      	EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
+        ARGS ${WX_CONFIG_CXXFLAGS_ARGS}
+        OUTPUT_VARIABLE CMAKE_WXWINDOWS_CXX_FLAGS)
+        MESSAGE("DBG: ${CMAKE_WXWINDOWS_CXX_FLAGS}")
+        
+      	EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
+        ARGS ${WX_CONFIG_ARGS_LIBS}
+        OUTPUT_VARIABLE WXWINDOWS_LIBRARIES)
+        MESSAGE("DBG: ${WXWINDOWS_LIBRARIES}")
+
+      
+     #   IF(WX_CONFIG_LIBS)
+    #		LINK_LIBRARIES(${WX_CONFIG_LIBS})
+  	#	ENDIF(WX_CONFIG_LIBS)
+  
+  	#	IF (WX_CONFIG_CXXFLAGS)
+    #		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WX_CONFIG_CXXFLAGS}")
+  	#	ENDIF(WX_CONFIG_CXXFLAGS)
+      
+      
+      
       
       MARK_AS_ADVANCED(
         CMAKE_WXWINDOWS_CXX_FLAGS
