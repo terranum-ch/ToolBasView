@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=ToolBasView
+Name[fr]=ToolBasView
+Comment=Tool for accessing an embedded mySQL server
+Comment[fr]=Outil d'accès à une base mySQL embarquée
+Exec=ToolBasView
+Icon=toolbasview
+Terminal=false
+Type=Application
+Categories=Application;AudioVideo;Player;
