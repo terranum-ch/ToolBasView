@@ -61,8 +61,7 @@ void GridOperation::GridOpSetNumberOfColumn(int iNumber)
 	}
 	
 	// delete all rows...
-	if (pGrid->GetNumberRows() > 0)
-		pGrid->DeleteRows(0,pGrid->GetNumberRows(),FALSE);
+	pGrid->DeleteRows(0,pGrid->GetNumberRows(),FALSE);
 	
 	
 }
@@ -86,13 +85,11 @@ void GridOperation::GridOpAddDataRow(int iColumn, wxArrayString * myArray)
 void GridOperation::GridClear (int iColumn,int iRows)
 {
 	pGrid->BeginBatch();
-	if (pGrid->GetNumberCols() > 0)
 		pGrid->DeleteCols(0,pGrid->GetCols());
-	if (pGrid->GetNumberRows() > 0)
 		pGrid->DeleteRows(0,pGrid->GetRows());
-	
-	pGrid->AppendCols(iColumn);
-	pGrid->AppendRows(iRows);
+		
+		pGrid->AppendCols(iColumn);
+		pGrid->AppendRows(iRows);
 	pGrid->EndBatch();
 }
 
