@@ -112,9 +112,6 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 						 myDatabase.DataBaseGetPath().c_str(),
 						 myDatabase.DataBaseGetName().c_str());
 			
-			//wxLogMessage(_("Character set used : %s"),
-			//			 myDatabase.DatabaseGetCharacterSet().c_str());
-			
 			myStringArray = myDatabase.DataBaseListTables();
 			
 			// add database name
