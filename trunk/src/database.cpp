@@ -84,7 +84,7 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 		"--skip-plugin-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets",
-		"--default-character-set=cp1250"
+		"--default-character-set=utf8" //"--default-character-set=cp1250"
 	};
 #else
 	static char *server_args[] = 
