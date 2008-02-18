@@ -1,3 +1,20 @@
+/***************************************************************************
+								database.h
+		Basic function for connecting a MySQL embedded database 
+ -------------------
+ copyright            : (C) 2007 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 /*!
     @file database.h
     @brief   Definition of class DataBase
@@ -12,7 +29,7 @@
 #define __database_H__
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma interface "../include/database.cpp"
+    #pragma interface "database.cpp"
 #endif
 
 #ifndef WX_PRECOMP
@@ -98,7 +115,7 @@ public:
 	This function is the only one who may be called before DataBaseOpen().
     @result  a wxString containing the version number
 	*/
-	wxString DatabaseGetVersion();
+	static wxString DatabaseGetVersion();
 	
 	/*!
     @function 
@@ -128,6 +145,13 @@ public:
 	*/		
 	wxArrayString DataBaseGetNextResult();
 	
+	bool DataBaseTableExist(const wxString & tableName);
+	
+	
+	int DataBaseGetResultAsInt();
+	
+	bool DataBaseIsTableEmpty(const wxString & tableName);
+	
 	/*!
     @function 
     @brief Used to execute multiple query on the database
@@ -144,22 +168,34 @@ public:
 	@see DataBaseCutRequest(), DataBaseQuery()
 	 
 	*/
-	int DataBaseQueryMultiple(wxString myQuery);
+	bool DataBaseQueryNoResult(wxString myQuery);
 	/*!
 	@function 
 	@brief Used to execute one query on the database and then get the result
 	
-	This function works in a similar way as the DataBaseQueryMultiple() but is able
+	This function works in a similar way as the DataBaseQueryNoResult() but is able
 	to send back the result of a query.
 	
 	@param myQuery the string containing the query
 	@result true if the query was successfuly made otherwise false.
 	@warning User have to check the return value, and if false then one souldn't 
 	call the DataBaseGetNextResult()
-	@see DataBaseQueryMultiple()
+	@see DataBaseQueryNoResult()
 	 */
-	int DataBaseQuery(wxString myQuery);
+	bool DataBaseQuery(const wxString & myQuery);
 	
+	
+	bool DataBaseHasResult ();
+	
+	
+	/*! Execute multiple query 
+	 @bug NOT WORKING, CRASH WITH VERSION 5.1.23-rc (on windows and Mac)
+	 */
+	int DataBaseQueryMultiple (const wxString & myQuery);
+	
+
+	int DataBaseQueryReal (wxString myQuery);
+
 	/*!
     @brief  return the path of the database
 	
