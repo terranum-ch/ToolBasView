@@ -75,7 +75,7 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 		stemps[i] = datadir.GetChar(i);
 	}
 	
-#ifndef __WINDOWS__
+#ifdef __WINDOWS__
 	static char *server_args[] = 
 	{
 		"this_program",       /* this string is not used */
@@ -84,7 +84,7 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 		//"--skip-plugin-innodb",
 		"--port=3309",
 		"--character-sets-dir=./share/charsets",
-		"--default-character-set=cp1250"
+		"--default-character-set=utf8"
 	};
 #else
 	static char *server_args[] = 
@@ -110,7 +110,7 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 
 	
-	if(mysql_server_init(num_elements, server_args, server_groups)==0)
+	if(mysql_library_init(num_elements, server_args, server_groups)==0)
 	{
 		pMySQL = mysql_init(NULL);
 		 mysql_options(pMySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
@@ -135,6 +135,7 @@ bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 
 bool DataBase::DataBaseClose()
 {
+	mysql_thread_end();	
 	mysql_library_end();
 	IsDatabaseOpen = FALSE;
 	return TRUE;
@@ -301,7 +302,6 @@ int DataBase::DataBaseGetResultAsInt()
 
 bool DataBase::DataBaseIsTableEmpty(const wxString & tableName)
 {
-	bool bReturnValue = TRUE;
 	wxString sSentence = wxString::Format(_T("SELECT * FROM %s"), tableName.c_str());
 	
 	// return TRUE if the sentence was OK and
@@ -397,7 +397,7 @@ bool DataBase::DataBaseConvertFullPath(wxString fullpath)
 	
 	wxFileName dirname = wxFileName(fullpath,wxEmptyString);
 	
-	int iNumDir = dirname.GetDirCount();
+	//int iNumDir = dirname.GetDirCount();
 	myDirArray = dirname.GetDirs();
 	m_DBName = myDirArray.Last();
 	dirname.RemoveLastDir(); 
