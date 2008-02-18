@@ -127,7 +127,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 		// SINGLE REQUEST
 		if (myRequestArray.Count() == 1) 
 		{
-			if (m_DataBase->DataBaseQuery(myRequestArray.Item(0))==0) 
+			if (m_DataBase->DataBaseQuery(myRequestArray.Item(0))) 
 			{
 				// the button show result is valid now...
 				(wxButton*)FindWindow(ID_BTN_SHOWRESULTS)->Enable(TRUE);
@@ -150,7 +150,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 				myTempRequest = myRequestArray.Item(i);
 				if (myTempRequest.IsEmpty())
 					break;
-				if (m_DataBase->DataBaseQueryMultiple(myTempRequest)!=0)
+				if (m_DataBase->DataBaseQueryNoResult(myTempRequest))
 				{
 					myErrorsArray.Add(i+1);
 				}
