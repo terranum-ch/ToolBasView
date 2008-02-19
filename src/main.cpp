@@ -27,6 +27,7 @@ bool TBVApp::OnInit()
 {
 	wxString myProgFrameName = sProgName;
 	myProgFrameName.Append(_T(".") SVN_VERSION);
+	myProgFrameName.Append(wxString::Format(_T(" [%s]"), DATABASE_TYPE_STRING.c_str()));
 	
 	TBVFrame* frame = new TBVFrame(0L, myProgFrameName,wxPoint(50,50), wxSize(620,520));
 	
@@ -75,7 +76,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxLogMessage(_("Program started"));
 	
 	// get the client version
-	wxString myVersion = _("MySQL embedded version : ") +  myDatabase.DatabaseGetVersion();
+	wxString myVersion = _("Database embedded version : ") +  myDatabase.DatabaseGetVersion();
 	SetStatusText(myVersion ,1);
 	
 	
