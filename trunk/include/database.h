@@ -42,6 +42,8 @@
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
+const wxString DATABASE_TYPE_STRING = _T("MYSQL/INNODB");
+
 /*!
     @enumeration 
     @brief enumeration of allowed values for
