@@ -22,8 +22,8 @@ SET(TRUNK_PATH ${PROJECT_SOURCE_DIR}/.. CACHE PATH "Path to the trunk" )
 INCLUDE ("cmake/Use_wxWindows.cmake")
 
 
-#MYSQL EMBEDDED
- INCLUDE ("cmake/findMySQLEmbedded.cmake")
+#SQLite EMBEDDED
+ INCLUDE ("cmake/findSQLite.cmake")
 
 
 # Getting the subversion number and
