@@ -98,14 +98,21 @@ TBVFrame::~TBVFrame()
 void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 {
 	wxArrayString myStringArray;
+	wxString myDatabaseWildcard = wxString::Format(
+												   _("ToolMap Database files (*.%s)|*.%s"), 
+												   DATABASE_EXTENSION_STRING.c_str(),
+												   DATABASE_EXTENSION_STRING.c_str());
 	
-	const wxString & dir = wxDirSelector (_("Choose the database folder"));
-	if (!dir.empty())
+	
+	wxFileDialog myFileDlg (this,_("Choose a database"),_T(""),
+							_T(""),	myDatabaseWildcard);
+	
+	if (myFileDlg.ShowModal() == wxID_OK)
 	{
 		// clear all the controls.
 		ClearCtrls();
 		
-		if(myDatabase.DataBaseOpen(dir,LANG_UTF8))
+		if(myDatabase.DataBaseOpen(myFileDlg.GetPath(),LANG_UTF8))
 		{
 			wxLogMessage(_("Database opened"));
 			
@@ -133,7 +140,7 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 			wxLogError(_("Error opening the database"));
 		}
 	}
-
+	
 }
 
 
@@ -285,16 +292,20 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 	myDlg->CenterOnParent();
 	if (myDlg->ShowModal()==wxID_OK)
 	{
-		// clean the tree ctrl
+	// clean the tree ctrl
 		ClearCtrls();
 		
-		// create realy the database...
-		myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
-		
-		wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
-		
-		// add database name
-		TreeAddItem((myDlg->m_DLG_DB_NAME),0);
+		// create really the database...
+		if (myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME))
+		{
+			
+			wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
+			
+			// add database name
+			TreeAddItem((myDlg->m_DLG_DB_NAME),0);
+		}
+		else
+			wxLogMessage(_("Error creating the database"));
 	}
 	
 }

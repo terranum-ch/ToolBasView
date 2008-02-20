@@ -36,13 +36,16 @@
     #include "wx/wx.h"
 #endif
 
-#include "mysql.h"
+//#include "mysql.h"
+#include "sqlite3.h"
+#include <wx/filename.h>
 #include <wx/arrstr.h> // array string
 #include <wx/strconv.h> // unicode conversion
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
-const wxString DATABASE_TYPE_STRING = _T("MYSQL/INNODB");
+const wxString DATABASE_TYPE_STRING = _T("SQLite");
+const wxString DATABASE_EXTENSION_STRING = _T("tmdb");
 
 /*!
     @enumeration 
@@ -259,10 +262,18 @@ public:
    
     
 private:
-	MYSQL * pMySQL;
+	//MYSQL * pMySQL;
+	
+	// handler of a sqlite db
+	sqlite3  * m_pDB;
+	
+	// handler for results
+	char ** m_Result;
+	int m_nRow;
+	int m_nCols;
 	
 	// for storing restults 
-	MYSQL_RES * pResults;
+	//MYSQL_RES * pResults;
 	int m_resultNumber;
 	
 	// storing database path and name.

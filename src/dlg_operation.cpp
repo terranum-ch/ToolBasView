@@ -145,29 +145,33 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 		// MULTIPLE REQUEST
 		else
 		{
-			for (unsigned int i=0; i< myRequestArray.Count(); i++) 
+			if (m_DataBase->DataBaseQueryMultiple(myRequest) != 0)
 			{
-				myTempRequest = myRequestArray.Item(i);
-				if (myTempRequest.IsEmpty())
-					break;
-				if (m_DataBase->DataBaseQueryNoResult(myTempRequest))
-				{
-					myErrorsArray.Add(i+1);
-				}
-				else
-				{
-					m_hasRequest = TRUE;
-				}
-			}
+					myComment.Printf(_("Results : Requests Errors"),myRequestArray.Count());
 			
-			// if errors found
-			if (myErrorsArray.Count() > 0) 
-			{
-				myComment.Printf(_("Results : Request failed on request n : "));
-				for (unsigned int j=0; j < myErrorsArray.Count(); j++) 
-				{
-					myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
-				}
+//			for (unsigned int i=0; i< myRequestArray.Count(); i++) 
+//			{
+//				myTempRequest = myRequestArray.Item(i);
+//				if (myTempRequest.IsEmpty())
+//					break;
+//				if (m_DataBase->DataBaseQueryNoResult(myTempRequest))
+//				{
+//					myErrorsArray.Add(i+1);
+//				}
+//				else
+//				{
+//					m_hasRequest = TRUE;
+//				}
+//			}
+//			
+//			// if errors found
+//			if (myErrorsArray.Count() > 0) 
+//			{
+//				myComment.Printf(_("Results : Request failed on request n : "));
+//				for (unsigned int j=0; j < myErrorsArray.Count(); j++) 
+//				{
+//					myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
+//				}
 			}
 			// no errors found
 			else 
