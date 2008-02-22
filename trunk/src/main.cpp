@@ -32,8 +32,9 @@ bool TBVApp::OnInit()
 	TBVFrame* frame = new TBVFrame(0L, myProgFrameName,wxPoint(50,50), wxSize(620,520));
 	
 	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
-	frame->Show();
 	frame->Centre();
+	frame->Show();
+	
 	
 	return true;
 }
@@ -47,6 +48,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
   EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
   EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
+  EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
 END_EVENT_TABLE()
 
 
@@ -202,6 +204,21 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		wxLogError(_("No Database open, please open a database first"));
 	}
  	
+}
+
+
+void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
+{
+	if (myDatabase.DataBaseIsOpen()) 
+	{
+		ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &myDatabase, -1);
+		// show the dialog
+		if (myDlg->ShowModal() == wxID_OK)
+		{
+			// add spatial data to the database
+		}
+		delete myDlg;
+	}
 }
 
 
