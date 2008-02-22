@@ -55,6 +55,7 @@ const int ID_OP_MENU = 10109;
 const int ID_PROCESS_MENU = 10110;
 const int ID_NEW_DBASE = 10111;
 const int ID_MENU_STATISTICS = 10112;
+const int ID_MENU_SPATIAL_ADD = 10113;
 wxMenuBar *MENU();
 
 #endif
