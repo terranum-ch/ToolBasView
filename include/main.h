@@ -16,6 +16,7 @@ const int ID_STATUS = 10003;
 #include <wx/treectrl.h> // for tree control
 #include "../include/gridoperation.h" // for grid operation.
 #include "../include/dlg_operation.h" // for dialogs operations.
+#include "../include/addspatialdata_dlg.h" // for adding spatial data
 
 
 // ART FILES
@@ -73,6 +74,7 @@ private:
 	void OnDisplayStatistics (wxCommandEvent & event);
 	void OnAboutDlg (wxCommandEvent & event);
 	void OnMenuExit (wxCommandEvent & event);
+	void OnSpatialDataAdd (wxCommandEvent & event);
 	/*!
     @function 
     @brief Called when user double click on the treectrl
