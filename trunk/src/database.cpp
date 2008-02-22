@@ -143,7 +143,7 @@ wxString DataBase::DatabaseGetVersion()
 wxArrayString DataBase::DatabaseListFields(wxString sTable)
 {
 	wxArrayString myStingArray;
-	wxString sSentence = wxString::Format(_T("PRAGMA table_info(`%s`)"), sTable.c_str());
+	wxString sSentence = wxString::Format(_T("PRAGMA table_info(%s)"), sTable.c_str());
 	int iName = 7;
 	
 	if (DataBaseQuery(sSentence))
@@ -164,7 +164,7 @@ wxArrayString DataBase::DatabaseListFields(wxString sTable)
 
 bool DataBase::DataBaseGetAllTableContent(wxString sTable)
 {
-	wxString sSentence = wxString::Format(_T("SELECT * FROM `%s`"), sTable.c_str());
+	wxString sSentence = wxString::Format(_T("SELECT * FROM %s"), sTable.c_str());
 	  
 	if (DataBaseQuery(sSentence))
 	{
@@ -292,7 +292,7 @@ bool DataBase::DataBaseQuery(const wxString & myQuery)
 {
 	int iRetour = 0;
 	char * zErrMsg = 0;
-	
+	wxString sError = _T("");
 	// m_pDB,  myQuery.mb_str(wxMBConvUTF8),NULL,NULL,&zErrMsg
 	iRetour = sqlite3_get_table(m_pDB, (const char*) myQuery.mb_str(wxConvUTF8),
 								&m_Result, &m_nRow, &m_nCols, &zErrMsg);
@@ -303,8 +303,8 @@ bool DataBase::DataBaseQuery(const wxString & myQuery)
 		m_resultNumber = 0;
 		return TRUE;
 	}
-	
-	wxLogDebug(_T("Error during query. Error number is [%d], message is %s"), iRetour, zErrMsg);
+	sError = wxString::FromAscii(zErrMsg);
+	wxLogDebug(_T("Error during query. Error number is [%d], message is %s"), iRetour, sError.c_str());
 	sqlite3_free(zErrMsg);
 	return FALSE;
 //	pResults = NULL;
