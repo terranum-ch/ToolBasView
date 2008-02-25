@@ -25,6 +25,8 @@ INCLUDE ("cmake/Use_wxWindows.cmake")
 #SQLite EMBEDDED
  INCLUDE ("cmake/findSQLite.cmake")
 
+#GEOS - GDAL libs
+ INCLUDE ("cmake/findGISLib.cmake")
 
 # Getting the subversion number and
 # generating a file called svn_version.h

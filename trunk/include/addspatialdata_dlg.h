@@ -65,6 +65,9 @@ class ADDSPATIALDATA_DLG: public wxDialog
 
 
 public:
+	wxString m_VectorFileName;
+	wxString m_DBTableName;
+	
     /// Constructors
     ADDSPATIALDATA_DLG();
     ADDSPATIALDATA_DLG( wxWindow* parent,
@@ -95,6 +98,7 @@ public:
 	
 	bool AddListOfTable ();
 
+	virtual bool TransferDataFromWindow();
 ////@begin ADDSPATIALDATA_DLG event handler declarations
 
 ////@end ADDSPATIALDATA_DLG event handler declarations

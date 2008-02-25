@@ -17,6 +17,9 @@ const int ID_STATUS = 10003;
 #include "../include/gridoperation.h" // for grid operation.
 #include "../include/dlg_operation.h" // for dialogs operations.
 #include "../include/addspatialdata_dlg.h" // for adding spatial data
+#include "../include/gisdataprovider.h"	// for dealing with spatial data
+
+#include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 
 
 // ART FILES
