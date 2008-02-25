@@ -102,6 +102,14 @@ void ADDSPATIALDATA_DLG::Init()
 }
 
 
+bool ADDSPATIALDATA_DLG::TransferDataFromWindow()
+{
+	m_VectorFileName = m_DLGAS_FileSelector->GetPath();
+	m_DBTableName = m_DLGAS_ListTables->GetStringSelection();
+	return TRUE;
+}
+
+
 
 bool ADDSPATIALDATA_DLG::AddListOfTable ()
 {

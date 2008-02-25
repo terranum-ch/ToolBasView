@@ -81,6 +81,9 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxString myVersion = _("Database embedded version : ") +  myDatabase.DatabaseGetVersion();
 	SetStatusText(myVersion ,1);
 	
+	// loading GDAL 
+	OGRRegisterAll();
+	wxLogDebug(_T("All GDAL driver registered..."));
 	
 	// getting the tree ctrl
 	pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,this);
@@ -209,13 +212,36 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 
 void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 {
+	GISOgrProvider myOgrData;
+	GISDBProvider myDBData;
+	wxString myWkbString;
+	
 	if (myDatabase.DataBaseIsOpen()) 
 	{
 		ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &myDatabase, -1);
 		// show the dialog
 		if (myDlg->ShowModal() == wxID_OK)
 		{
-			// add spatial data to the database
+			// try to open spatial data
+			myOgrData.GISOpen(myDlg->m_VectorFileName);
+			wxLogDebug(_T("Number of feature read : %d"), myOgrData.GISGetFeatureCount());
+			
+			// try to open database data
+			myDBData.GISOpen(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING);
+			myDBData.GISSetLayer(myDlg->m_DBTableName);
+			wxLogDebug(_T("Number of layer into DB : %d"), myDBData.GISGetLayerCount());
+			
+			
+			
+			myOgrData.GISGetNextFeatureAsWkT(myWkbString);
+			myDBData.GISSetFeatureAsWkT(myWkbString);
+			
+			
+			
+			// don't forget to close the spatial data
+			myOgrData.GISClose();
+			myDBData.GISClose();
+			
 		}
 		delete myDlg;
 	}
