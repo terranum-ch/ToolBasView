@@ -215,7 +215,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	GISDBProvider myDBData;
 	wxString myWkbString;
 	wxArrayString myReadData;
-	int i=0;
+	int i=1;
 	unsigned long ltime = 0;
 	long lFeatureCount = 0;
 	
@@ -236,29 +236,37 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 			myDBData.GISSetActiveDatabase(&myDatabase);
 			wxLogDebug(_T("Number of layer into DB : %d"), myDBData.GISGetLayerCount());
 			
+			
+			// create a progress dialog for showing
+			// import progress
+			int iMax = lFeatureCount / 1000;
+			wxProgressDialog myPrgDlg (_("Importing data into the Database"),
+									   _("Importing in progress, please wait..."),
+										 iMax);
+			
+			
 			// count elapsed time
 			wxStopWatch sw;
 			
-			// iterate all objects
-			//for (i=0; i<lFeatureCount;i++)
-			//{
-			while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 9000))
+			
+			while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 1000))
 			{
-				myDBData.GISSetFeatureAsWkTBuffer(myReadData, FALSE);
+				myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
+				
+				if (i <= iMax)
+				{
+					myPrgDlg.Update(i);
+					i++;	
+				}
+				
 				// clear the buffer
 				myReadData.Clear();
-				//wxLogDebug(_T("round..."));
 			}
-			
-			
-				//myDBData.GISSetFeatureAsWkT(myWkbString, FALSE);
-			//}
 			
 			// stop timmer
 			ltime = sw.Time();
 			sw.Pause();
 			
-			wxLogDebug(_T("Size of array is : %d item for %d size"), myReadData.GetCount(), sizeof(myReadData));
 			
 			wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
 						 lFeatureCount, ltime);
