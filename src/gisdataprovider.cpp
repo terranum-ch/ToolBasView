@@ -140,9 +140,6 @@ bool GISOgrProvider::GISGetNextFeatureAsWkT (wxString & wkbstring)
 			wkbstring = wxString::FromAscii(myExport);
 			delete myExport;
 		}
-		
-		wxLogDebug(_T("WKT : %s"), wkbstring.c_str());
-		
 		m_iFeatureLoop ++;
 		OGRFeature::DestroyFeature( poFeature );
 		return TRUE;
@@ -154,6 +151,49 @@ bool GISOgrProvider::GISGetNextFeatureAsWkT (wxString & wkbstring)
 	return FALSE;
 }
 
+
+bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, int iBufferSize)
+{
+	OGRGeometry *poGeometry;
+	bool bReturnValue = FALSE;
+	
+	// loop for reading multiple feature in memory
+	// specify number of feature to read with iBuffersize
+	for (int i=0; i<iBufferSize; i++)
+	{
+		OGRFeature *poFeature;
+		char * myExport;
+		if ((poFeature = m_pLayer->GetNextFeature()) != NULL)
+		{
+			poGeometry = poFeature->GetGeometryRef();
+			if (poGeometry != NULL)
+			{
+				if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+				{
+					
+					OGRLineString * poLine = (OGRLineString *) poGeometry;
+					
+					poLine->exportToWkt(&myExport);
+					featurelist->Add(wxString::FromAscii(myExport));
+					delete myExport;
+					bReturnValue = TRUE;
+				}
+								
+				OGRFeature::DestroyFeature( poFeature );
+			}
+			else
+			{
+				wxLogDebug(_T("No Geometery / Feature found"));
+				break;
+			}
+		}
+		else
+			break;
+		
+	}
+	return bReturnValue;
+	
+}
 
 
 bool GISOgrProvider::GISClose ()
@@ -245,29 +285,119 @@ bool GISDBProvider::GISSetLayer (const wxString & layername)
 }
 
 
-bool GISDBProvider::GISSetFeatureAsWkT (const wxString & wkbstring)
+
+bool GISDBProvider::GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe)
 {
-	OGRFeature *poFeature;
-	OGRGeometry *poGeometry;
-	wxString myString = wkbstring;
-	char * myWKTChar = (char *) myString.GetWriteBuf(myString.Len());
-	bool bReturn = TRUE;
+	OGRSpatialReference mySpatRef;
+	OGRLineString * myGeom;
+	bool bReturnValue = FALSE;
+	//OGREnvelope myEnveloppe;
+
+		
+	std::string nomtr((char const*)wktstring.mb_str(*wxConvCurrent));
+	char * mypChar = (char *) nomtr.c_str();
 	
-	poFeature = OGRFeature::CreateFeature(m_pLayer->GetLayerDefn());
+	OGRErr myErr;
+	myErr = OGRGeometryFactory::createFromWkt( &mypChar, &mySpatRef, (OGRGeometry**) &myGeom);
 	
-	OGRSpatialReference  ref;
-    OGRGeometry * new_geom;
-    OGRErr err = OGRGeometryFactory::createFromWkt(&myWKTChar, &ref, &new_geom);
-	
-	poFeature->SetGeometry(new_geom);
-	if( m_pLayer->CreateFeature( poFeature ) != OGRERR_NONE )
+	// check that a geometry was created
+	if (myErr == 0)
 	{
-		wxLogDebug(_T("Failed to create feature"));
-		bReturn = FALSE;
+		// get the bounding box of the geometry
+		myGeom->getEnvelope(enveloppe);
+		bReturnValue = TRUE;
+		
+		// delete the geometry
+		
+	}
+	else
+		wxLogDebug(_T("Unable to create geometry, error is %d"), myErr);
+	
+	delete mypChar;
+	return bReturnValue;
+}
+
+
+
+bool GISDBProvider::GISSetFeatureAsWkT (const wxString & wkbstring,  bool bComputeExtend)
+{
+	//double * rect;
+	OGREnvelope myEnveloppe;
+	wxString sSentence = _T("");
+	
+	// if we must compute the bounding box for new added line
+	if(bComputeExtend)
+	{
+		
+		// check if we can compute the enveloppe (a.k.a bounding box)
+		if(GISComputeBoundingBox(wkbstring, &myEnveloppe))
+		{
+			sSentence = wxString::Format(_T("INSERT INTO GENERIC_LINES ")
+										 _T("(WKT_GEOMETRY, MINX, MINY, MAXX, MAXY)")
+										 _T("VALUES (\"%s\", %f, %f, %f, %f)"),
+										 wkbstring.c_str(), myEnveloppe.MinX, myEnveloppe.MinY,
+										 myEnveloppe.MaxX, myEnveloppe.MaxY);
+		}
+		
+	}
+	else
+	{
+		sSentence = wxString::Format(_T("INSERT INTO GENERIC_LINES (WKT_GEOMETRY) VALUES (\"%s\")"),
+									 wkbstring.c_str());
 	}
 	
-	OGRFeature::DestroyFeature( poFeature );
-	return bReturn;
+	// add WKT string to the database
+	// warning the table must have a WKT_GEOMETRY field
+	if (m_pActiveDB->DataBaseQuery(sSentence))
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+bool GISDBProvider::GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist, bool bComputeExtend)
+{
+	OGREnvelope myEnveloppe;
+	wxString sSentence = _T("BEGIN TRANSACTION test; ");
+	
+	// if we must compute the bounding box for new added line
+	if(bComputeExtend)
+	{
+		
+		// check if we can compute the enveloppe (a.k.a bounding box)
+		//if(GISComputeBoundingBox(wkbstring, &myEnveloppe))
+//		{
+//			sSentence = wxString::Format(_T("INSERT INTO GENERIC_LINES ")
+//										 _T("(WKT_GEOMETRY, MINX, MINY, MAXX, MAXY)")
+//										 _T("VALUES (\"%s\", %f, %f, %f, %f)"),
+//										 wkbstring.c_str(), myEnveloppe.MinX, myEnveloppe.MinY,
+//										 myEnveloppe.MaxX, myEnveloppe.MaxY);
+//		}
+		
+	}
+	else
+	{
+		
+		for (unsigned int i=0; i<featurelist.GetCount();i++)
+		{
+			sSentence.Append(wxString::Format(_T("INSERT INTO GENERIC_LINES (WKT_GEOMETRY) VALUES (\"%s\"); "),
+							 (featurelist.Item(i)).c_str()));
+		}
+		
+	}
+	
+	sSentence.Append(_T(" END TRANSACTION test;"));
+	
+	// add WKT string to the database
+	// warning the table must have a WKT_GEOMETRY field
+	if (m_pActiveDB->DataBaseQueryMultiple(sSentence))
+	{
+		return TRUE;
+	}
+	return FALSE;
+	
+	
 }
 
 

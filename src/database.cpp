@@ -299,7 +299,7 @@ bool DataBase::DataBaseQuery(const wxString & myQuery)
 	//iRetour =  sqlite3_exec(m_pDB,(const char*) myQuery.mb_str(wxConvUTF8),NULL, NULL, &zErrMsg);
 	if (iRetour == SQLITE_OK)
 	{
-		wxLogDebug(_T("Query passed OK"));
+		//wxLogDebug(_T("Query passed OK"));
 		m_resultNumber = 0;
 		return TRUE;
 	}

@@ -90,7 +90,6 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
 	// Creating the gridoperation object
 	pGridOp = new GridOperation((wxGrid *) FindWindowById(ID_GRID,this));
-
 	
 }
 
@@ -215,6 +214,10 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	GISOgrProvider myOgrData;
 	GISDBProvider myDBData;
 	wxString myWkbString;
+	wxArrayString myReadData;
+	int i=0;
+	unsigned long ltime = 0;
+	long lFeatureCount = 0;
 	
 	if (myDatabase.DataBaseIsOpen()) 
 	{
@@ -224,19 +227,41 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 		{
 			// try to open spatial data
 			myOgrData.GISOpen(myDlg->m_VectorFileName);
-			wxLogDebug(_T("Number of feature read : %d"), myOgrData.GISGetFeatureCount());
+			lFeatureCount = myOgrData.GISGetFeatureCount();
+			wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
 			
 			// try to open database data
 			myDBData.GISOpen(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING);
 			myDBData.GISSetLayer(myDlg->m_DBTableName);
+			myDBData.GISSetActiveDatabase(&myDatabase);
 			wxLogDebug(_T("Number of layer into DB : %d"), myDBData.GISGetLayerCount());
 			
+			// count elapsed time
+			wxStopWatch sw;
+			
+			// iterate all objects
+			//for (i=0; i<lFeatureCount;i++)
+			//{
+			while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 9000))
+			{
+				myDBData.GISSetFeatureAsWkTBuffer(myReadData, FALSE);
+				// clear the buffer
+				myReadData.Clear();
+				//wxLogDebug(_T("round..."));
+			}
 			
 			
-			myOgrData.GISGetNextFeatureAsWkT(myWkbString);
-			myDBData.GISSetFeatureAsWkT(myWkbString);
+				//myDBData.GISSetFeatureAsWkT(myWkbString, FALSE);
+			//}
 			
+			// stop timmer
+			ltime = sw.Time();
+			sw.Pause();
 			
+			wxLogDebug(_T("Size of array is : %d item for %d size"), myReadData.GetCount(), sizeof(myReadData));
+			
+			wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
+						 lFeatureCount, ltime);
 			
 			// don't forget to close the spatial data
 			myOgrData.GISClose();

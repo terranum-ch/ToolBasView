@@ -33,7 +33,7 @@
 
 #include <ogrsf_frmts.h>	// compile GDAL with GEOS support !
 #include "geos_c.h"			// for geos (Geographic data processing)
-
+#include "database.h"		// for GISDBProvider to support direct com with DB
 
 enum GISPROVIDER_SUPPORTED_TYPE
 {
@@ -84,6 +84,7 @@ class GISOgrProvider : public GISDataProvider
 		virtual wxRect GISGetExtend ();
 		virtual long GISGetFeatureCount ();
 		virtual bool GISGetNextFeatureAsWkT (wxString & wkbstring);
+		virtual bool GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, int iBufferSize);
 		virtual bool GISClose ();
 
 	};
@@ -97,6 +98,7 @@ class GISDBProvider : public GISDataProvider
 		OGRDataSource       *m_pDatasource;
 		//long				m_NumOfVector;
 		unsigned int		m_iFeatureLoop;
+		DataBase		*	m_pActiveDB;
 		
 	public:
 		GISDBProvider();
@@ -106,9 +108,12 @@ class GISDBProvider : public GISDataProvider
 		virtual wxRect GISGetExtend ();
 		virtual long GISGetFeatureCount ();
 		virtual bool GISGetNextFeatureAsWkT (wxString & wkbstring);
-		virtual bool GISSetFeatureAsWkT (const wxString & wkbstring);
+		virtual bool GISSetFeatureAsWkT (const wxString & wkbstring, bool bComputeExtend = TRUE);
+		virtual bool GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist, bool bComputeExtend = TRUE);
 		virtual int  GISGetLayerCount ();
 		virtual bool GISSetLayer (const wxString & layername);
+		virtual void GISSetActiveDatabase(DataBase * pDB) {m_pActiveDB = pDB;}
+		virtual bool GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe);
 		virtual bool GISClose ();
 		
 		
