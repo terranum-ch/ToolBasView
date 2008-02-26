@@ -20,6 +20,7 @@ const int ID_STATUS = 10003;
 #include "../include/gisdataprovider.h"	// for dealing with spatial data
 
 #include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
+#include <wx/progdlg.h>				// progress dialog.
 
 
 // ART FILES

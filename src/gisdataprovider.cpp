@@ -308,12 +308,12 @@ bool GISDBProvider::GISComputeBoundingBox (wxString  wktstring, OGREnvelope * en
 		bReturnValue = TRUE;
 		
 		// delete the geometry
-		
+		delete myGeom;
 	}
 	else
 		wxLogDebug(_T("Unable to create geometry, error is %d"), myErr);
 	
-	delete mypChar;
+	//delete mypChar;
 	return bReturnValue;
 }
 
@@ -359,27 +359,40 @@ bool GISDBProvider::GISSetFeatureAsWkT (const wxString & wkbstring,  bool bCompu
 bool GISDBProvider::GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist, bool bComputeExtend)
 {
 	OGREnvelope myEnveloppe;
+	unsigned int i;
 	wxString sSentence = _T("BEGIN TRANSACTION test; ");
 	
 	// if we must compute the bounding box for new added line
+	// this will allow creation of false spatial index
+	// for faster retriving of data
 	if(bComputeExtend)
 	{
 		
 		// check if we can compute the enveloppe (a.k.a bounding box)
-		//if(GISComputeBoundingBox(wkbstring, &myEnveloppe))
-//		{
-//			sSentence = wxString::Format(_T("INSERT INTO GENERIC_LINES ")
-//										 _T("(WKT_GEOMETRY, MINX, MINY, MAXX, MAXY)")
-//										 _T("VALUES (\"%s\", %f, %f, %f, %f)"),
-//										 wkbstring.c_str(), myEnveloppe.MinX, myEnveloppe.MinY,
-//										 myEnveloppe.MaxX, myEnveloppe.MaxY);
-//		}
+		for (i=0; i<featurelist.GetCount();i++)
+		{
+			if(GISComputeBoundingBox(featurelist.Item(i), &myEnveloppe))
+			{
+				sSentence.Append(wxString::Format(_T("INSERT INTO GENERIC_LINES ")
+											 _T("(WKT_GEOMETRY, MINX, MINY, MAXX, MAXY)")
+											 _T("VALUES (\"%s\", %f, %f, %f, %f); "),
+											 (featurelist.Item(i)).c_str(), myEnveloppe.MinX, myEnveloppe.MinY,
+											 myEnveloppe.MaxX, myEnveloppe.MaxY));
+			}
+			else 
+			{
+				wxLogDebug(_T("Error computing bounding box"));
+			}
+		}
+
 		
 	}
+	
+	// no bounding box needed for new added line
 	else
 	{
 		
-		for (unsigned int i=0; i<featurelist.GetCount();i++)
+		for (i=0; i<featurelist.GetCount();i++)
 		{
 			sSentence.Append(wxString::Format(_T("INSERT INTO GENERIC_LINES (WKT_GEOMETRY) VALUES (\"%s\"); "),
 							 (featurelist.Item(i)).c_str()));
@@ -391,7 +404,7 @@ bool GISDBProvider::GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist,
 	
 	// add WKT string to the database
 	// warning the table must have a WKT_GEOMETRY field
-	if (m_pActiveDB->DataBaseQueryMultiple(sSentence))
+	if (m_pActiveDB->DataBaseQueryMultiple(sSentence) == 0)
 	{
 		return TRUE;
 	}
