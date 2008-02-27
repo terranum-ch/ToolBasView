@@ -183,6 +183,8 @@ wxMenuBar *MENU()
     item2->Append( ID_PROCESS_MENU, _("Process SQL Request...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
     item2->Append( ID_MENU_SPATIAL_ADD, _("Add spatial data into the database...\tCtrl-S"), 
 				  _("Allow user to load spatial data into a database table (SHP)") );
+	item2->Append( ID_MENU_SPATIAL_SEARCH, _("Search spatial data...\tCtrl-F"), 
+				  _("Search spatial data used for benchmark") );
 	item2->AppendSeparator();
 	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"), 
 				  _("Dialog for deleting data from the database") );
