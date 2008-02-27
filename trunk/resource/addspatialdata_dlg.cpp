@@ -105,6 +105,7 @@ void ADDSPATIALDATA_DLG::Init()
 ////@begin ADDSPATIALDATA_DLG member initialisation
     m_DLGAS_FileSelector = NULL;
     m_DLGAS_ListTables = NULL;
+    m_DLGAS_Chk_Index = NULL;
 ////@end ADDSPATIALDATA_DLG member initialisation
 }
 
@@ -140,20 +141,24 @@ void ADDSPATIALDATA_DLG::CreateControls()
 
     itemBoxSizer2->Add(5, 5, 1, wxGROW|wxALL, 5);
 
-    wxStaticLine* itemStaticLine9 = new wxStaticLine( itemDialog1, ID_STATICLINE, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-    itemBoxSizer2->Add(itemStaticLine9, 0, wxGROW|wxALL, 5);
+    m_DLGAS_Chk_Index = new wxCheckBox( itemDialog1, ID_CHECKBOX, _("Compute spatial index"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_DLGAS_Chk_Index->SetValue(true);
+    itemBoxSizer2->Add(m_DLGAS_Chk_Index, 0, wxALIGN_LEFT|wxALL, 5);
 
-    wxStdDialogButtonSizer* itemStdDialogButtonSizer10 = new wxStdDialogButtonSizer;
+    wxStaticLine* itemStaticLine10 = new wxStaticLine( itemDialog1, ID_STATICLINE, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+    itemBoxSizer2->Add(itemStaticLine10, 0, wxGROW|wxALL, 5);
 
-    itemBoxSizer2->Add(itemStdDialogButtonSizer10, 0, wxALIGN_RIGHT|wxALL, 5);
-    wxButton* itemButton11 = new wxButton( itemDialog1, wxID_OK, _("&OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemButton11->SetDefault();
-    itemStdDialogButtonSizer10->AddButton(itemButton11);
+    wxStdDialogButtonSizer* itemStdDialogButtonSizer11 = new wxStdDialogButtonSizer;
 
-    wxButton* itemButton12 = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer10->AddButton(itemButton12);
+    itemBoxSizer2->Add(itemStdDialogButtonSizer11, 0, wxALIGN_RIGHT|wxALL, 5);
+    wxButton* itemButton12 = new wxButton( itemDialog1, wxID_OK, _("&OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemButton12->SetDefault();
+    itemStdDialogButtonSizer11->AddButton(itemButton12);
 
-    itemStdDialogButtonSizer10->Realize();
+    wxButton* itemButton13 = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStdDialogButtonSizer11->AddButton(itemButton13);
+
+    itemStdDialogButtonSizer11->Realize();
 
 ////@end ADDSPATIALDATA_DLG content construction
 }

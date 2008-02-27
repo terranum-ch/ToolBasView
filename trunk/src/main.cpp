@@ -229,7 +229,6 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	wxString myWkbString;
 	wxArrayString myReadData;
 	int i=1;
-	unsigned long ltime = 0;
 	long lFeatureCount = 0;
 	
 	if (myDatabase.DataBaseIsOpen()) 
@@ -276,13 +275,26 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 				myReadData.Clear();
 			}
 			
-			// stop timmer
-			ltime = sw.Time();
-			sw.Pause();
-			
-			
+			// show elapsed time
 			wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
-						 lFeatureCount, ltime);
+						 lFeatureCount,  sw.Time());
+			
+			
+			// creating index if asked
+			if (myDlg->m_bComputeIndex == TRUE)
+			{
+				sw.Start();
+				wxArrayString myFields;
+				myFields.Add(_T("MINX"));
+				myFields.Add(_T("MINY"));
+				myFields.Add(_T("MAXX"));
+				myFields.Add(_T("MAXY"));
+				
+				if(myDBData.GISComputeIndex(myFields, myDlg->m_DBTableName))
+				{
+					wxLogMessage(_("Creating index take %u [ms]"), sw.Time());
+				}
+			}
 			
 			// don't forget to close the spatial data
 			myOgrData.GISClose();

@@ -114,6 +114,7 @@ class GISDBProvider : public GISDataProvider
 		virtual bool GISSetLayer (const wxString & layername);
 		virtual void GISSetActiveDatabase(DataBase * pDB) {m_pActiveDB = pDB;}
 		virtual bool GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe);
+		virtual bool GISComputeIndex (const wxArrayString & fields, const wxString & table);
 		virtual bool GISClose ();
 		
 		

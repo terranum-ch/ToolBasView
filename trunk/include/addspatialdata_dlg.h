@@ -42,11 +42,12 @@
 #define ID_ADDSPATIALDATA_DLG 10000
 #define ID_FILESELECTOR 10001
 #define ID_LISTTABLES 10002
+#define ID_CHECKBOX 10009
 #define ID_STATICLINE 10003
 #define SYMBOL_ADDSPATIALDATA_DLG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
 #define SYMBOL_ADDSPATIALDATA_DLG_TITLE _("Add spatial data into database")
 #define SYMBOL_ADDSPATIALDATA_DLG_IDNAME ID_ADDSPATIALDATA_DLG
-#define SYMBOL_ADDSPATIALDATA_DLG_SIZE wxSize(500, 400)
+#define SYMBOL_ADDSPATIALDATA_DLG_SIZE wxSize(400, 300)
 #define SYMBOL_ADDSPATIALDATA_DLG_POSITION wxDefaultPosition
 ////@end control identifiers
 
@@ -67,6 +68,7 @@ class ADDSPATIALDATA_DLG: public wxDialog
 public:
 	wxString m_VectorFileName;
 	wxString m_DBTableName;
+	bool m_bComputeIndex;
 	
     /// Constructors
     ADDSPATIALDATA_DLG();
@@ -119,6 +121,7 @@ public:
 ////@begin ADDSPATIALDATA_DLG member variables
     wxFilePickerCtrl * m_DLGAS_FileSelector;
 	wxChoice* m_DLGAS_ListTables;
+	wxCheckBox* m_DLGAS_Chk_Index;
 ////@end ADDSPATIALDATA_DLG member variables
 };
 
