@@ -99,6 +99,7 @@ void ADDSPATIALDATA_DLG::Init()
     m_DLGAS_FileSelector = NULL;
     m_DLGAS_ListTables = NULL;
 	m_pDatabase = NULL;
+	m_DLGAS_Chk_Index = NULL;
 }
 
 
@@ -106,6 +107,7 @@ bool ADDSPATIALDATA_DLG::TransferDataFromWindow()
 {
 	m_VectorFileName = m_DLGAS_FileSelector->GetPath();
 	m_DBTableName = m_DLGAS_ListTables->GetStringSelection();
+	m_bComputeIndex = m_DLGAS_Chk_Index->IsChecked();
 	return TRUE;
 }
 
@@ -167,6 +169,10 @@ void ADDSPATIALDATA_DLG::CreateControls()
     itemFlexGridSizer3->Add(m_DLGAS_ListTables, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 	
     itemBoxSizer2->Add(5, 5, 1, wxGROW|wxALL, 5);
+	
+	m_DLGAS_Chk_Index = new wxCheckBox( itemDialog1, ID_CHECKBOX, _("Compute spatial index"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_DLGAS_Chk_Index->SetValue(true);
+    itemBoxSizer2->Add(m_DLGAS_Chk_Index, 0, wxALIGN_LEFT|wxALL, 5);
 	
     wxStaticLine* itemStaticLine9 = new wxStaticLine( itemDialog1, ID_STATICLINE, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
     itemBoxSizer2->Add(itemStaticLine9, 0, wxGROW|wxALL, 5);

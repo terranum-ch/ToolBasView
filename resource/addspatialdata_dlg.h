@@ -35,6 +35,7 @@
 #define ID_ADDSPATIALDATA_DLG 10000
 #define ID_FILESELECTOR 10001
 #define ID_LISTTABLES 10002
+#define ID_CHECKBOX 10009
 #define ID_STATICLINE 10003
 #define SYMBOL_ADDSPATIALDATA_DLG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
 #define SYMBOL_ADDSPATIALDATA_DLG_TITLE _("Add spatial data into database")
@@ -89,6 +90,7 @@ public:
 ////@begin ADDSPATIALDATA_DLG member variables
     wxTextCtrl* m_DLGAS_FileSelector;
     wxChoice* m_DLGAS_ListTables;
+    wxCheckBox* m_DLGAS_Chk_Index;
 ////@end ADDSPATIALDATA_DLG member variables
 };
 

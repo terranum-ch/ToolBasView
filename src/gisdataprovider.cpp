@@ -318,6 +318,32 @@ bool GISDBProvider::GISComputeBoundingBox (wxString  wktstring, OGREnvelope * en
 }
 
 
+bool GISDBProvider::GISComputeIndex (const wxArrayString & fields, const wxString & table)
+{
+	wxString sSentence = wxString::Format(_T("CREATE INDEX index_%s ON %s ("),
+										  table.c_str(), table.c_str());
+	
+	// append columns for size of string array
+	for (unsigned int i = 0; i<fields.GetCount(); i++)
+	{
+		sSentence.Append(wxString::Format(_T("%s,"),(fields.Item(i)).c_str()));
+	}
+	
+	// remove the last character (the last comma)
+	sSentence.RemoveLast();
+	sSentence.Append(_T("); "));
+	
+	// process the query and return true if ok
+	if(m_pActiveDB->DataBaseQueryMultiple(sSentence)==0)
+	{
+		return TRUE;
+	}
+	
+	wxLogDebug(_T("Not able to create index, sentence is : %s"),
+			   sSentence.c_str());
+	return FALSE;
+}
+
 
 bool GISDBProvider::GISSetFeatureAsWkT (const wxString & wkbstring,  bool bComputeExtend)
 {
