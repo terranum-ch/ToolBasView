@@ -49,6 +49,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
   EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
   EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
+  EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
 END_EVENT_TABLE()
 
 
@@ -145,6 +146,18 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 		}
 	}
 	
+}
+
+void TBVFrame::OnDeleteData (wxCommandEvent & event)
+{	
+	DELETETABLEDATA_DLG myDelDlg (this, wxID_ANY, &myDatabase);
+	// set the active possibilities for the database
+	// deleting
+	myDelDlg.SetActiveFlags(DEL_FLAGS_ALL);
+	
+	// if we choose to delete some tables
+	// processing is done into the dialog itself.
+	myDelDlg.ShowModal();
 }
 
 
