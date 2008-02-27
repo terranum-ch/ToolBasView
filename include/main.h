@@ -21,6 +21,7 @@ const int ID_STATUS = 10003;
 
 #include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 #include <wx/progdlg.h>				// progress dialog.
+#include "../include/deletetabledata_dlg.h"	// deleting data dialog
 
 
 // ART FILES
@@ -78,6 +79,7 @@ private:
 	void OnDisplayStatistics (wxCommandEvent & event);
 	void OnAboutDlg (wxCommandEvent & event);
 	void OnMenuExit (wxCommandEvent & event);
+	void OnDeleteData (wxCommandEvent & event);
 	void OnSpatialDataAdd (wxCommandEvent & event);
 	/*!
     @function 
