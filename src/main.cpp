@@ -50,6 +50,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
   EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
   EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
+  EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
 END_EVENT_TABLE()
 
 
@@ -304,6 +305,20 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 		delete myDlg;
 	}
 }
+
+
+
+void TBVFrame::OnSpatialDataSearch (wxCommandEvent & event)
+{
+	SEARCHSPATIALPOINT_DLG myDlg (this, &myDatabase);
+	if (myDlg.OpenDBGISData(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING,
+							_T("GENERIC_LINES")))
+	{
+		myDlg.ShowModal();
+	}
+	
+}
+
 
 
 void TBVFrame::TreeAddItem (wxString tname, int parent)

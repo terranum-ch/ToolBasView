@@ -22,6 +22,7 @@ const int ID_STATUS = 10003;
 #include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 #include <wx/progdlg.h>				// progress dialog.
 #include "../include/deletetabledata_dlg.h"	// deleting data dialog
+#include "searchspatialpoint_dlg.h"		// searching spatial data
 
 
 // ART FILES
@@ -81,6 +82,7 @@ private:
 	void OnMenuExit (wxCommandEvent & event);
 	void OnDeleteData (wxCommandEvent & event);
 	void OnSpatialDataAdd (wxCommandEvent & event);
+	void OnSpatialDataSearch (wxCommandEvent & event);
 	/*!
     @function 
     @brief Called when user double click on the treectrl
