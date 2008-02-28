@@ -42,8 +42,13 @@ private:
 	GISDBProvider m_GISDB;
 	
 	void OnButtonClose(wxCommandEvent & event);
+	void OnIdleActivateButton (wxIdleEvent & event);
+	void OnButtonFind (wxCommandEvent & event);
 	
+	bool IsControlFilled ();
 	
+	wxString m_xvalue;
+	wxString m_yvalue;
 	
 
 public:
@@ -84,6 +89,7 @@ public:
     wxStaticText* m_DLGSS_result_index_tm;
     wxStaticText* m_DLGSS_result_status;
     wxStaticText* m_DLGSS_result_status_tm;
+	wxButton *	  m_DLGSS_FindButton;
 };
 
 #endif
