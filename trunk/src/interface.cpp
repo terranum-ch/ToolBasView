@@ -45,7 +45,7 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSplitterWindow *item2 = new wxSplitterWindow( parent, ID_LEFT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_BORDER|wxSP_3D|wxCLIP_CHILDREN );
+    wxSplitterWindow *item2 = new wxSplitterWindow( parent, ID_LEFT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_3DBORDER|wxSP_3DSASH|wxSP_LIVE_UPDATE|wxNO_BORDER );
     item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	wxPanel * Leftwindow = new wxPanel(item2,-1);
@@ -97,7 +97,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSplitterWindow *item1 = new wxSplitterWindow( parent, ID_RIGHT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_BORDER|wxSP_3D|wxCLIP_CHILDREN );
+    wxSplitterWindow *item1 = new wxSplitterWindow( parent, ID_RIGHT_SPLIT, wxDefaultPosition, wxSize(200,160),wxSP_3DBORDER|wxSP_3DSASH|wxSP_LIVE_UPDATE|wxNO_BORDER);
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxPanel * TopWindow = new wxPanel(item1,-1);

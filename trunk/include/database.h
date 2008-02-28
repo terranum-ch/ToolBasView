@@ -155,6 +155,8 @@ public:
 	
 	int DataBaseGetResultAsInt();
 	
+	double DataBaseGetResultAsDouble();
+	
 	bool DataBaseIsTableEmpty(const wxString & tableName);
 	
 	/*!

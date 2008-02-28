@@ -57,7 +57,7 @@ class GISDataProvider  : public wxObject
 		~GISDataProvider();
 		
 		virtual bool GISOpen (const wxString & filename);
-		virtual wxRect GISGetExtend ();
+		virtual OGREnvelope * GISGetExtend ();
 		virtual bool GISClose ();
 		bool GISIsOpened ();
 		
@@ -81,7 +81,7 @@ class GISOgrProvider : public GISDataProvider
 		~GISOgrProvider();
 		
 		virtual bool GISOpen (const wxString & filename);
-		virtual wxRect GISGetExtend ();
+		virtual OGREnvelope * GISGetExtend ();
 		virtual long GISGetFeatureCount ();
 		virtual bool GISGetNextFeatureAsWkT (wxString & wkbstring);
 		virtual bool GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, int iBufferSize);
@@ -95,17 +95,19 @@ class GISDBProvider : public GISDataProvider
 	{
 	private:
 		OGRLayer			* m_pLayer;
+		wxString			m_LayerName;
 		OGRDataSource       *m_pDatasource;
 		//long				m_NumOfVector;
 		unsigned int		m_iFeatureLoop;
 		DataBase		*	m_pActiveDB;
+		
 		
 	public:
 		GISDBProvider();
 		~GISDBProvider();
 		
 		virtual bool GISOpen (const wxString & filename);
-		virtual wxRect GISGetExtend ();
+		virtual OGREnvelope * GISGetExtend ();
 		virtual long GISGetFeatureCount ();
 		virtual bool GISGetNextFeatureAsWkT (wxString & wkbstring);
 		virtual bool GISSetFeatureAsWkT (const wxString & wkbstring, bool bComputeExtend = TRUE);
