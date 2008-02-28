@@ -238,6 +238,11 @@ int DataBase::DataBaseGetResultAsInt()
 //	MYSQL_ROW record;
 	int iReturnedValue = -1;
 	
+	if (DataBaseHasResult())
+	{
+		iReturnedValue = atoi(m_Result[1]);
+		sqlite3_free_table(m_Result);
+	}
 //	if (m_resultNumber > 0 && pResults != NULL)
 //	{
 //		record = mysql_fetch_row(pResults);
@@ -256,6 +261,20 @@ int DataBase::DataBaseGetResultAsInt()
 	return iReturnedValue;
 
 }
+
+
+double DataBase::DataBaseGetResultAsDouble()
+{
+	double dReturnedValue = -1.0;
+	
+	if (DataBaseHasResult())
+	{
+		dReturnedValue = atof(m_Result[1]);
+		sqlite3_free_table(m_Result);
+	}
+	return dReturnedValue;
+}
+
 
 
 bool DataBase::DataBaseIsTableEmpty(const wxString & tableName)

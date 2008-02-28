@@ -40,6 +40,11 @@ private:
 	
 	DataBase * m_pDatabase;
 	GISDBProvider m_GISDB;
+	
+	void OnButtonClose(wxCommandEvent & event);
+	
+	
+	
 
 public:
     SEARCHSPATIALPOINT_DLG();
@@ -60,6 +65,7 @@ public:
 				long style = SYMBOL_SEARCHSPATIALPOINT_DLG_STYLE );
 
 	bool OpenDBGISData (const wxString & dbname, const wxString & table);
+	
 	
 
     void Init();

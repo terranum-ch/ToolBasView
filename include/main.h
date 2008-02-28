@@ -83,6 +83,10 @@ private:
 	void OnDeleteData (wxCommandEvent & event);
 	void OnSpatialDataAdd (wxCommandEvent & event);
 	void OnSpatialDataSearch (wxCommandEvent & event);
+	void OnMenuIdle (wxIdleEvent & event);
+	
+	void EnableMenuItem (bool benable);
+	
 	/*!
     @function 
     @brief Called when user double click on the treectrl

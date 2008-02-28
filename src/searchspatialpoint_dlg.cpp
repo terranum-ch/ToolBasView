@@ -31,10 +31,21 @@ IMPLEMENT_DYNAMIC_CLASS( SEARCHSPATIALPOINT_DLG, wxDialog )
 
 
 BEGIN_EVENT_TABLE( SEARCHSPATIALPOINT_DLG, wxDialog )
+	EVT_BUTTON (wxID_CLOSE, SEARCHSPATIALPOINT_DLG::OnButtonClose)
 END_EVENT_TABLE()
 
 
+/***************************** EVENT FUNCTIONS ***************************/
+void SEARCHSPATIALPOINT_DLG::OnButtonClose(wxCommandEvent & event)
+{
+	// Quit the dialog...
+	Close();
+	
+}
 
+
+
+/*****************************  FUNCTIONS ***************************/
 SEARCHSPATIALPOINT_DLG::SEARCHSPATIALPOINT_DLG()
 {
     Init();
@@ -99,12 +110,42 @@ void SEARCHSPATIALPOINT_DLG::Init()
 
 bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxString & table)
 {
+	// store the OGRenveloppe, must be deleted after use
+	// but only if not null
+	OGREnvelope * myDBEnveloppe;
+	
 	// return true if opening database and setting table works
 	if (m_GISDB.GISOpen(dbname))
 	{
 			if (m_GISDB.GISSetLayer(table))
 			{
-				m_GISDB.GISSetActiveDatabase(m_pDatabase);	
+				m_GISDB.GISSetActiveDatabase(m_pDatabase);
+				
+				// get the extend
+				wxStopWatch sw;
+				myDBEnveloppe = m_GISDB.GISGetExtend();
+				
+				sw.Pause();
+				
+				
+				if (myDBEnveloppe != NULL)
+				{
+					wxLogMessage(_T("Time for computing extend is : %d [ms]"), sw.Time());
+					
+					sw.Start();
+					int iNbFeature = m_GISDB.GISGetFeatureCount();
+					wxLogMessage(_T("Time for computing nb of features : %d [ms]"), sw.Time());
+					
+					// put the extend in the dialog
+					m_DLGSS_Map_Xmin->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MinX));
+					m_DLGSS_Map_Xmax->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MaxX));
+					m_DLGSS_Map_Ymin->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MinY));
+					m_DLGSS_Map_Ymax->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MaxY));
+					
+					
+					
+					delete myDBEnveloppe;
+				}
 				return TRUE;
 			}
 		

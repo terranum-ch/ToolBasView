@@ -44,10 +44,10 @@ bool GISDataProvider::GISOpen (const wxString & filename)
 }
 
 
-wxRect GISDataProvider::GISGetExtend ()
+OGREnvelope * GISDataProvider::GISGetExtend ()
 {
 
-	return wxRect(0,0,0,0);
+	return NULL;
 }
 
 
@@ -108,10 +108,23 @@ bool GISOgrProvider::GISOpen (const wxString & filename)
 }
 
 
-wxRect GISOgrProvider::GISGetExtend ()
+OGREnvelope * GISOgrProvider::GISGetExtend ()
 {
-	
-	return wxRect(0,0,0,0);
+	// if returned value is not NULL then 
+	// caller must delete OGREnveloppe *
+	// otherwise OGREnveloppe is deleted
+	// here...
+	OGREnvelope * myEnveloppe = new OGREnvelope();
+	// compute the extend
+	if (m_pLayer->GetExtent(myEnveloppe, TRUE) == OGRERR_NONE)
+	{
+		return myEnveloppe;
+	}
+	else 
+	{
+		delete myEnveloppe;
+	}
+	return NULL;
 }
 
 
@@ -221,6 +234,7 @@ GISDBProvider::GISDBProvider()
 	m_pLayer			= NULL;
 	m_pDatasource		= NULL;
 	m_iFeatureLoop		= 0;
+	m_LayerName			= _T("");
 	
 }
 
@@ -255,15 +269,35 @@ bool GISDBProvider::GISOpen (const wxString & filename)
 }
 
 
-wxRect GISDBProvider::GISGetExtend ()
+OGREnvelope * GISDBProvider::GISGetExtend ()
 {
+	OGREnvelope * myEnveloppe = new OGREnvelope();
 	
-	return wxRect(0,0,0,0);
+	// compute the extend using query on spatial index
+	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINX) FROM ") + m_LayerName))
+		myEnveloppe->MinX = m_pActiveDB->DataBaseGetResultAsDouble();
+	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINY) FROM ") + m_LayerName))
+		myEnveloppe->MinY = m_pActiveDB->DataBaseGetResultAsDouble();
+	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXX) FROM ") + m_LayerName))
+		myEnveloppe->MaxX = m_pActiveDB->DataBaseGetResultAsDouble();
+	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXY) FROM ") + m_LayerName))
+		myEnveloppe->MaxY = m_pActiveDB->DataBaseGetResultAsDouble();
+		
+	
+	return myEnveloppe;
 }
 
 
 long GISDBProvider::GISGetFeatureCount ()
 {
+	wxString sSentence = wxString::Format(_T("SELECT  COUNT(*) FROM %s"),
+										  m_LayerName.c_str());
+	
+	if (m_pActiveDB->DataBaseQuery(sSentence))
+	{
+	  return m_pActiveDB->DataBaseGetResultAsInt();
+	}
+	// bellow function is slower as the one used
 	//return m_pLayer->GetFeatureCount();
 	return -1;
 }
@@ -278,8 +312,12 @@ bool GISDBProvider::GISSetLayer (const wxString & layername)
 {
 	m_pLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
 	if (m_pLayer != NULL)
+	{
+		m_LayerName = layername;
 		return TRUE;
+	}
 	
+	m_LayerName = _T("");
 	wxLogDebug(_T("No layer with name : %s"), layername.c_str());
 	return FALSE;
 }

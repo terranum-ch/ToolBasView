@@ -51,6 +51,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
   EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
   EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
   EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
+EVT_IDLE (TBVFrame::OnMenuIdle)
 END_EVENT_TABLE()
 
 
@@ -317,6 +318,26 @@ void TBVFrame::OnSpatialDataSearch (wxCommandEvent & event)
 		myDlg.ShowModal();
 	}
 	
+}
+
+
+void TBVFrame::OnMenuIdle (wxIdleEvent & event)
+{
+	// function called during idle event for 
+	// hiding menu
+	EnableMenuItem(myDatabase.DataBaseIsOpen());
+
+}
+
+
+void TBVFrame::EnableMenuItem (bool benable)
+{
+	wxMenuBar * mypMenu = GetMenuBar();
+	mypMenu->Enable(ID_MENU_STATISTICS, benable);
+	mypMenu->Enable(ID_PROCESS_MENU, benable);
+	mypMenu->Enable(ID_MENU_SPATIAL_ADD, benable);
+	mypMenu->Enable(ID_MENU_SPATIAL_SEARCH, benable);
+	mypMenu->Enable(ID_MENU_DELETE, benable);
 }
 
 
