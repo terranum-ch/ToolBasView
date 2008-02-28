@@ -32,6 +32,8 @@ IMPLEMENT_DYNAMIC_CLASS( SEARCHSPATIALPOINT_DLG, wxDialog )
 
 BEGIN_EVENT_TABLE( SEARCHSPATIALPOINT_DLG, wxDialog )
 	EVT_BUTTON (wxID_CLOSE, SEARCHSPATIALPOINT_DLG::OnButtonClose)
+	EVT_IDLE (SEARCHSPATIALPOINT_DLG::OnIdleActivateButton)
+	EVT_BUTTON (wxID_FIND, SEARCHSPATIALPOINT_DLG::OnButtonFind) 
 END_EVENT_TABLE()
 
 
@@ -42,6 +44,36 @@ void SEARCHSPATIALPOINT_DLG::OnButtonClose(wxCommandEvent & event)
 	Close();
 	
 }
+
+
+void SEARCHSPATIALPOINT_DLG::OnIdleActivateButton (wxIdleEvent & event)
+{
+	// enable button if controls are filled
+	m_DLGSS_FindButton->Enable(IsControlFilled());
+}
+
+
+void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
+{
+	// get value from control
+	m_xvalue = m_DLGSS_coord_x->GetValue();
+	m_yvalue = m_DLGSS_coord_y->GetValue();
+	
+}
+
+
+
+
+/***************************** PRIVATE FUNCTIONS ***************************/
+bool SEARCHSPATIALPOINT_DLG::IsControlFilled ()
+{
+	if (!m_DLGSS_coord_x->IsEmpty() && !m_DLGSS_coord_y->IsEmpty())
+		return TRUE;
+	
+	return FALSE;
+}
+
+
 
 
 
@@ -105,6 +137,10 @@ void SEARCHSPATIALPOINT_DLG::Init()
     m_DLGSS_result_status_tm = NULL;
 	
 	m_pDatabase = NULL;
+		m_DLGSS_FindButton = NULL;
+	
+	m_xvalue = _T("");
+	m_yvalue = _T("");
 }
 
 
@@ -218,13 +254,15 @@ void SEARCHSPATIALPOINT_DLG::CreateControls()
     wxStaticText* itemStaticText18 = new wxStaticText( itemDialog1, wxID_STATIC, _("x :"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer17->Add(itemStaticText18, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_DLGSS_coord_x = new wxTextCtrl( itemDialog1, ID_TEXTCTRL1, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    m_DLGSS_coord_x = new wxTextCtrl( itemDialog1, ID_TEXTCTRL1, _T(""), wxDefaultPosition, wxDefaultSize, 0,
+									  wxTextValidator(wxFILTER_NUMERIC, &m_xvalue));
     itemFlexGridSizer17->Add(m_DLGSS_coord_x, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxStaticText* itemStaticText20 = new wxStaticText( itemDialog1, wxID_STATIC, _("y :"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer17->Add(itemStaticText20, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_DLGSS_coord_y = new wxTextCtrl( itemDialog1, ID_TEXTCTRL2, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    m_DLGSS_coord_y = new wxTextCtrl( itemDialog1, ID_TEXTCTRL2, _T(""), wxDefaultPosition, wxDefaultSize, 0,
+									 wxTextValidator(wxFILTER_NUMERIC, &m_yvalue));
     itemFlexGridSizer17->Add(m_DLGSS_coord_y, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxBoxSizer* itemBoxSizer22 = new wxBoxSizer(wxHORIZONTAL);
@@ -270,8 +308,8 @@ void SEARCHSPATIALPOINT_DLG::CreateControls()
     wxBoxSizer* itemBoxSizer35 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer2->Add(itemBoxSizer35, 0, wxALIGN_RIGHT|wxALL, 5);
 
-    wxButton* itemButton36 = new wxButton( itemDialog1, wxID_FIND, _("&Find"), wxDefaultPosition, wxSize(150, -1), 0 );
-    itemBoxSizer35->Add(itemButton36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    m_DLGSS_FindButton = new wxButton( itemDialog1, wxID_FIND, _("&Find"), wxDefaultPosition, wxSize(150, -1), 0 );
+    itemBoxSizer35->Add(m_DLGSS_FindButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxButton* itemButton37 = new wxButton( itemDialog1, wxID_CLOSE, _("&Close"), wxDefaultPosition, wxDefaultSize, 0 );
     itemButton37->SetDefault();
