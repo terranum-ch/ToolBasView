@@ -58,6 +58,26 @@ void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
 	// get value from control
 	m_xvalue = m_DLGSS_coord_x->GetValue();
 	m_yvalue = m_DLGSS_coord_y->GetValue();
+	double dx = 0, dy = 0;
+	m_xvalue.ToDouble(&dx);
+	m_yvalue.ToDouble(&dy);
+	
+	// get buffer value
+	int iBuffer = m_DLGSS_buffer->GetValue();
+	
+	// extract lines
+	int iFidFoundLine = 0;
+	wxString sStatusString = _("NOT FOUND");
+	
+	wxStopWatch sw;
+	
+	if(m_GISDB.GISGetFeatureByBuffer(dx, dy, iBuffer, iFidFoundLine) != NULL)
+		sStatusString = wxString::Format(_("FOUND, Line ID is %d"), iFidFoundLine);
+	
+	sw.Pause();
+	
+	m_DLGSS_result_status->SetLabel(_("Line is : ") + sStatusString);
+	m_DLGSS_result_status_tm->SetLabel(wxString::Format(_T("%d [ms]"), sw.Time()));
 	
 }
 
@@ -189,6 +209,8 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 	wxLogDebug(_T("Error opening the Database"));
 	return FALSE;
 }
+
+
 
 
 
