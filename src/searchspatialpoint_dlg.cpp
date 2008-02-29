@@ -61,6 +61,7 @@ void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
 	double dx = 0, dy = 0;
 	m_xvalue.ToDouble(&dx);
 	m_yvalue.ToDouble(&dy);
+	OGRGeometry * myFoundLine;
 	
 	// get buffer value
 	int iBuffer = m_DLGSS_buffer->GetValue();
@@ -71,9 +72,11 @@ void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
 	
 	wxStopWatch sw;
 	
-	if(m_GISDB.GISGetFeatureByBuffer(dx, dy, iBuffer, iFidFoundLine) != NULL)
+	myFoundLine = m_GISDB.GISGetFeatureByBuffer(dx, dy, iBuffer, iFidFoundLine);
+	if(myFoundLine != NULL)
+	{
 		sStatusString = wxString::Format(_("FOUND, Line ID is %d"), iFidFoundLine);
-	
+	}
 	sw.Pause();
 	
 	m_DLGSS_result_status->SetLabel(_("Line is : ") + sStatusString);
