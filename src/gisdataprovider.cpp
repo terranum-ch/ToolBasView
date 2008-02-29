@@ -527,5 +527,107 @@ bool GISDBProvider::GISClose ()
 }
 
 
+OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
+													 const double & y, const int & ibuffer,
+													 int & iFidFound)
+{
+	char * myBuffer = NULL;
+	int iFidLineFound = 0;
+	OGRGeometry * myFoundLine = NULL;
+	
+	// step one, create the buffer for point
+	myBuffer = GISCreateBufferPoint(x, y, ibuffer);
+	if (myBuffer != NULL)
+	{	
+		// create the point->polygon geometry
+		OGRPolygon * myBuffPoint = new OGRPolygon();
+		myBuffPoint->importFromWkt(&myBuffer); // mybuffer not more needed...
+		
+	
+		// step two, find the line
+		myFoundLine = GISSearchLines(m_pLayer, myBuffPoint, iFidFound);
+			
+		delete myBuffer;
+	}
+	
+	
+	return myFoundLine;
+}
+
+
+/********************************* PRIVATE GIS DB FUNCTION *************************/
+
+// delete the retruned char when not more needed
+char * GISDBProvider::GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer)
+{
+	OGRPoint myPoint;
+	myPoint.setX (x);
+	myPoint.setY (y);
+	char * myChar = NULL; 
+	
+	// export to GEOS and compute the buffer
+	GEOSGeom g1 = myPoint.exportToGEOS();
+	GEOSGeom g2 = GEOSBuffer(g1,ibuffer,20);
+	myChar = GEOSGeomToWKT(g2);
+	
+	// show in the log
+	wxLogMessage (_("Selected point : %.*f, %.*f, buffer = %d"),2,x,2,y,ibuffer);
+	
+	return myChar;
+}
+
+
+OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * pointbuffer, int & iFID)
+{
+	iFID = -1;
+	int i=0;
+	bool bStatus = FALSE;
+	//		
+	OGRFeature *poFeature;
+	OGRGeometry *poGeometry;
+
+	
+	// get first layer
+	layer->ResetReading();
+	
+	// show an busy cursor, will automaticaly be destroyed after
+	// this function.
+	wxBusyCursor wait;
+	
+	// itterate all the lines
+	while( (poFeature = layer->GetNextFeature()) != NULL )
+	{
+		
+		poGeometry = poFeature->GetGeometryRef();
+		
+		if( poGeometry != NULL)
+		{
+			if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+			{
+				OGRLineString * poLine = (OGRLineString *) poGeometry;
+				
+				// if we found the selected line
+				if(pointbuffer->Intersects(poLine))
+				{
+					// get the selected line FID
+					iFID = i;
+					bStatus = TRUE;
+					// get the geometry
+					break;
+				}
+			}
+			i++;
+		}
+	}
+	// delete the feature ??
+	OGRFeature::DestroyFeature(poFeature);
+
+	// return the Geometry
+	if (bStatus == TRUE)
+		return poGeometry;
+	
+	return NULL;	
+}
+
 
 

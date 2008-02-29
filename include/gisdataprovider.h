@@ -101,6 +101,8 @@ class GISDBProvider : public GISDataProvider
 		unsigned int		m_iFeatureLoop;
 		DataBase		*	m_pActiveDB;
 		
+		char * GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer);
+		OGRGeometry * GISSearchLines (OGRLayer * layer, OGRGeometry * pointbuffer, int & iFID);
 		
 	public:
 		GISDBProvider();
@@ -118,6 +120,11 @@ class GISDBProvider : public GISDataProvider
 		virtual bool GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe);
 		virtual bool GISComputeIndex (const wxArrayString & fields, const wxString & table);
 		virtual bool GISClose ();
+		
+		// Search functions //
+		virtual OGRGeometry * GISGetFeatureByBuffer (const double & x,
+													 const double & y, const int & ibuffer,
+													 int & iFidFound);
 		
 		
 	};
