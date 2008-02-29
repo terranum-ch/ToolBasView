@@ -659,7 +659,7 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 				if(pointbuffer->Intersects(poLine))
 				{
 					// get the selected line FID
-					iFID = poFeature->GetFID();
+					iFID = poFeature->GetFieldAsInteger(0);
 					bStatus = TRUE;
 					// get the geometry
 					break;
