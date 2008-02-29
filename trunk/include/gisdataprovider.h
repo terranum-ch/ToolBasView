@@ -101,8 +101,9 @@ class GISDBProvider : public GISDataProvider
 		unsigned int		m_iFeatureLoop;
 		DataBase		*	m_pActiveDB;
 		
-		char * GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer);
+		OGRGeometry * GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer);
 		OGRGeometry * GISSearchLines (OGRLayer * layer, OGRGeometry * pointbuffer, int & iFID);
+	 
 		
 	public:
 		GISDBProvider();
@@ -115,7 +116,8 @@ class GISDBProvider : public GISDataProvider
 		virtual bool GISSetFeatureAsWkT (const wxString & wkbstring, bool bComputeExtend = TRUE);
 		virtual bool GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist, bool bComputeExtend = TRUE);
 		virtual int  GISGetLayerCount ();
-		virtual bool GISSetLayer (const wxString & layername);
+		virtual OGRLayer * GISGetLayer (const wxString & layername);
+		virtual bool GISSetActiveLayer (const wxString & layername);
 		virtual void GISSetActiveDatabase(DataBase * pDB) {m_pActiveDB = pDB;}
 		virtual bool GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe);
 		virtual bool GISComputeIndex (const wxArrayString & fields, const wxString & table);
@@ -125,7 +127,8 @@ class GISDBProvider : public GISDataProvider
 		virtual OGRGeometry * GISGetFeatureByBuffer (const double & x,
 													 const double & y, const int & ibuffer,
 													 int & iFidFound);
-		
+		OGRLayer *	GISSetSpatialFilter (OGRGeometry * enveloppe);
+		bool		GISDeleteSpatialFilter (OGRLayer * templayer);
 		
 	};
 

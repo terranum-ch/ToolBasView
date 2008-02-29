@@ -173,7 +173,7 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 	// return true if opening database and setting table works
 	if (m_GISDB.GISOpen(dbname))
 	{
-			if (m_GISDB.GISSetLayer(table))
+			if (m_GISDB.GISSetActiveLayer(table))
 			{
 				m_GISDB.GISSetActiveDatabase(m_pDatabase);
 				
