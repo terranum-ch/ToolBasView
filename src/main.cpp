@@ -246,7 +246,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 			
 			// try to open database data
 			myDBData.GISOpen(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING);
-			myDBData.GISSetLayer(myDlg->m_DBTableName);
+			myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
 			myDBData.GISSetActiveDatabase(&myDatabase);
 			wxLogDebug(_T("Number of layer into DB : %d"), myDBData.GISGetLayerCount());
 			

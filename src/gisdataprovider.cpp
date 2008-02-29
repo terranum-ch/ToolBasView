@@ -308,7 +308,7 @@ int GISDBProvider::GISGetLayerCount ()
 }
 
 
-bool GISDBProvider::GISSetLayer (const wxString & layername)
+bool GISDBProvider::GISSetActiveLayer (const wxString & layername)
 {
 	m_pLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
 	if (m_pLayer != NULL)
@@ -322,6 +322,17 @@ bool GISDBProvider::GISSetLayer (const wxString & layername)
 	return FALSE;
 }
 
+
+OGRLayer * GISDBProvider::GISGetLayer (const wxString & layername)
+{
+	// do not delete the returned layer... properties of datasource
+	OGRLayer * myLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
+	if (myLayer == NULL)
+	{
+		wxLogDebug(_T("No layer with name : %s"), layername.c_str());
+	}
+	return myLayer;
+}
 
 
 bool GISDBProvider::GISComputeBoundingBox (wxString  wktstring, OGREnvelope * enveloppe)
@@ -531,23 +542,31 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 													 const double & y, const int & ibuffer,
 													 int & iFidFound)
 {
-	char * myBuffer = NULL;
-	int iFidLineFound = 0;
+	//char * myBuffer = NULL;
 	OGRGeometry * myFoundLine = NULL;
+	OGRLayer * myTempLayer = NULL;
 	
 	// step one, create the buffer for point
-	myBuffer = GISCreateBufferPoint(x, y, ibuffer);
-	if (myBuffer != NULL)
+	OGRPolygon * myBuffPoint = (OGRPolygon *) GISCreateBufferPoint(x, y, ibuffer);
+	if (myBuffPoint != NULL)
 	{	
-		// create the point->polygon geometry
-		OGRPolygon * myBuffPoint = new OGRPolygon();
-		myBuffPoint->importFromWkt(&myBuffer); // mybuffer not more needed...
-		
-	
-		// step two, find the line
-		myFoundLine = GISSearchLines(m_pLayer, myBuffPoint, iFidFound);
+		// step two, calculate  use the spatial index
+		//myTempLayer = GISSetSpatialFilter(m_pLayer, myBuffPoint);
+		myTempLayer = GISSetSpatialFilter(myBuffPoint);
+		if (myTempLayer != NULL)
+		{
+			// step three, find the line
+			myFoundLine = GISSearchLines(myTempLayer, myBuffPoint, iFidFound);
 			
-		delete myBuffer;
+			wxLogDebug(_T("Number of feature parsed in spatial index is %d"), myTempLayer->GetFeatureCount());
+			
+		}
+		
+		
+		// delete the temporary layer
+		GISDeleteSpatialFilter(myTempLayer);
+			
+		//delete myBuffer;
 	}
 	
 	
@@ -555,25 +574,55 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 }
 
 
+
+OGRLayer * GISDBProvider::GISSetSpatialFilter (OGRGeometry * enveloppe)
+{
+	// create an enveloppe
+	OGREnvelope myEnveloppe;
+	enveloppe->getEnvelope(&myEnveloppe);
+	OGRLayer * myLayer;
+	
+	// filter the database and extract in a view all
+	// line contained in the bb.
+	wxString sSentence = wxString::Format(_T("SELECT * FROM %s WHERE MINX <= %f ")
+										  _T("AND MAXX >= %f AND MINY <= %f AND MAXY >= %f"),
+										  m_LayerName.c_str(),
+										  myEnveloppe.MaxX,
+										  myEnveloppe.MinX,
+										  myEnveloppe.MaxY,
+										  myEnveloppe.MinY);
+	 myLayer = m_pDatasource->ExecuteSQL(sSentence.ToAscii(), enveloppe, NULL);
+	
+	
+	if (myLayer == NULL)
+		wxLogDebug(_T("Not able to create spatial filter"));
+	//layer->SetSpatialFilter(enveloppe);
+	return myLayer;
+	
+}
+
+
+bool	GISDBProvider::GISDeleteSpatialFilter (OGRLayer * templayer)
+{
+	m_pDatasource->ReleaseResultSet(templayer);
+	return TRUE;
+	
+}
+
+
 /********************************* PRIVATE GIS DB FUNCTION *************************/
 
 // delete the retruned char when not more needed
-char * GISDBProvider::GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer)
+OGRGeometry * GISDBProvider::GISCreateBufferPoint (const double & x, const double &y, const int & ibuffer)
 {
 	OGRPoint myPoint;
 	myPoint.setX (x);
 	myPoint.setY (y);
-	char * myChar = NULL; 
-	
-	// export to GEOS and compute the buffer
-	GEOSGeom g1 = myPoint.exportToGEOS();
-	GEOSGeom g2 = GEOSBuffer(g1,ibuffer,20);
-	myChar = GEOSGeomToWKT(g2);
 	
 	// show in the log
-	wxLogMessage (_("Selected point : %.*f, %.*f, buffer = %d"),2,x,2,y,ibuffer);
+	//wxLogMessage (_("Selected point : %.*f, %.*f, buffer = %d"),2,x,2,y,ibuffer);
 	
-	return myChar;
+	return myPoint.Buffer(ibuffer, 20);
 }
 
 
@@ -610,7 +659,7 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 				if(pointbuffer->Intersects(poLine))
 				{
 					// get the selected line FID
-					iFID = i;
+					iFID = poFeature->GetFID();
 					bStatus = TRUE;
 					// get the geometry
 					break;
@@ -628,6 +677,8 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 	
 	return NULL;	
 }
+
+
 
 
 
