@@ -303,18 +303,9 @@ void SEARCHSPATIALPOINT_DLG::CreateControls()
     wxStaticBoxSizer* itemStaticBoxSizer25 = new wxStaticBoxSizer(itemStaticBoxSizer25Static, wxVERTICAL);
     itemBoxSizer2->Add(itemStaticBoxSizer25, 0, wxGROW|wxLEFT|wxRIGHT, 10);
 
-    wxFlexGridSizer* itemFlexGridSizer26 = new wxFlexGridSizer(2, 3, 0, 0);
+    wxFlexGridSizer* itemFlexGridSizer26 = new wxFlexGridSizer(1, 3, 0, 0);
     itemFlexGridSizer26->AddGrowableCol(1);
     itemStaticBoxSizer25->Add(itemFlexGridSizer26, 0, wxGROW|wxALL, 5);
-
-    wxStaticText* itemStaticText27 = new wxStaticText( itemDialog1, wxID_STATIC, _("Number of lines fetched from spatial index :"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer26->Add(itemStaticText27, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
-
-    m_DLGSS_result_index = new wxStaticText( itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer26->Add(m_DLGSS_result_index, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
-
-    m_DLGSS_result_index_tm = new wxStaticText( itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxSize(50, -1), 0 );
-    itemFlexGridSizer26->Add(m_DLGSS_result_index_tm, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxStaticText* itemStaticText30 = new wxStaticText( itemDialog1, wxID_STATIC, _("Status :"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer26->Add(itemStaticText30, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
