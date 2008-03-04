@@ -23,7 +23,11 @@ INCLUDE ("cmake/Use_wxWindows.cmake")
 
 
 #SQLite EMBEDDED
- INCLUDE ("cmake/findSQLite.cmake")
+# INCLUDE ("cmake/findSQLite.cmake")
+
+#MYSQL EMBEDDED
+INCLUDE ("cmake/findMySQLEmbedded.cmake")
+
 
 #GEOS - GDAL libs
  INCLUDE ("cmake/findGISLib.cmake")

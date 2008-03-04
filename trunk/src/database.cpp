@@ -46,7 +46,6 @@
 DataBase::DataBase()
 {
 	IsDatabaseOpen = FALSE;
-	m_pDB = NULL;
 }
 
 DataBase::~DataBase()
@@ -57,44 +56,88 @@ DataBase::~DataBase()
 
 bool DataBase::DataBaseOpen (wxString path, enum Lang_Flag flag)
 {
-	int iRetour = 0;
-	wxString sFullNamePath = _T("");
+	bool Bsucces = FALSE;
 	
 	// conversion from path, return values in m_DBName and m_DBPath
-	// and check that no value is empty
-	if (DataBaseConvertFullPath(path))
+	DataBaseConvertFullPath(path);
+	
+	// converting the path for being compatible with mysql
+	// converting only in windows
+	wxString myCorrectPathName = DataBaseConvertMYSQLPath (m_DBPath);
+	
+	wxString datadir = _T("--datadir=") + myCorrectPathName;
+	
+	// convertion to char *.... no other way ?
+	int iLen = datadir.Len();
+	char * stemps = new char[iLen+1];
+	for (int i =0;i<=iLen;i++)
 	{
-		// construct the full database name (path, name, . and extension)
-		sFullNamePath = m_DBPath + m_DBName + _T(".") + DATABASE_EXTENSION_STRING;
-		
-		// try opening the database
-		//sqlite3_open_v2((const char*)sFullNamePath.mb_str(wxConvUTF8), &m_pDB,  SQLITE_OPEN_READWRITE);
-		iRetour = sqlite3_open((const char*)sFullNamePath.mb_str(wxConvUTF8), &m_pDB);
-		
-		if (iRetour != 0)
-		{
-			IsDatabaseOpen = FALSE;
-			wxLogMessage(_("Error opening the database. Error code is [%d]"), iRetour);
-			return FALSE;
-		}
-		
-		IsDatabaseOpen = TRUE;
-		return TRUE;
+		stemps[i] = datadir.GetChar(i);
 	}
-	return FALSE;
+	
+#ifdef __WINDOWS__
+	static char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps,
+		"--language=./share/english",
+		//"--skip-plugin-innodb",
+		"--port=3309",
+		"--character-sets-dir=./share/charsets",
+		"--default-character-set=utf8"
+	};
+#else
+	static char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps,
+		//"--language=./share/english",
+		//"--skip-plugin-innodb",
+		"--port=3309",
+		//"--character-sets-dir=./share/charsets",
+		//"--default-character-set=cp1250"
+	};
+#endif
+	
+	static char *server_groups[] = {
+		"embedded",
+		"server",
+		"this_program_SERVER",
+		(char *)NULL
+	};
+
+	
+	int num_elements = (sizeof(server_args) / sizeof(char *));
+
+	
+	if(mysql_library_init(num_elements, server_args, server_groups)==0)
+	{
+		pMySQL = mysql_init(NULL);
+		 mysql_options(pMySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
+
+		
+		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,(const char *)m_DBName.mb_str(wxConvUTF8),3309,NULL,CLIENT_MULTI_STATEMENTS))
+		{
+			// change character set...
+					
+			IsDatabaseOpen = TRUE;
+			if(DataBaseSetCharacterSet(flag))
+				Bsucces = TRUE;
+		}	
+		
+	}
+	
+	// if something goes wrong we return FALSE
+	delete [] stemps;
+	return Bsucces;
 	
 }
 
 bool DataBase::DataBaseClose()
 {
-	int iRetour = sqlite3_close(m_pDB);
-	if (iRetour != 0)
-	{
-		wxLogMessage(_("Error closing the database return code is [%d]"), iRetour);
-		return FALSE;
-	}
-	
-	wxLogDebug(_T("Closing database OK"));
+	mysql_thread_end();	
+	mysql_library_end();
+	IsDatabaseOpen = FALSE;
 	return TRUE;
 }
 
@@ -105,26 +148,22 @@ return IsDatabaseOpen;
 
 wxArrayString DataBase::DataBaseListTables()
 {
-	// getting a list of all tables from a
-	// database is as simple as passing
-	// this sql request
-	//SELECT name FROM sqlite_master
-	//WHERE type='table'
-	//ORDER BY name;
+	MYSQL_RES *results;
+	MYSQL_ROW record;
 	wxArrayString myStingArray;
 	
-	if (DataBaseQuery(_T("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")))
+	if(mysql_query(pMySQL,"SHOW TABLES;")==0)
 	{
-		// have we got some results ?
-		if (DataBaseHasResult())
+		results = mysql_store_result(pMySQL);
+		
+		while((record = mysql_fetch_row(results)))
 		{
-			// do not take into account the first item from the array (column name)
-			for (int i = 0; i< (m_nCols * m_nRow); i++)
-			{
-				myStingArray.Add(wxString(m_Result[i+1], wxConvUTF8));
-			}
-			sqlite3_free_table(m_Result);
+			
+			myStingArray.Add(wxString(record[0],wxConvUTF8));
 		}
+		
+		// clean
+		mysql_free_result(results);
 		
 	}
 	return myStingArray;
@@ -134,95 +173,168 @@ wxArrayString DataBase::DataBaseListTables()
 wxString DataBase::DatabaseGetVersion()
 {
 	wxString myVersionString;
-	myVersionString = wxString::FromAscii(SQLITE_VERSION);
+	myVersionString = wxString(mysql_get_client_info(),wxConvUTF8);
 	return myVersionString;
 }
 
 
 
+wxString DataBase::DataBaseGetLastError()
+{
+	wxString reterr = wxString::FromAscii(mysql_error(pMySQL));
+	return reterr;
+	
+}
+
+
 wxArrayString DataBase::DatabaseListFields(wxString sTable)
 {
+	MYSQL_RES *results;
+	MYSQL_ROW record;
 	wxArrayString myStingArray;
-	wxString sSentence = wxString::Format(_T("PRAGMA table_info(%s)"), sTable.c_str());
-	int iName = 7;
+	wxString myQuery = _T("SHOW COLUMNS FROM ") + sTable;
 	
-	if (DataBaseQuery(sSentence))
+	if(mysql_query(pMySQL,(const char *)myQuery.mb_str(wxConvUTF8))==0)
 	{
-		if (DataBaseHasResult())
+		results = mysql_store_result(pMySQL);
+		while((record = mysql_fetch_row(results)))
 		{
-		// do not take into account the first item from the array (column name)
-		for (int i = 0; i< (m_nRow); i++)
-		{
-			myStingArray.Add(wxString(m_Result[iName], wxConvUTF8));
-			iName = iName + 6;
+			myStingArray.Add(wxString(record[0], wxConvUTF8));
 		}
-		sqlite3_free_table(m_Result);
-		}
+		
+		
+		
+		// clean
+		mysql_free_result(results);
+		
 	}
 	return myStingArray;
 }
 
 bool DataBase::DataBaseGetAllTableContent(wxString sTable)
 {
-	wxString sSentence = wxString::Format(_T("SELECT * FROM %s"), sTable.c_str());
-	  
-	if (DataBaseQuery(sSentence))
-	{
-		if (DataBaseHasResult())
-		{
-			m_resultNumber = 0;
-			return TRUE;
-		}
+	m_resultNumber = 0;
+	wxString myQuery = _T("SELECT * FROM ") + sTable;
 	
-	}	
+	if (mysql_query(pMySQL, (const char *)myQuery.mb_str(wxConvUTF8))==0) 
+	{
+		pResults = mysql_store_result(pMySQL);
+		m_resultNumber = mysql_field_count(pMySQL);
+		return TRUE;
+	}
 	return FALSE;
 }
 
 
 wxArrayString DataBase::DataBaseGetNextResult()
 {
-//	MYSQL_ROW record;
+	MYSQL_ROW record;
 	wxArrayString myRowResult;
 	
-	// get the rows of data one by one 
-	// and clear results when returning the last line
-	if (m_resultNumber < (m_nCols * m_nRow))
+	if (m_resultNumber > 0 && pResults != NULL)
 	{
-		// skip the first row (introduction of data)
-		m_resultNumber = m_resultNumber + m_nCols;		
-		for (int i=0; i < m_nCols; i++)
+		record = mysql_fetch_row(pResults);
+		if(record != NULL)
 		{
-			myRowResult.Add(wxString(m_Result[i+m_resultNumber], wxConvUTF8));
+			for (int i = 0; i<m_resultNumber; i++) 
+			{
+				myRowResult.Add(wxString ( record[i], wxConvUTF8));
+			}
 		}
-
-	}
-	else
-	{
-		sqlite3_free_table(m_Result);
+		else 
+		{
+			// clean
+			m_resultNumber=0;
+			mysql_free_result(pResults);
+		}		
 	}
 
 	return myRowResult;
 }
 
 
+bool DataBase::DataBaseGetNextResult(wxString & result)
+{
+	MYSQL_ROW record;
+	
+	if (m_resultNumber > 0 && pResults != NULL)
+	{
+		record = mysql_fetch_row(pResults);
+		if(record != NULL)
+		{
+			result = wxString ( record[0], wxConvUTF8);
+			return TRUE;
+		}
+		else 
+		{
+			// clean
+			m_resultNumber=0;
+			mysql_free_result(pResults);
+		}		
+	}
+	return FALSE;
+}
+
+
+bool DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row, unsigned long * length)
+{
+	unsigned long * mylength = NULL;
+	//length = NULL;
+	
+	if (m_resultNumber > 0 && pResults != NULL)
+	{
+		row = mysql_fetch_row(pResults);
+		if(row != NULL)
+		{
+			mylength = mysql_fetch_lengths( pResults );
+			if ( mylength == NULL )
+			{
+				wxLogDebug(_T("mysql_fetch_lengths() failed."));
+				return FALSE;
+			}
+			
+			length = mylength;
+			
+			
+			
+	//		// Geometry columns will have the first 4 bytes contain the SRID.
+//			OGRGeometryFactory::createFromWkb(((unsigned char *)record[0]) + 4, 
+//											  NULL,
+//											  &geometry,
+//											  panLengths[0] - 4 );
+			return TRUE;
+		}
+		else 
+		{
+			// clean
+			m_resultNumber=0;
+			mysql_free_result(pResults);
+		}
+	}
+
+	
+	return FALSE;
+}
+
+
 
 bool DataBase::DataBaseTableExist(const wxString & tableName)
 {
-//	MYSQL_ROW record;
-//	// look for an existing table
-//	wxString sSentence = wxString::Format (_T("SHOW TABLES  LIKE  '%s'"), tableName.c_str());
-//	
-//
-//	if (DataBaseQuery(sSentence))
-//	{
-//		// if the query has passed...
-//		// then we check the results
-//		record = mysql_fetch_row(pResults);
-//		if(record != NULL)
-//		{
-//			return TRUE;
-//		}
-//	}
+	MYSQL_ROW record;
+	// look for an existing table
+	wxString sSentence = wxString::Format (_T("SHOW TABLES  LIKE  '%s'"), tableName.c_str());
+	
+
+	if (DataBaseQuery(sSentence))
+	{
+		// if the query has passed...
+		// then we check the results
+		record = mysql_fetch_row(pResults);
+		if(record != NULL)
+		{
+			return TRUE;
+		}
+	}
 	return FALSE;
 	
 	
@@ -235,28 +347,23 @@ bool DataBase::DataBaseTableExist(const wxString & tableName)
 
 int DataBase::DataBaseGetResultAsInt()
 {
-//	MYSQL_ROW record;
+	MYSQL_ROW record;
 	int iReturnedValue = -1;
 	
-	if (DataBaseHasResult())
+	if (m_resultNumber > 0 && pResults != NULL)
 	{
-		iReturnedValue = atoi(m_Result[1]);
-		sqlite3_free_table(m_Result);
+		record = mysql_fetch_row(pResults);
+		if(record != NULL)
+		{
+			 iReturnedValue =  atoi(record[0]);
+		}
+		else 
+		{
+			// clean
+			m_resultNumber=0;
+			mysql_free_result(pResults);
+		}		
 	}
-//	if (m_resultNumber > 0 && pResults != NULL)
-//	{
-//		record = mysql_fetch_row(pResults);
-//		if(record != NULL)
-//		{
-//			 iReturnedValue =  atoi(record[0]);
-//		}
-//		else 
-//		{
-//			// clean
-//			m_resultNumber=0;
-//			mysql_free_result(pResults);
-//		}		
-//	}
 	
 	return iReturnedValue;
 
@@ -265,30 +372,30 @@ int DataBase::DataBaseGetResultAsInt()
 
 double DataBase::DataBaseGetResultAsDouble()
 {
-	double dReturnedValue = -1.0;
+	//double dReturnedValue = -1.0;
 	
-	if (DataBaseHasResult())
-	{
-		dReturnedValue = atof(m_Result[1]);
-		sqlite3_free_table(m_Result);
-	}
-	return dReturnedValue;
+	//if (DataBaseHasResult())
+	//{
+	//	dReturnedValue = atof(m_Result[1]);
+	//	sqlite3_free_table(m_Result);
+	//}
+	//return dReturnedValue;
 }
 
 
 
 bool DataBase::DataBaseIsTableEmpty(const wxString & tableName)
 {
-//	wxString sSentence = wxString::Format(_T("SELECT * FROM %s"), tableName.c_str());
-//	
-//	// return TRUE if the sentence was OK and
-//	// return no results (table is empty)
-//	if (DataBaseQuery(sSentence))
-//		if(DataBaseHasResult() == FALSE)
-//			return TRUE;
-//	
-//	// table is not empty
-//	wxLogDebug (_T("Table [%s] is not empty or request error"), tableName.c_str());
+	wxString sSentence = wxString::Format(_T("SELECT * FROM %s"), tableName.c_str());
+	
+	// return TRUE if the sentence was OK and
+	// return no results (table is empty)
+	if (DataBaseQuery(sSentence))
+		if(DataBaseHasResult() == FALSE)
+			return TRUE;
+	
+	// table is not empty
+	wxLogDebug (_T("Table [%s] is not empty or request error"), tableName.c_str());
 	return FALSE;
 }
 
@@ -296,53 +403,39 @@ bool DataBase::DataBaseIsTableEmpty(const wxString & tableName)
 
 bool DataBase::DataBaseQueryNoResult(wxString myQuery)
 {
-//	MYSQL_RES *results;
-//	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
-//	results = mysql_store_result(pMySQL);
-//	mysql_free_result(results);
-//	
-//	if (iRetour == 0)
-//		return TRUE;
-//	
+	MYSQL_RES *results;
+	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
+	results = mysql_store_result(pMySQL);
+	mysql_free_result(results);
+	
+	if (iRetour == 0)
+		return TRUE;
+	
 	return FALSE;
 }
 
 bool DataBase::DataBaseQuery(const wxString & myQuery)
 {
-	int iRetour = 0;
-	char * zErrMsg = 0;
-	wxString sError = _T("");
-	// m_pDB,  myQuery.mb_str(wxMBConvUTF8),NULL,NULL,&zErrMsg
-	iRetour = sqlite3_get_table(m_pDB, (const char*) myQuery.mb_str(wxConvUTF8),
-								&m_Result, &m_nRow, &m_nCols, &zErrMsg);
-	//iRetour =  sqlite3_exec(m_pDB,(const char*) myQuery.mb_str(wxConvUTF8),NULL, NULL, &zErrMsg);
-	if (iRetour == SQLITE_OK)
+	pResults = NULL;
+	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
+	if (iRetour == 0) 
 	{
-		//wxLogDebug(_T("Query passed OK"));
-		m_resultNumber = 0;
+		pResults = mysql_store_result(pMySQL);
+		m_resultNumber = mysql_field_count(pMySQL);
 		return TRUE;
 	}
-	sError = wxString::FromAscii(zErrMsg);
-	wxLogDebug(_T("Error during query. Error number is [%d], message is %s"), iRetour, sError.c_str());
-	sqlite3_free(zErrMsg);
 	return FALSE;
-//	pResults = NULL;
-//	int iRetour = mysql_query(pMySQL, (const char*)myQuery.mb_str(wxConvUTF8) );
-//	if (iRetour == 0) 
-//	{
-//		pResults = mysql_store_result(pMySQL);
-//		m_resultNumber = mysql_field_count(pMySQL);
-//		return TRUE;
-//	}
 }
 
 
 bool DataBase::DataBaseHasResult ()
 {
-
-	if (m_nCols > 0 || m_nRow > 0)
+	
+	if (pResults != NULL)
 	{
-		return TRUE;
+		// if we have some results ?
+		if( mysql_num_rows(pResults) > 0)
+			return TRUE;
 	}
 	return FALSE;
 }
@@ -350,48 +443,40 @@ bool DataBase::DataBaseHasResult ()
 
 int DataBase::DataBaseQueryMultiple (const wxString & myQuery)
 {
-	int iRetour = 0;
-	char * zErrMsg = 0;
-	wxString sError = _T("");
+	int iReturnValue = 0;
 	
-	// pass the query to the database
-	iRetour =  sqlite3_exec(m_pDB,(const char*) myQuery.mb_str(wxConvUTF8),NULL, NULL, &zErrMsg);
-	if (iRetour == SQLITE_OK)
+	if (iReturnValue == 0)
 	{
-		//wxLogDebug(_T("Query passed OK"));
-		return iRetour;
+		iReturnValue = mysql_query(pMySQL,(const char*)myQuery.mb_str(wxConvUTF8));
 	}
 	
-	wxLogDebug(_T("Error during query"));
-	sError = wxString::FromAscii(zErrMsg);
-	//wxLogDebug(_T("Error during query. Error number is [%d], message is %s"), iRetour, zErrMsg);
-	wxLogDebug(_T("Error during query. Error number is [%d], message was : %s"), iRetour, sError.c_str());
-	
-	sqlite3_free(zErrMsg);
-	return iRetour;
+	return iReturnValue;
 }
 
 
 int DataBase::DataBaseQueryReal (wxString myQuery)
 {
-//	MYSQL_RES *results;
-//	//const char * mySentence = myQuery.c_str(); //mb_str(wxConvUTF8);
-//
-//	int iRetour = mysql_query(pMySQL,(const char*)myQuery.mb_str(wxConvUTF8));
-//	results = mysql_store_result(pMySQL);
-//	mysql_free_result(results);
-//	return iRetour;
-	return 0;
+	MYSQL_RES *results;
+	//const char * mySentence = myQuery.c_str(); //mb_str(wxConvUTF8);
+
+	int iRetour = mysql_query(pMySQL,(const char*)myQuery.mb_str(wxConvUTF8));
+	results = mysql_store_result(pMySQL);
+	mysql_free_result(results);
+	return iRetour;
 
 }
 
 bool DataBase::DataBaseConvertFullPath(wxString fullpath)
 {
-	wxFileName myFileName (fullpath);
+	wxArrayString myDirArray;
 	
-	// init private variables
-	m_DBPath = myFileName.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-	m_DBName = myFileName.GetName();
+	wxFileName dirname = wxFileName(fullpath,wxEmptyString);
+	
+	//int iNumDir = dirname.GetDirCount();
+	myDirArray = dirname.GetDirs();
+	m_DBName = myDirArray.Last();
+	dirname.RemoveLastDir(); 
+	m_DBPath = dirname.GetPath();
 	
 	if (m_DBPath.IsEmpty() || m_DBName.IsEmpty())
 	{
@@ -408,10 +493,9 @@ wxString DataBase::DatabaseGetCharacterSet()
 	 
 	// wxString sCharName(cs.csname, wxConvUTF8);
 	 
-//	 // compatibility with mysql 4...
-//	 wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
-//	 return sCharName;
-	return _T("");
+	 // compatibility with mysql 4...
+	 wxString sCharName(mysql_character_set_name (pMySQL), wxConvUTF8);
+	 return sCharName;
 
 }
 
@@ -427,24 +511,99 @@ wxString DataBase::DataBaseGetPath()
 
 bool DataBase::DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag)
 {
-	wxFileName sDBPathName (DataBasePath, DataBaseName, DATABASE_EXTENSION_STRING);	
-	wxString myTempName = sDBPathName.GetFullPath();
+	bool BSucces = FALSE;
+
+	// converting the path for being compatible with mysql
+	// converting only in windows
+	wxString myCorrectPathName = DataBaseConvertMYSQLPath (DataBasePath);
 	
-	// init private variables
-	m_DBPath = sDBPathName.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
-	m_DBName = sDBPathName.GetName();
-	
-	
-	int iRetour = sqlite3_open((const char*)myTempName.mb_str(wxConvUTF8), &m_pDB);
-	// publish return code if != 0
-	if (iRetour != 0)
+	wxString datadir = _T("--datadir=") + myCorrectPathName;
+
+	// convertion to char *.... no other way ?
+	int iLen = datadir.Len();
+	char * stemps = new char[iLen+1];
+	for (int i =0;i<=iLen;i++)
 	{
-		IsDatabaseOpen = FALSE;
-		wxLogError(_T("Error creating the database. Error code is [%d]"), iRetour);
-		return FALSE;
+		stemps[i] = datadir.GetChar(i);
 	}
-	IsDatabaseOpen = TRUE;
-	return TRUE;
+
+
+/*	if we uses the pre-compiled MySQL from MySQL A.B.
+	then we need to skip the innodb engine and we
+	alsa have to specify a path for language and
+	character-sets even if we don't use it because
+	of utf. Otherwise it leads to a crash without
+	futher explanation.
+*/
+#ifdef __WINDOWS__
+	char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps,
+		"--language=./share/english",
+		//"--skip-plugin-innodb",//"--skip-innodb", // dosen't exist in 5.1 --> lead to a crash
+		"--port=3309",
+		"--character-sets-dir=./share/charsets",
+		"--character_set_server=utf8"
+		//"--default-collation=utf8"
+	};
+/*	Those server_args could be used for home-made
+	MySQL libs (unix and mac) without innodb engine
+	and with default character-set set to utf8
+*/
+#else	
+	char *server_args[] = 
+	{
+		"this_program",       /* this string is not used */
+		stemps, // "--language=./share/english", // not needed if home-made mySQL
+		"--port=3309" //,"--character-sets-dir=./share/charsets"
+	};
+#endif
+	
+	
+	char *server_groups[] = {
+		"embedded",
+		"server",
+		"this_program_SERVER",
+		(char *)NULL
+	};
+
+	
+	
+	int num_elements = (sizeof(server_args) / sizeof(char *));
+	
+	int ierror = mysql_library_init(num_elements, server_args, server_groups);
+	if(ierror==0)
+	{
+		pMySQL = mysql_init(NULL);	
+		 mysql_options(pMySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
+
+		
+		if(mysql_real_connect(pMySQL,NULL,NULL,NULL,NULL,3309,NULL,0))
+		{
+			wxString myDBName (DataBaseName);
+			myDBName.Prepend(_T("CREATE DATABASE "));
+			myDBName.Append (_T(" DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"));
+			
+			if(mysql_query(pMySQL,(const char *)myDBName.mb_str(wxConvUTF8)) ==0)
+			{
+				// connect to the database
+				if(mysql_real_connect(pMySQL,NULL,NULL,NULL,
+					(const char *)DataBaseName.mb_str(wxConvUTF8),3309,NULL,CLIENT_MULTI_STATEMENTS))
+				{		
+					m_DBPath = DataBasePath;
+					m_DBName = DataBaseName;
+					IsDatabaseOpen = TRUE;
+					if(DataBaseSetCharacterSet(Flag))
+						BSucces = TRUE;
+				}
+			}
+		}	
+		
+	}
+	// if something goes wrong
+	delete stemps;
+	return BSucces;
 }
 
 
@@ -457,28 +616,28 @@ wxArrayString DataBase::DataBaseCutRequest (wxString theRequest)
 
 wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
 {
-//	wxArrayString myNewName;
+	wxArrayString myNewName;
 	wxString myReturnPath;
-//	wxFileName myOriginalName = wxFileName(originalPath,wxEmptyString);
-//	
-//	// get the separator
-//	wxString mySeparator = myOriginalName.GetPathSeparator();
-//	
-//	// if separator != '/' we process the filename
-//	if ( mySeparator != _T("/") )
-//	{
-//		myNewName = wxStringTokenize(originalPath,_T("\\"));
-//		for (int i=0; i < (int)myNewName.Count(); i++)
-//		{
-//		myReturnPath += myNewName.Item(i);
-//		myReturnPath += _T("/");	
-//		}
-//		
-//	}
-//	else 
-//	{
-//		return originalPath;
-//	}
+	wxFileName myOriginalName = wxFileName(originalPath,wxEmptyString);
+	
+	// get the separator
+	wxString mySeparator = myOriginalName.GetPathSeparator();
+	
+	// if separator != '/' we process the filename
+	if ( mySeparator != _T("/") )
+	{
+		myNewName = wxStringTokenize(originalPath,_T("\\"));
+		for (int i=0; i < (int)myNewName.Count(); i++)
+		{
+		myReturnPath += myNewName.Item(i);
+		myReturnPath += _T("/");	
+		}
+		
+	}
+	else 
+	{
+		return originalPath;
+	}
 
 	return myReturnPath;
 }
@@ -486,36 +645,51 @@ wxString DataBase::DataBaseConvertMYSQLPath(wxString originalPath)
 
 wxString DataBase::DataBaseGetSize (int iPrecision)
 {
+	wxLongLong myBigSize;
+	double dMegaBytes = 0.0;
 	
-	wxFileName myDBPathName (m_DBPath, m_DBName, DATABASE_EXTENSION_STRING);
-	wxLogDebug(_T("database name is %s"), myDBPathName.GetFullPath().c_str());
-	wxString myDBSize = myDBPathName.GetHumanReadableSize();
-	return wxString::Format(_("Database size is : %s"), myDBSize.c_str());
+	wxFileName myDataBasePath = wxFileName(m_DBPath,wxEmptyString);
+	myDataBasePath.AppendDir(m_DBName);
+	wxString myDataBasePathName = myDataBasePath.GetPath();
+	if (wxDir::Exists(myDataBasePathName))
+	{
+		// compute the size
+		myBigSize = wxDir::GetTotalSize(myDataBasePathName);
+		// modifiy the size to be MB
+		dMegaBytes =  (myBigSize.ToDouble() / 1024) / 1024;
+		return  wxString::Format(_T("%.*f [MB]"),iPrecision,dMegaBytes);
+	}
+	
+	//return _("The Directory dosen't exist.");
+	//wxFileName myDBPathName (m_DBPath, m_DBName, DATABASE_EXTENSION_STRING);
+	//wxLogDebug(_T("database name is %s"), myDBPathName.GetFullPath().c_str());
+	//wxString myDBSize = myDBPathName.GetHumanReadableSize();
+	//return wxString::Format(_("Database size is : %s"), myDBSize.c_str());
 	
 }
 
 bool DataBase::DataBaseSetCharacterSet (enum Lang_Flag myFlag)
 {
-//	wxString myRequest;
-//
-//	switch(myFlag)
-//	{
-//
-//	case LANG_LATIN1:
-//		myRequest = _T("SET CHARACTER SET 'latin1'");
-//		break;
-//
-//	default:
-//	case LANG_UTF8:
-//		myRequest = _T("SET CHARACTER SET 'utf8'");
-//		break;
-//	};
-//
-//	if(mysql_query(pMySQL,(const char*)myRequest.mb_str(wxConvUTF8))==0)
-//	{
-//		return TRUE;
-//	}
-//
+	wxString myRequest;
+
+	switch(myFlag)
+	{
+
+	case LANG_LATIN1:
+		myRequest = _T("SET CHARACTER SET 'latin1'");
+		break;
+
+	default:
+	case LANG_UTF8:
+		myRequest = _T("SET CHARACTER SET 'utf8'");
+		break;
+	};
+
+	if(mysql_query(pMySQL,(const char*)myRequest.mb_str(wxConvUTF8))==0)
+	{
+		return TRUE;
+	}
+
 
 	return FALSE;
 }

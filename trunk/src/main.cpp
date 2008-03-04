@@ -105,21 +105,14 @@ TBVFrame::~TBVFrame()
 void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 {
 	wxArrayString myStringArray;
-	wxString myDatabaseWildcard = wxString::Format(
-												   _("ToolMap Database files (*.%s)|*.%s"), 
-												   DATABASE_EXTENSION_STRING.c_str(),
-												   DATABASE_EXTENSION_STRING.c_str());
 	
-	
-	wxFileDialog myFileDlg (this,_("Choose a database"),_T(""),
-							_T(""),	myDatabaseWildcard);
-	
-	if (myFileDlg.ShowModal() == wxID_OK)
+	const wxString & dir = wxDirSelector (_("Choose the database folder"));
+	if (!dir.empty())
 	{
 		// clear all the controls.
 		ClearCtrls();
 		
-		if(myDatabase.DataBaseOpen(myFileDlg.GetPath(),LANG_UTF8))
+		if(myDatabase.DataBaseOpen(dir,LANG_UTF8))
 		{
 			wxLogMessage(_("Database opened"));
 			
@@ -147,7 +140,6 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 			wxLogError(_("Error opening the database"));
 		}
 	}
-	
 }
 
 void TBVFrame::OnDeleteData (wxCommandEvent & event)
@@ -155,7 +147,7 @@ void TBVFrame::OnDeleteData (wxCommandEvent & event)
 	DELETETABLEDATA_DLG myDelDlg (this, wxID_ANY, &myDatabase);
 	// set the active possibilities for the database
 	// deleting
-	myDelDlg.SetActiveFlags(DEL_FLAGS_ALL);
+	myDelDlg.SetActiveFlags(DEL_FLAGS_DATA | DEL_FLAGS_TABLE);
 	
 	// if we choose to delete some tables
 	// processing is done into the dialog itself.
@@ -245,11 +237,8 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 			wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
 			
 			// try to open database data
-			myDBData.GISOpen(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING);
+			myDBData.GISOpen(&myDatabase);
 			myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
-			myDBData.GISSetActiveDatabase(&myDatabase);
-			wxLogDebug(_T("Number of layer into DB : %d"), myDBData.GISGetLayerCount());
-			
 			
 			// create a progress dialog for showing
 			// import progress
@@ -261,11 +250,10 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 			
 			// count elapsed time
 			wxStopWatch sw;
-			
-			
+		
 			while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 1000))
 			{
-				myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
+			myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
 				
 				if (i <= iMax)
 				{
@@ -287,17 +275,13 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 			{
 				sw.Start();
 				wxArrayString myFields;
-				myFields.Add(_T("MINX"));
-				myFields.Add(_T("MINY"));
-				myFields.Add(_T("MAXX"));
-				myFields.Add(_T("MAXY"));
-				
+			
 				if(myDBData.GISComputeIndex(myFields, myDlg->m_DBTableName))
 				{
 					wxLogMessage(_("Creating index take %u [ms]"), sw.Time());
 				}
 			}
-			
+
 			// don't forget to close the spatial data
 			myOgrData.GISClose();
 			myDBData.GISClose();
@@ -312,8 +296,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 void TBVFrame::OnSpatialDataSearch (wxCommandEvent & event)
 {
 	SEARCHSPATIALPOINT_DLG myDlg (this, &myDatabase);
-	if (myDlg.OpenDBGISData(myDatabase.DataBaseGetPath() + myDatabase.DataBaseGetName() + _T(".") + DATABASE_EXTENSION_STRING,
-							_T("GENERIC_LINES")))
+	if (myDlg.OpenDBGISData(_T(""),_T("GENERIC_LINES")))
 	{
 		myDlg.ShowModal();
 	}
@@ -432,17 +415,13 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 	// clean the tree ctrl
 		ClearCtrls();
 		
-		// create really the database...
-		if (myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME))
-		{
-			
-			wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
-			
-			// add database name
-			TreeAddItem((myDlg->m_DLG_DB_NAME),0);
-		}
-		else
-			wxLogMessage(_("Error creating the database"));
+		// create realy the database...
+		myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
+		
+		wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
+		
+		// add database name
+		TreeAddItem((myDlg->m_DLG_DB_NAME),0);
 	}
 	
 }

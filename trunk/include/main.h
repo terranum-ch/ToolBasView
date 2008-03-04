@@ -28,7 +28,7 @@ const int ID_STATUS = 10003;
 // ART FILES
 #include "../art/Fish_sml.xpm"
 
-const wxString sProgName = _("ToolBasView version 1.1");
+const wxString sProgName = _("ToolBasView version 1.3");
 
 /*!
 @class		TBVApp

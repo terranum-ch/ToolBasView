@@ -268,23 +268,96 @@ bool GISDBProvider::GISOpen (const wxString & filename)
 	return FALSE;
 }
 
+bool GISDBProvider::GISOpen(DataBase * handle)
+{
+	if (handle != NULL)
+	{
+		m_pActiveDB = handle;
+		GISDataProvider::GISOpen(m_pActiveDB->DataBaseGetName());
+		return TRUE;
+		
+	}
+	wxLogDebug(_T("Database handle is null..."));
+	return FALSE;
+	
+}
+
 
 OGREnvelope * GISDBProvider::GISGetExtend ()
 {
-	OGREnvelope * myEnveloppe = new OGREnvelope();
+	OGREnvelope * psExtent = new OGREnvelope();
+	OGREnvelope oEnv;
+	wxString result = _T("");
+	MYSQL_ROW row;
+	unsigned long *  row_length = NULL;
 	
-	// compute the extend using query on spatial index
-	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINX) FROM ") + m_LayerName))
-		myEnveloppe->MinX = m_pActiveDB->DataBaseGetResultAsDouble();
-	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINY) FROM ") + m_LayerName))
-		myEnveloppe->MinY = m_pActiveDB->DataBaseGetResultAsDouble();
-	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXX) FROM ") + m_LayerName))
-		myEnveloppe->MaxX = m_pActiveDB->DataBaseGetResultAsDouble();
-	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXY) FROM ") + m_LayerName))
-		myEnveloppe->MaxY = m_pActiveDB->DataBaseGetResultAsDouble();
+	// query for the geometry enveloppe for all lines
+	wxString sSentence = _T("SELECT Envelope(OBJECT_GEOMETRY) FROM ") + m_LayerName;
+	//wxLogDebug(sSentence);
+	if (m_pActiveDB->DataBaseQuery(sSentence))
+	{
+		// init extend based on the first object
+		// to avoid 0 values for Xmin.
+		//m_pActiveDB->DataBaseGetNextGeometryResult(poGeometry);
+		m_pActiveDB->DataBaseGetNextRowResult(row, row_length);
+		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
+		poGeometry->getEnvelope(&oEnv);
+		psExtent->MinX = oEnv.MinX;
+		psExtent->MinY = oEnv.MinY;
+		delete poGeometry;
 		
+//		m_pActiveDB->DataBaseGetNextResult(result);
+//		 = NULL;
+//		std::string nomtr((char const*)result.mb_str(*wxConvCurrent));
+//		char * mypChar = (char *) nomtr.c_str();
+//		OGRGeometryFactory::createFromWkt(&mypChar,NULL,&poGeometry);
+		
+		
+		
+		// loop all lines
+		while (m_pActiveDB->DataBaseGetNextResult(result))
+		{
+			OGRGeometry *poGeometry = NULL;
+			std::string nomtr((char const*)result.mb_str(*wxConvCurrent));
+			char * mypChar = (char *) nomtr.c_str();
+			
+			// Geometry columns will have the first 4 bytes contain the SRID.
+			OGRGeometryFactory::createFromWkt(&mypChar,NULL,&poGeometry);
+			
+			if ( poGeometry != NULL )
+			{
+				poGeometry->getEnvelope(&oEnv);
+				if (oEnv.MinX < psExtent->MinX) 
+					psExtent->MinX = oEnv.MinX;
+				if (oEnv.MinY < psExtent->MinY) 
+					psExtent->MinY = oEnv.MinY;
+				if (oEnv.MaxX > psExtent->MaxX) 
+					psExtent->MaxX = oEnv.MaxX;
+				if (oEnv.MaxY > psExtent->MaxY) 
+					psExtent->MaxY = oEnv.MaxY;
+			}
+			delete poGeometry;
+		}
+		return psExtent;
+		
+		
+	}
+	wxLogDebug(_T("Error computing extend : %s "),
+			   m_pActiveDB->DataBaseGetLastError().c_str());
+
 	
-	return myEnveloppe;
+//	// compute the extend using query on spatial index
+//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINX) FROM ") + m_LayerName))
+//		myEnveloppe->MinX = m_pActiveDB->DataBaseGetResultAsDouble();
+//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINY) FROM ") + m_LayerName))
+//		myEnveloppe->MinY = m_pActiveDB->DataBaseGetResultAsDouble();
+//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXX) FROM ") + m_LayerName))
+//		myEnveloppe->MaxX = m_pActiveDB->DataBaseGetResultAsDouble();
+//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXY) FROM ") + m_LayerName))
+//		myEnveloppe->MaxY = m_pActiveDB->DataBaseGetResultAsDouble();
+//		
+	return NULL;
+	
 }
 
 
@@ -310,14 +383,20 @@ int GISDBProvider::GISGetLayerCount ()
 
 bool GISDBProvider::GISSetActiveLayer (const wxString & layername)
 {
-	m_pLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
-	if (m_pLayer != NULL)
-	{
-		m_LayerName = layername;
-		return TRUE;
-	}
+	// we check that the layer name exists
+	wxString sSentence = _T("SHOW TABLES LIKE \"") + layername + _T("\"");
 	
-	m_LayerName = _T("");
+	if (m_pActiveDB->DataBaseQuery(sSentence))
+	{
+		// ok the table exist
+		if (m_pActiveDB->DataBaseHasResult())
+		{
+			m_LayerName = layername;
+			return TRUE;
+		}
+		
+	}
+	// nothing returned, the layer dosen't exist.
 	wxLogDebug(_T("No layer with name : %s"), layername.c_str());
 	return FALSE;
 }
@@ -325,13 +404,14 @@ bool GISDBProvider::GISSetActiveLayer (const wxString & layername)
 
 OGRLayer * GISDBProvider::GISGetLayer (const wxString & layername)
 {
-	// do not delete the returned layer... properties of datasource
-	OGRLayer * myLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
-	if (myLayer == NULL)
-	{
-		wxLogDebug(_T("No layer with name : %s"), layername.c_str());
-	}
-	return myLayer;
+//	// do not delete the returned layer... properties of datasource
+//	OGRLayer * myLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
+//	if (myLayer == NULL)
+//	{
+//		wxLogDebug(_T("No layer with name : %s"), layername.c_str());
+//	}
+//	return myLayer;
+	return NULL;
 }
 
 
@@ -366,30 +446,30 @@ bool GISDBProvider::GISComputeBoundingBox (wxString  wktstring, OGREnvelope * en
 	return bReturnValue;
 }
 
-
+// array string is not used for mysql
 bool GISDBProvider::GISComputeIndex (const wxArrayString & fields, const wxString & table)
 {
-	wxString sSentence = wxString::Format(_T("CREATE INDEX index_%s ON %s ("),
-										  table.c_str(), table.c_str());
+	wxString sSentence = wxString::Format(_T("CREATE SPATIAL INDEX sp_index ON %s (OBJECT_GEOMETRY);"),
+										  table.c_str());
 	
-	// append columns for size of string array
-	for (unsigned int i = 0; i<fields.GetCount(); i++)
-	{
-		sSentence.Append(wxString::Format(_T("%s,"),(fields.Item(i)).c_str()));
-	}
-	
-	// remove the last character (the last comma)
-	sSentence.RemoveLast();
-	sSentence.Append(_T("); "));
+//	// append columns for size of string array
+//	for (unsigned int i = 0; i<fields.GetCount(); i++)
+//	{
+//		sSentence.Append(wxString::Format(_T("%s,"),(fields.Item(i)).c_str()));
+//	}
+//	
+//	// remove the last character (the last comma)
+//	sSentence.RemoveLast();
+//	sSentence.Append(_T("); "));
 	
 	// process the query and return true if ok
 	if(m_pActiveDB->DataBaseQueryMultiple(sSentence)==0)
 	{
 		return TRUE;
 	}
-	
-	wxLogDebug(_T("Not able to create index, sentence is : %s"),
-			   sSentence.c_str());
+		
+	wxLogDebug(_T("Not able to create index : %s"),
+			   m_pActiveDB->DataBaseGetLastError().c_str());
 	return FALSE;
 }
 
@@ -431,58 +511,31 @@ bool GISDBProvider::GISSetFeatureAsWkT (const wxString & wkbstring,  bool bCompu
 }
 
 
+// bcomputextend is not used for mysql
 bool GISDBProvider::GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist, bool bComputeExtend)
 {
 	OGREnvelope myEnveloppe;
 	unsigned int i;
-	wxString sSentence = _T("BEGIN TRANSACTION test; ");
+	wxString sSentence = _T("");
 	
-	// if we must compute the bounding box for new added line
-	// this will allow creation of false spatial index
-	// for faster retriving of data
-	if(bComputeExtend)
-	{
 		
-		// check if we can compute the enveloppe (a.k.a bounding box)
+	
 		for (i=0; i<featurelist.GetCount();i++)
 		{
-			if(GISComputeBoundingBox(featurelist.Item(i), &myEnveloppe))
-			{
-				sSentence.Append(wxString::Format(_T("INSERT INTO GENERIC_LINES ")
-											 _T("(WKT_GEOMETRY, MINX, MINY, MAXX, MAXY)")
-											 _T("VALUES (\"%s\", %f, %f, %f, %f); "),
-											 (featurelist.Item(i)).c_str(), myEnveloppe.MinX, myEnveloppe.MinY,
-											 myEnveloppe.MaxX, myEnveloppe.MaxY));
-			}
-			else 
-			{
-				wxLogDebug(_T("Error computing bounding box"));
-			}
+			sSentence.Append(wxString::Format(_T("INSERT INTO %s")
+											  _T(" VALUES (-1, GeomFromText('%s')); "),
+											  m_LayerName.c_str(),
+											  featurelist.Item(i).c_str()));
 		}
 
 		
-	}
-	
-	// no bounding box needed for new added line
-	else
-	{
-		
-		for (i=0; i<featurelist.GetCount();i++)
-		{
-			sSentence.Append(wxString::Format(_T("INSERT INTO GENERIC_LINES (WKT_GEOMETRY) VALUES (\"%s\"); "),
-							 (featurelist.Item(i)).c_str()));
-		}
-		
-	}
-	
-	sSentence.Append(_T(" END TRANSACTION test;"));
-	
-	// add WKT string to the database
-	// warning the table must have a WKT_GEOMETRY field
+	//wxLogDebug(sSentence);
+
 	if (m_pActiveDB->DataBaseQueryMultiple(sSentence) == 0)
 	{
 		return TRUE;
 	}
+	wxLogDebug (_T("Error is : %s"), m_pActiveDB->DataBaseGetLastError().c_str());
 	return FALSE;
 	
 	
@@ -528,7 +581,7 @@ bool GISDBProvider::GISClose ()
 {
 	if (GISIsOpened())
 	{
-		OGRDataSource::DestroyDataSource( m_pDatasource);
+		//OGRDataSource::DestroyDataSource( m_pDatasource);
 		GISDataProvider::GISClose();
 		return TRUE;
 	}
@@ -608,6 +661,19 @@ bool	GISDBProvider::GISDeleteSpatialFilter (OGRLayer * templayer)
 	return TRUE;
 	
 }
+
+
+OGRGeometry * GISDBProvider::GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length)
+{
+	OGRGeometry * geometry = NULL;
+	// Geometry columns will have the first 4 bytes contain the SRID.
+	OGRGeometryFactory::createFromWkb(((unsigned char *)row[0]) + 4, 
+												  NULL,
+												  &geometry,
+												  length[0] - 4 );
+	return geometry;
+}
+
 
 
 /********************************* PRIVATE GIS DB FUNCTION *************************/

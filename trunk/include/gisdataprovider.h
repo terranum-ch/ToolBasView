@@ -94,6 +94,7 @@ class GISOgrProvider : public GISDataProvider
 class GISDBProvider : public GISDataProvider
 	{
 	private:
+		
 		OGRLayer			* m_pLayer;
 		wxString			m_LayerName;
 		OGRDataSource       *m_pDatasource;
@@ -110,6 +111,7 @@ class GISDBProvider : public GISDataProvider
 		~GISDBProvider();
 		
 		virtual bool GISOpen (const wxString & filename);
+		bool GISOpen(DataBase * handle);
 		virtual OGREnvelope * GISGetExtend ();
 		virtual long GISGetFeatureCount ();
 		virtual bool GISGetNextFeatureAsWkT (wxString & wkbstring);
@@ -129,6 +131,9 @@ class GISDBProvider : public GISDataProvider
 													 int & iFidFound);
 		OGRLayer *	GISSetSpatialFilter (OGRGeometry * enveloppe);
 		bool		GISDeleteSpatialFilter (OGRLayer * templayer);
+		
+		// create function
+		OGRGeometry * GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length);
 		
 	};
 

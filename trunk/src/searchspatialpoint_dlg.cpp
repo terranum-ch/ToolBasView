@@ -166,7 +166,7 @@ void SEARCHSPATIALPOINT_DLG::Init()
 	m_yvalue = _T("");
 }
 
-
+// dbname is not used for mysql
 bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxString & table)
 {
 	// store the OGRenveloppe, must be deleted after use
@@ -174,11 +174,10 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 	OGREnvelope * myDBEnveloppe;
 	
 	// return true if opening database and setting table works
-	if (m_GISDB.GISOpen(dbname))
+	if (m_GISDB.GISOpen(m_pDatabase))
 	{
 			if (m_GISDB.GISSetActiveLayer(table))
 			{
-				m_GISDB.GISSetActiveDatabase(m_pDatabase);
 				
 				// get the extend
 				wxStopWatch sw;
@@ -191,10 +190,10 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 				{
 					wxLogMessage(_T("Time for computing extend is : %d [ms]"), sw.Time());
 					
-					sw.Start();
-					int iNbFeature = m_GISDB.GISGetFeatureCount();
-					wxLogMessage(_T("Time for computing nb of features : %d [ms]"), sw.Time());
-					
+//					sw.Start();
+//					int iNbFeature = m_GISDB.GISGetFeatureCount();
+//					wxLogMessage(_T("Time for computing nb of features : %d [ms]"), sw.Time());
+//					
 					// put the extend in the dialog
 					m_DLGSS_Map_Xmin->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MinX));
 					m_DLGSS_Map_Xmax->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MaxX));
@@ -207,7 +206,7 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 				}
 				return TRUE;
 			}
-		
+//		
 	}
 	wxLogDebug(_T("Error opening the Database"));
 	return FALSE;
