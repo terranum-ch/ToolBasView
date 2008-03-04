@@ -157,7 +157,7 @@ bool DELETETABLEDATA_DLG::TransferDataFromWindow()
 
 void DELETETABLEDATA_DLG::OnPressOK (wxCommandEvent & event)
 {
-	wxString sSentence = _T("BEGIN TRANSACTION test2; ");
+	wxString sSentence = _T("");
 	
 	for (unsigned int i = 0; i<m_DlgDel_ListTables->GetCount(); i++)
 	{
@@ -185,7 +185,7 @@ void DELETETABLEDATA_DLG::OnPressOK (wxCommandEvent & event)
 	}
 	
 	
-	sSentence.Append(_T("END TRANSACTION test2; "));
+	sSentence.Append(_T(""));
 	
 	// do we have to vacum (vacuum is global and no in transaction)
 	if (m_DlgDel_Chk_Vacuum->IsChecked())

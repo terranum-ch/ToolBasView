@@ -36,16 +36,17 @@
     #include "wx/wx.h"
 #endif
 
-//#include "mysql.h"
-#include "sqlite3.h"
-#include <wx/filename.h>
+#include "mysql.h"
 #include <wx/arrstr.h> // array string
 #include <wx/strconv.h> // unicode conversion
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
-const wxString DATABASE_TYPE_STRING = _T("SQLite");
-const wxString DATABASE_EXTENSION_STRING = _T("tmdb");
+// for getting geometry from sql query
+// only used for DataBaseGetNextGeometryResult()
+//#include <ogrsf_frmts.h> 
+
+const wxString DATABASE_TYPE_STRING = _T("MYSQL/INNODB");
 
 /*!
     @enumeration 
@@ -105,6 +106,8 @@ public:
 	@result return TRUE if the database is open
 	*/	
 	bool DataBaseIsOpen();
+	
+	wxString DataBaseGetLastError();
 
 	/*!
     @function 
@@ -149,6 +152,10 @@ public:
     @result     An array of strings containing the values of one row.
 	*/		
 	wxArrayString DataBaseGetNextResult();
+	
+	bool DataBaseGetNextResult(wxString & result);
+	
+	bool DataBaseGetNextRowResult (MYSQL_ROW & row, unsigned long * length);
 	
 	bool DataBaseTableExist(const wxString & tableName);
 	
@@ -264,18 +271,10 @@ public:
    
     
 private:
-	//MYSQL * pMySQL;
-	
-	// handler of a sqlite db
-	sqlite3  * m_pDB;
-	
-	// handler for results
-	char ** m_Result;
-	int m_nRow;
-	int m_nCols;
+	MYSQL * pMySQL;
 	
 	// for storing restults 
-	//MYSQL_RES * pResults;
+	MYSQL_RES * pResults;
 	int m_resultNumber;
 	
 	// storing database path and name.
