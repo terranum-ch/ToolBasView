@@ -190,23 +190,21 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 				{
 					wxLogMessage(_T("Time for computing extend is : %d [ms]"), sw.Time());
 					
-//					sw.Start();
-//					int iNbFeature = m_GISDB.GISGetFeatureCount();
-//					wxLogMessage(_T("Time for computing nb of features : %d [ms]"), sw.Time());
-//					
+					sw.Start();
+					int iNbFeature = m_GISDB.GISGetFeatureCount();
+					wxLogMessage(_T("Time for computing %d features : %d [ms]"), iNbFeature, sw.Time());
+					
 					// put the extend in the dialog
 					m_DLGSS_Map_Xmin->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MinX));
 					m_DLGSS_Map_Xmax->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MaxX));
 					m_DLGSS_Map_Ymin->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MinY));
 					m_DLGSS_Map_Ymax->SetLabel(wxString::Format(_T("%.*f"), 4,myDBEnveloppe->MaxY));
 					
-					
-					
 					delete myDBEnveloppe;
 				}
 				return TRUE;
 			}
-//		
+	
 	}
 	wxLogDebug(_T("Error opening the Database"));
 	return FALSE;

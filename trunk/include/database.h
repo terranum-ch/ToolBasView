@@ -155,7 +155,7 @@ public:
 	
 	bool DataBaseGetNextResult(wxString & result);
 	
-	bool DataBaseGetNextRowResult (MYSQL_ROW & row, unsigned long * length);
+	unsigned long * DataBaseGetNextRowResult (MYSQL_ROW & row);
 	
 	bool DataBaseTableExist(const wxString & tableName);
 	
