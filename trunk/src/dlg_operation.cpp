@@ -136,6 +136,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 			}
 			else {
 				myComment = wxString(_("Result : Request Error, please check syntax"));
+				wxLogDebug(m_DataBase->DataBaseGetLastError());
 			}
 
 			

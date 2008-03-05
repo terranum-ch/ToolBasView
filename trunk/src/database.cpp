@@ -278,6 +278,7 @@ bool DataBase::DataBaseGetNextResult(wxString & result)
 
 unsigned long * DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row)
 {
+	MYSQL_ROW myrow;
 	// check for results and return raw row result :-)
 	if (m_resultNumber > 0 && pResults != NULL)
 	{
@@ -404,6 +405,7 @@ bool DataBase::DataBaseQuery(const wxString & myQuery)
 		m_resultNumber = mysql_field_count(pMySQL);
 		return TRUE;
 	}
+	
 	return FALSE;
 }
 
@@ -419,6 +421,19 @@ bool DataBase::DataBaseHasResult ()
 	}
 	return FALSE;
 }
+
+long DataBase::DatabaseGetCountResults()
+{
+	return mysql_num_rows(pResults);
+}
+
+
+void DataBase::DataBaseDestroyResults ()
+{
+	if (pResults != NULL)
+		mysql_free_result(pResults);
+}
+
 
 
 int DataBase::DataBaseQueryMultiple (const wxString & myQuery)

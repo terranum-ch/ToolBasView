@@ -310,7 +310,7 @@ void SEARCHSPATIALPOINT_DLG::CreateControls()
     m_DLGSS_result_status = new wxStaticText( itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer26->Add(m_DLGSS_result_status, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_DLGSS_result_status_tm = new wxStaticText( itemDialog1, wxID_STATIC, _T(""), wxDefaultPosition, wxDefaultSize, 0 );
+    m_DLGSS_result_status_tm = new wxStaticText( itemDialog1, wxID_STATIC, _T("[ms]"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer26->Add(m_DLGSS_result_status_tm, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     itemBoxSizer2->Add(5, 5, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);

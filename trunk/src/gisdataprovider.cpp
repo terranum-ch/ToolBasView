@@ -570,31 +570,27 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 													 const double & y, const int & ibuffer,
 													 int & iFidFound)
 {
-	//char * myBuffer = NULL;
 	OGRGeometry * myFoundLine = NULL;
-	OGRLayer * myTempLayer = NULL;
 	
 	// step one, create the buffer for point
 	OGRPolygon * myBuffPoint = (OGRPolygon *) GISCreateBufferPoint(x, y, ibuffer);
 	if (myBuffPoint != NULL)
 	{	
 		// step two, calculate  use the spatial index
-		//myTempLayer = GISSetSpatialFilter(m_pLayer, myBuffPoint);
-		myTempLayer = GISSetSpatialFilter(myBuffPoint);
-		if (myTempLayer != NULL)
+		if (GISSetSpatialFilter(m_LayerName, myBuffPoint))
 		{
-			// step three, find the line
-			myFoundLine = GISSearchLines(myTempLayer, myBuffPoint, iFidFound);
 			
-			wxLogDebug(_T("Number of feature parsed in spatial index is %d"), myTempLayer->GetFeatureCount());
-			
+			wxLogDebug(_T("Setting spatial filter OK, %d results fetched"),
+					   m_pActiveDB->DatabaseGetCountResults());
+			if (m_pActiveDB->DataBaseHasResult())
+			{
+				// step three, find the line
+				myFoundLine = GISSearchLines(NULL, myBuffPoint, iFidFound);
+			}
+			// delete the temporary result set 
+			GISDeleteSpatialFilter(NULL);
+
 		}
-		
-		
-		// delete the temporary layer
-		GISDeleteSpatialFilter(myTempLayer);
-			
-		//delete myBuffer;
 	}
 	
 	
@@ -603,49 +599,48 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 
 
 
-OGRLayer * GISDBProvider::GISSetSpatialFilter (OGRGeometry * enveloppe)
+bool  GISDBProvider::GISSetSpatialFilter (const wxString & table, OGRGeometry * enveloppe)
 {
-	// create an enveloppe
-	OGREnvelope myEnveloppe;
-	enveloppe->getEnvelope(&myEnveloppe);
-	OGRLayer * myLayer;
+	char * myExport;
+	wxString sExport = _T("");
 	
-	// filter the database and extract in a view all
-	// line contained in the bb.
-	wxString sSentence = wxString::Format(_T("SELECT * FROM %s WHERE MINX <= %f ")
-										  _T("AND MAXX >= %f AND MINY <= %f AND MAXY >= %f"),
-										  m_LayerName.c_str(),
-										  myEnveloppe.MaxX,
-										  myEnveloppe.MinX,
-										  myEnveloppe.MaxY,
-										  myEnveloppe.MinY);
-	 myLayer = m_pDatasource->ExecuteSQL(sSentence.ToAscii(), enveloppe, NULL);
+	enveloppe->exportToWkt(&myExport);
+	sExport = wxString::FromAscii(myExport);
+	delete myExport;
 	
+	//SELECT * FROM generic_lines WHERE MBRIntersects(GeomFromText('POINT(540000 155000)'), OBJECT_GEOMETRY)
+	wxString sSentence = wxString::Format( _T("SELECT * FROM %s WHERE ")
+										  _T("MBRIntersects(GeomFromText('%s'),OBJECT_GEOMETRY)"),
+										  table.c_str(), sExport.c_str());
 	
-	if (myLayer == NULL)
-		wxLogDebug(_T("Not able to create spatial filter"));
-	//layer->SetSpatialFilter(enveloppe);
-	return myLayer;
+	if (m_pActiveDB->DataBaseQuery(sSentence))
+	{
+		return TRUE;
+	}
 	
+	wxLogDebug(wxString::Format(_T("Error setting spatial filter : %s"),
+								m_pActiveDB->DataBaseGetLastError().c_str()));
+	
+	return FALSE;
 }
+
 
 
 bool	GISDBProvider::GISDeleteSpatialFilter (OGRLayer * templayer)
 {
-	m_pDatasource->ReleaseResultSet(templayer);
+	m_pActiveDB->DataBaseDestroyResults();
 	return TRUE;
-	
 }
 
 
-OGRGeometry * GISDBProvider::GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length)
+OGRGeometry * GISDBProvider::GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length, int geometry_col)
 {
 	OGRGeometry * geometry = NULL;
 	// Geometry columns will have the first 4 bytes contain the SRID.
-	OGRGeometryFactory::createFromWkb(((unsigned char *)row[0]) + 4, 
+	OGRGeometryFactory::createFromWkb(((unsigned char *)row[geometry_col]) + 4, 
 												  NULL,
 												  &geometry,
-												  length[0] - 4 );
+												  length[geometry_col] - 4 );
 	return geometry;
 }
 
@@ -669,55 +664,84 @@ OGRGeometry * GISDBProvider::GISCreateBufferPoint (const double & x, const doubl
 
 OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * pointbuffer, int & iFID)
 {
-	iFID = -1;
-	int i=0;
-	bool bStatus = FALSE;
+	// layer not used...
+	
+	iFID = 0;
+	//int i=0;
+	//bool bStatus = FALSE;
 	//		
-	OGRFeature *poFeature;
-	OGRGeometry *poGeometry;
+	//OGRFeature *poFeature;
+	OGRGeometry *iterateGeometry;
+	MYSQL_ROW row;
+	unsigned long * row_length;
 
+	// results are aleready created by setting spatial filter
+	// now we iterate through the selected lines
 	
-	// get first layer
-	layer->ResetReading();
-	
-	// show an busy cursor, will automaticaly be destroyed after
-	// this function.
-	wxBusyCursor wait;
-	
-	// itterate all the lines
-	while( (poFeature = layer->GetNextFeature()) != NULL )
+	while (1)
 	{
+		row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
+		if (row_length == NULL)
+			break;
+		//iFID ++;
 		
-		poGeometry = poFeature->GetGeometryRef();
-		
-		if( poGeometry != NULL)
+		iterateGeometry = GISCreateDataBaseGeometry(row, row_length, 1);
+		if (iterateGeometry != NULL)
 		{
-			if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+			if(pointbuffer->Intersect(iterateGeometry))
 			{
-				OGRLineString * poLine = (OGRLineString *) poGeometry;
-				
-				// if we found the selected line
-				if(pointbuffer->Intersects(poLine))
-				{
-					// get the selected line FID
-					iFID = poFeature->GetFieldAsInteger(0);
-					bStatus = TRUE;
-					// get the geometry
-					break;
-				}
+				// get the FID
+				iFID = atoi(row[0]);
+				return iterateGeometry;
 			}
-			i++;
 		}
+		
 	}
-	// delete the feature ??
-	OGRFeature::DestroyFeature(poFeature);
-
-	// return the Geometry
-	if (bStatus == TRUE)
-		return poGeometry;
 	
-	return NULL;	
+	return NULL;
 }
+
+//	// get first layer
+//	//layer->ResetReading();
+//	
+//	// show an busy cursor, will automaticaly be destroyed after
+//	// this function.
+//	//wxBusyCursor wait;
+//	
+//	// itterate all the lines
+//	//while( (poFeature = layer->GetNextFeature()) != NULL )
+//	//{
+//		
+//	//	poGeometry = poFeature->GetGeometryRef();
+//		
+//		if( poGeometry != NULL)
+//		{
+//			if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+//			{
+//				OGRLineString * poLine = (OGRLineString *) poGeometry;
+//				
+//				// if we found the selected line
+//				if(pointbuffer->Intersects(poLine))
+//				{
+//					// get the selected line FID
+//					iFID = poFeature->GetFieldAsInteger(0);
+//					bStatus = TRUE;
+//					// get the geometry
+//					break;
+//				}
+//			}
+//			i++;
+//		}
+//	}
+//	// delete the feature ??
+//	OGRFeature::DestroyFeature(poFeature);
+//
+//	// return the Geometry
+//	if (bStatus == TRUE)
+//		return poGeometry;
+//	
+//	return NULL;	
+//}
 
 
 
