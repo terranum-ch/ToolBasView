@@ -246,6 +246,7 @@ wxArrayString DataBase::DataBaseGetNextResult()
 			// clean
 			m_resultNumber=0;
 			mysql_free_result(pResults);
+			pResults = NULL;
 		}		
 	}
 
@@ -270,6 +271,7 @@ bool DataBase::DataBaseGetNextResult(wxString & result)
 			// clean
 			m_resultNumber=0;
 			mysql_free_result(pResults);
+			pResults = NULL;
 		}		
 	}
 	return FALSE;
@@ -292,6 +294,7 @@ unsigned long * DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row)
 			// clean
 			m_resultNumber=0;
 			mysql_free_result(pResults);
+			pResults = NULL;
 		}
 	}
 	return NULL;
@@ -343,6 +346,7 @@ int DataBase::DataBaseGetResultAsInt()
 			// clean
 			m_resultNumber=0;
 			mysql_free_result(pResults);
+			pResults = NULL;
 		}		
 	}
 	
@@ -424,14 +428,21 @@ bool DataBase::DataBaseHasResult ()
 
 long DataBase::DatabaseGetCountResults()
 {
-	return mysql_num_rows(pResults);
+	if (pResults != NULL && mysql_num_fields(pResults) > 0)
+	{
+		return mysql_num_rows(pResults);
+	}
+	return 0;
 }
 
 
 void DataBase::DataBaseDestroyResults ()
 {
-	if (pResults != NULL)
+	if (pResults != NULL && DataBaseHasResult())
+	{
 		mysql_free_result(pResults);
+		pResults = NULL;
+	}
 }
 
 
