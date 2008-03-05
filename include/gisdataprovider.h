@@ -129,11 +129,11 @@ class GISDBProvider : public GISDataProvider
 		virtual OGRGeometry * GISGetFeatureByBuffer (const double & x,
 													 const double & y, const int & ibuffer,
 													 int & iFidFound);
-		OGRLayer *	GISSetSpatialFilter (OGRGeometry * enveloppe);
+		bool 	GISSetSpatialFilter (const wxString & table, OGRGeometry * enveloppe);
 		bool		GISDeleteSpatialFilter (OGRLayer * templayer);
 		
 		// create function
-		OGRGeometry * GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length);
+		OGRGeometry * GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length, int geometry_col=0);
 		
 	};
 

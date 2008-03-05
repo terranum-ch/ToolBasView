@@ -125,6 +125,7 @@ public:
 	*/
 	static wxString DatabaseGetVersion();
 	
+	long DatabaseGetCountResults();
 	/*!
     @function 
     @brief Return an array containing all the selected table fields
@@ -201,6 +202,7 @@ public:
 	
 	bool DataBaseHasResult ();
 	
+	void DataBaseDestroyResults ();
 	
 	/*! Execute multiple query 
 	 @bug NOT WORKING, CRASH WITH VERSION 5.1.23-rc (on windows and Mac)

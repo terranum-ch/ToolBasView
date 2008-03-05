@@ -97,8 +97,6 @@ public:
     wxSlider* m_DLGSS_buffer;
     wxStaticText* m_DLGSS_result_index;
     wxStaticText* m_DLGSS_result_index_tm;
-    wxStaticText* m_DLGSS_result_status;
-    wxStaticText* m_DLGSS_result_status_tm;
 ////@end SEARCHSPATIALPOINT_DLG member variables
 };
 
