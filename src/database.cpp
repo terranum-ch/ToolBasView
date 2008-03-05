@@ -276,33 +276,15 @@ bool DataBase::DataBaseGetNextResult(wxString & result)
 }
 
 
-bool DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row, unsigned long * length)
+unsigned long * DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row)
 {
-	unsigned long * mylength = NULL;
-	//length = NULL;
-	
+	// check for results and return raw row result :-)
 	if (m_resultNumber > 0 && pResults != NULL)
 	{
 		row = mysql_fetch_row(pResults);
 		if(row != NULL)
 		{
-			mylength = mysql_fetch_lengths( pResults );
-			if ( mylength == NULL )
-			{
-				wxLogDebug(_T("mysql_fetch_lengths() failed."));
-				return FALSE;
-			}
-			
-			length = mylength;
-			
-			
-			
-	//		// Geometry columns will have the first 4 bytes contain the SRID.
-//			OGRGeometryFactory::createFromWkb(((unsigned char *)record[0]) + 4, 
-//											  NULL,
-//											  &geometry,
-//											  panLengths[0] - 4 );
-			return TRUE;
+			return  mysql_fetch_lengths( pResults );
 		}
 		else 
 		{
@@ -311,9 +293,7 @@ bool DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row, unsigned long * length
 			mysql_free_result(pResults);
 		}
 	}
-
-	
-	return FALSE;
+	return NULL;
 }
 
 

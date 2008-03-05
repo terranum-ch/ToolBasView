@@ -287,43 +287,31 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 {
 	OGREnvelope * psExtent = new OGREnvelope();
 	OGREnvelope oEnv;
-	wxString result = _T("");
 	MYSQL_ROW row;
-	unsigned long *  row_length = NULL;
+	unsigned long *  row_length;
 	
 	// query for the geometry enveloppe for all lines
 	wxString sSentence = _T("SELECT Envelope(OBJECT_GEOMETRY) FROM ") + m_LayerName;
-	//wxLogDebug(sSentence);
 	if (m_pActiveDB->DataBaseQuery(sSentence))
 	{
 		// init extend based on the first object
 		// to avoid 0 values for Xmin.
-		//m_pActiveDB->DataBaseGetNextGeometryResult(poGeometry);
-		m_pActiveDB->DataBaseGetNextRowResult(row, row_length);
+		row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
 		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
 		poGeometry->getEnvelope(&oEnv);
 		psExtent->MinX = oEnv.MinX;
 		psExtent->MinY = oEnv.MinY;
 		delete poGeometry;
 		
-//		m_pActiveDB->DataBaseGetNextResult(result);
-//		 = NULL;
-//		std::string nomtr((char const*)result.mb_str(*wxConvCurrent));
-//		char * mypChar = (char *) nomtr.c_str();
-//		OGRGeometryFactory::createFromWkt(&mypChar,NULL,&poGeometry);
-		
-		
-		
 		// loop all lines
-		while (m_pActiveDB->DataBaseGetNextResult(result))
+		while (1)
 		{
-			OGRGeometry *poGeometry = NULL;
-			std::string nomtr((char const*)result.mb_str(*wxConvCurrent));
-			char * mypChar = (char *) nomtr.c_str();
+			row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
+			if (row_length == NULL)
+				break;
 			
-			// Geometry columns will have the first 4 bytes contain the SRID.
-			OGRGeometryFactory::createFromWkt(&mypChar,NULL,&poGeometry);
-			
+			// compute the geometry and get the xmin xmax, ymin, ymax
+			OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
 			if ( poGeometry != NULL )
 			{
 				poGeometry->getEnvelope(&oEnv);
@@ -340,24 +328,11 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 		}
 		return psExtent;
 		
-		
 	}
+	
 	wxLogDebug(_T("Error computing extend : %s "),
 			   m_pActiveDB->DataBaseGetLastError().c_str());
-
-	
-//	// compute the extend using query on spatial index
-//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINX) FROM ") + m_LayerName))
-//		myEnveloppe->MinX = m_pActiveDB->DataBaseGetResultAsDouble();
-//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MIN(MINY) FROM ") + m_LayerName))
-//		myEnveloppe->MinY = m_pActiveDB->DataBaseGetResultAsDouble();
-//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXX) FROM ") + m_LayerName))
-//		myEnveloppe->MaxX = m_pActiveDB->DataBaseGetResultAsDouble();
-//	if(m_pActiveDB->DataBaseQuery(_T("SELECT MAX(MAXY) FROM ") + m_LayerName))
-//		myEnveloppe->MaxY = m_pActiveDB->DataBaseGetResultAsDouble();
-//		
-	return NULL;
-	
+	return NULL;	
 }
 
 
