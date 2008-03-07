@@ -50,7 +50,7 @@ IF (APPLE)
 	ENDIF(SEARCH_GEOS)
 	
 	
-SEARCH_GDAL)
+	IF(SEARCH_GDAL)
 	# copy GDAL lib to the bundle 
 	EXEC_PROGRAM( "cp ${SEARCH_GIS_LIB_PATH}/lib/libgdal.1.dylib ${BUNDLELIBPATH}")
 
