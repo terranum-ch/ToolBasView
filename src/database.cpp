@@ -280,7 +280,6 @@ bool DataBase::DataBaseGetNextResult(wxString & result)
 
 unsigned long * DataBase::DataBaseGetNextRowResult (MYSQL_ROW & row)
 {
-	MYSQL_ROW myrow;
 	// check for results and return raw row result :-)
 	if (m_resultNumber > 0 && pResults != NULL)
 	{
@@ -365,6 +364,7 @@ double DataBase::DataBaseGetResultAsDouble()
 	//	sqlite3_free_table(m_Result);
 	//}
 	//return dReturnedValue;
+	return 0;
 }
 
 
@@ -666,7 +666,7 @@ wxString DataBase::DataBaseGetSize (int iPrecision)
 		return  wxString::Format(_T("%.*f [MB]"),iPrecision,dMegaBytes);
 	}
 	
-	//return _("The Directory dosen't exist.");
+	return _("The Directory dosen't exist.");
 	//wxFileName myDBPathName (m_DBPath, m_DBName, DATABASE_EXTENSION_STRING);
 	//wxLogDebug(_T("database name is %s"), myDBPathName.GetFullPath().c_str());
 	//wxString myDBSize = myDBPathName.GetHumanReadableSize();
