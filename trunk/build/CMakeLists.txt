@@ -87,11 +87,9 @@ ENDIF (WIN32)
 # check is done internally.
 INCLUDE ("cmake/installMacGISLib.cmake")
 
-#ADD_CUSTOM_COMMAND( TARGET ${PROGNAME} POST_BUILD
- #     COMMAND mkdir ARGS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app/Contents/Resources
-  #    COMMAND cp ARGS ${PROJECT_SOURCE_DIR}/../art/${APP_ICON} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app/Contents/Resources
-   #   COMMENT "Adding icon into program bundle")
-     # COMMAND cp ARGS *.qm ${CMAKE_CURRENT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources 
+#SOULD WE ADD THE LIBTIFF INTO BUNDLE
+# ONLY FOR CERTAIN MAC WITH PPC 
+# CHECK ARE DONE INTERNALLY YOU 
+# CAN CALL THIS WITHOUT FEAR...
+INCLUDE ("cmake/installMacLibTiff.cmake")
 
-#	 ADD_CUSTOM_COMMAND(TARGET ToolBasView POST_BUILD_COMMAND mkdir -p  ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources)
-#	 ADD_CUSTOM_COMMAND(TARGET ToolBasView POST_BUILD_COMMAND cp ${PROJECT_SOURCE_DIR}/../art/${APP_ICON}  ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources)
