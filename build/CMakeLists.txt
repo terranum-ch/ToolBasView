@@ -93,3 +93,8 @@ INCLUDE ("cmake/installMacGISLib.cmake")
 # CAN CALL THIS WITHOUT FEAR...
 INCLUDE ("cmake/installMacLibTiff.cmake")
 
+# SHOULD WE USE THE MT VERSION FOR DEFAULT 
+# COMPATIBILITY WITH < WINXP
+IF (WIN32)
+	INCLUDE ("cmake/Use_visualstudioMT.cmake")
+ENDIF (WIN32)
