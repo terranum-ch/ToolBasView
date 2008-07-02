@@ -85,7 +85,7 @@ ENDIF (WIN32)
 
 # copy libs to bundle if we are under mac...
 # check is done internally.
-INCLUDE ("cmake/installMacGISLib.cmake")
+INCLUDE ("cmake/installMacGISLIB.cmake")
 
 #SOULD WE ADD THE LIBTIFF INTO BUNDLE
 # ONLY FOR CERTAIN MAC WITH PPC 
