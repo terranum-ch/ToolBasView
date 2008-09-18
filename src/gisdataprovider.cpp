@@ -294,6 +294,7 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	
 	// query for the geometry enveloppe for all lines
 	wxString sSentence = _T("SELECT Envelope(OBJECT_GEOMETRY) FROM ") + m_LayerName;
+	wxLogDebug(m_LayerName);
 	if (m_pActiveDB->DataBaseQuery(sSentence))
 	{
 		// init extend based on the first object
