@@ -231,6 +231,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 		// show the dialog
 		if (myDlg->ShowModal() == wxID_OK)
 		{
+	
 			// try to open spatial data
 			myOgrData.GISOpen(myDlg->m_VectorFileName);
 			lFeatureCount = myOgrData.GISGetFeatureCount();

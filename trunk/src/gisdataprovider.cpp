@@ -74,6 +74,7 @@ GISOgrProvider::GISOgrProvider()
 	m_pLayer			= NULL;
 	m_pDatasource		= NULL;
 	m_iFeatureLoop		= 0;
+	m_LayerSpatType		= GISSPATIAL_ERROR;
 	
 }
 
@@ -85,6 +86,17 @@ GISOgrProvider::~GISOgrProvider()
 }
 
 
+
+/***************************************************************************//**
+ @brief Open an OGR layer
+ @details Try to open one of the supported ogr layer. The spatial type of the
+ layer is then computed
+ @param filename name and path of the layer to open
+ @return  true if layer was sucessfully opened and spatial type computed, false
+ if one failed
+ @author Lucien Schreiber (c) CREALP 2008
+ @date 22 September 2008
+ *******************************************************************************/
 bool GISOgrProvider::GISOpen (const wxString & filename)
 {
 		
@@ -96,6 +108,13 @@ bool GISOgrProvider::GISOpen (const wxString & filename)
 		m_pLayer->ResetReading();
 		
 		wxLogDebug(_T("Opening vector file OK"));
+		
+		// compute spatial type
+		m_LayerSpatType = GetLayerSpatialType();
+		if (m_LayerSpatType == GISSPATIAL_ERROR)
+			return FALSE;
+				
+		
 		return TRUE;
     }
 	
@@ -166,7 +185,18 @@ bool GISOgrProvider::GISGetNextFeatureAsWkT (wxString & wkbstring)
 }
 
 
-bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, int iBufferSize)
+
+
+/***************************************************************************//**
+ @brief Get Feature as text format
+ @param featurelist adress of a valid array for storing the features.
+ @param iBufferSize the number of feature to read (a value of 1000 seems nice)
+ @return  true if features were read correctly
+ @author Lucien Schreiber (c) CREALP 2008
+ @date 22 September 2008
+ *******************************************************************************/
+bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, 
+													  int iBufferSize)
 {
 	OGRGeometry *poGeometry;
 	bool bReturnValue = FALSE;
@@ -182,32 +212,25 @@ bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist, i
 			poGeometry = poFeature->GetGeometryRef();
 			if (poGeometry != NULL)
 			{
-				if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
-				{
-					
-					OGRLineString * poLine = (OGRLineString *) poGeometry;
-					
-					poLine->exportToWkt(&myExport);
-					featurelist->Add(wxString::FromAscii(myExport));
-					delete myExport;
-					bReturnValue = TRUE;
-				}
-								
-				OGRFeature::DestroyFeature( poFeature );
+				poGeometry->exportToWkt(&myExport);
+				
+				featurelist->Add(wxString::FromAscii(myExport));
+				delete myExport;
+				bReturnValue = TRUE;
 			}
-			else
-			{
-				wxLogDebug(_T("No Geometery / Feature found"));
-				break;
-			}
+			
+			OGRFeature::DestroyFeature( poFeature );
 		}
 		else
+		{
+			wxLogDebug(_T("No Geometery / Feature found"));
 			break;
-		
+		}
 	}
 	return bReturnValue;
-	
 }
+
+
 
 
 bool GISOgrProvider::GISClose ()
@@ -223,6 +246,77 @@ bool GISOgrProvider::GISClose ()
 	return FALSE;
 }
 
+
+
+/***************************************************************************//**
+ @brief Return the spatial type of the layer
+ @return  one of the #GISSPATIAL_TYPE
+ @author Lucien Schreiber (c) CREALP 2008
+ @date 22 September 2008
+ *******************************************************************************/
+GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
+{
+	OGRGeometry *poGeometry;
+	OGRFeature *poFeature;
+	GISSPATIAL_TYPE retvalue = GISSPATIAL_ERROR;
+	
+	wxASSERT(m_pLayer);
+	
+	// computing features count, not able to know the
+	// spatial type if no features are present.
+	if (m_pLayer->GetFeatureCount () <= 0)
+	{
+		wxLogError(_("Unable to add the layer, layer is empty"));
+		return GISSPATIAL_ERROR;
+	}
+	
+	
+	// computing layer type (point, line, polygon or unknown)
+	if ((poFeature = m_pLayer->GetNextFeature()) == NULL)
+	{
+		wxLogError(_("Unable to read feature, layer may be corrupted"));
+		return GISSPATIAL_ERROR;
+	}
+	
+	wxString sLogType = _T("Layer type : ");
+	poGeometry = poFeature->GetGeometryRef();
+	if( poGeometry != NULL)
+	{	
+		switch (wkbFlatten(poGeometry->getGeometryType()))
+		{
+			case wkbLineString:
+				sLogType.Append(_T("Line"));
+				retvalue = GISSPATIAL_LINE;
+				break;
+			case wkbPoint:
+				sLogType.Append(_T("Point"));
+				retvalue = GISSPATIAL_POINT;
+				break;
+			case wkbPolygon:
+				sLogType.Append(_T("Polygon"));
+				retvalue = GISSPATIAL_POLYGON;
+				break;
+			default:
+				sLogType.Append(_T("Error"));
+				retvalue = GISSPATIAL_ERROR;
+				break;
+		}
+	}
+	
+	wxLogMessage(sLogType);
+	
+	OGRFeature::DestroyFeature( poFeature );
+	
+	if (retvalue == GISSPATIAL_ERROR)
+	{
+		wxLogDebug(_T("Error getting spatial layer type"));
+	}
+	
+	// reset reading 
+	m_pLayer->ResetReading();
+	
+	return retvalue;
+}
 
 
 
@@ -704,47 +798,6 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 	return NULL;
 }
 
-//	// get first layer
-//	//layer->ResetReading();
-//	
-//	// show an busy cursor, will automaticaly be destroyed after
-//	// this function.
-//	//wxBusyCursor wait;
-//	
-//	// itterate all the lines
-//	//while( (poFeature = layer->GetNextFeature()) != NULL )
-//	//{
-//		
-//	//	poGeometry = poFeature->GetGeometryRef();
-//		
-//		if( poGeometry != NULL)
-//		{
-//			if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
-//			{
-//				OGRLineString * poLine = (OGRLineString *) poGeometry;
-//				
-//				// if we found the selected line
-//				if(pointbuffer->Intersects(poLine))
-//				{
-//					// get the selected line FID
-//					iFID = poFeature->GetFieldAsInteger(0);
-//					bStatus = TRUE;
-//					// get the geometry
-//					break;
-//				}
-//			}
-//			i++;
-//		}
-//	}
-//	// delete the feature ??
-//	OGRFeature::DestroyFeature(poFeature);
-//
-//	// return the Geometry
-//	if (bStatus == TRUE)
-//		return poGeometry;
-//	
-//	return NULL;	
-//}
 
 
 

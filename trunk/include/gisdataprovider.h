@@ -43,6 +43,20 @@ enum GISPROVIDER_SUPPORTED_TYPE
 const int GISPROVIDER_SUPPORTED_TYPE_NUMBER = 2;
 
 
+/***************************************************************************//**
+ @brief List of supported formats
+ @author Lucien Schreiber (c) CREALP 2008
+ @date 22 September 2008
+ *******************************************************************************/
+enum GISSPATIAL_TYPE
+{
+	GISSPATIAL_ERROR = -1,
+	GISSPATIAL_POINT = 0,
+	GISSPATIAL_LINE = 1,
+	GISSPATIAL_POLYGON =2
+};
+
+
 /*************************  GENERIC GIS PROVIDER ***************************/
 class GISDataProvider  : public wxObject
 	{
@@ -70,16 +84,22 @@ class GISDataProvider  : public wxObject
 /*************************  OGR GIS PROVIDER (SHP,...) ***************************/
 class GISOgrProvider : public GISDataProvider
 	{
-	private:
+	protected:
 		OGRLayer			* m_pLayer;
 		OGRDataSource       *m_pDatasource;
 		//long				m_NumOfVector;
 		unsigned int		m_iFeatureLoop;
+		GISSPATIAL_TYPE		m_LayerSpatType;
+		
+		//bool GISGetNextFeatureAsWktBufferPoint (wxArrayString * featurelist, int iBufferSize);
+		//bool GISGetNextFeatureAsWktBufferLine (wxArrayString * featurelist, int iBufferSize);
+		
 		
 	public:
 		GISOgrProvider();
 		~GISOgrProvider();
 		
+		GISSPATIAL_TYPE GetLayerSpatialType ();
 		virtual bool GISOpen (const wxString & filename);
 		virtual OGREnvelope * GISGetExtend ();
 		virtual long GISGetFeatureCount ();
@@ -88,6 +108,7 @@ class GISOgrProvider : public GISDataProvider
 		virtual bool GISClose ();
 
 	};
+
 
 
 /*************************  DATABASE GIS PROVIDER (sqlite) ***************************/
