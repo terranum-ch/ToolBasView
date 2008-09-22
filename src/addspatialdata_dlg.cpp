@@ -147,6 +147,12 @@ void ADDSPATIALDATA_DLG::CreateControls()
 	
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
     itemDialog1->SetSizer(itemBoxSizer2);
+	wxStaticText* itemStaticText18 = new wxStaticText( itemDialog1,
+													  wxID_STATIC,
+													  _("Support importing all spatial data types (POINTS | LINES | POLYGONS)"),
+													  wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
+	itemBoxSizer2->Add(itemStaticText18, 0, wxGROW | wxALL, 5);
+	
 	
     wxFlexGridSizer* itemFlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
     itemFlexGridSizer3->AddGrowableCol(1);
