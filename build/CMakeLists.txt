@@ -3,6 +3,11 @@
 # (c) LUCIEN SCHREIBER CREALP 2007
 cmake_minimum_required(VERSION 2.4)
 
+## POLICY FOR WINDOWS ONLY ???
+if(COMMAND cmake_policy)
+    cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 SET (PROGNAME ToolBasView)
 PROJECT (${PROGNAME})
 
@@ -102,3 +107,12 @@ INCLUDE ("cmake/installMacLibTiff.cmake")
 IF (WIN32)
 	INCLUDE ("cmake/Use_visualstudioMT.cmake")
 ENDIF (WIN32)
+
+#SOULD WE ADD THE GDIPLUS.dll INTO project
+# ONLY FOR Windows, but needed if using
+# advanced graphics
+# do nothing under other 
+# OS. 
+# CHECK ARE DONE INTERNALLY YOU 
+# CAN CALL THIS WITHOUT FEAR...
+INCLUDE ("cmake/Use_wingdiplus.cmake")
