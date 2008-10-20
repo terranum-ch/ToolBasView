@@ -215,7 +215,7 @@ bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist,
 				poGeometry->exportToWkt(&myExport);
 				
 				featurelist->Add(wxString::FromAscii(myExport));
-				delete myExport;
+				OGRFree(myExport);
 				bReturnValue = TRUE;
 			}
 			

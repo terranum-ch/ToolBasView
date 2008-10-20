@@ -46,7 +46,7 @@
 // only used for DataBaseGetNextGeometryResult()
 //#include <ogrsf_frmts.h> 
 
-const wxString DATABASE_TYPE_STRING = _T("MYSQL");
+const wxString DATABASE_TYPE_STRING = _T("MySQL");
 
 /*!
     @enumeration 
