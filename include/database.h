@@ -37,19 +37,82 @@
 #endif
 
 #include "mysql.h"
-#include <wx/arrstr.h> // array string
-#include <wx/strconv.h> // unicode conversion
+//#include <wx/arrstr.h> // array string
+//#include <wx/strconv.h> // unicode conversion
+
+//#include <wx/filename.h>
+
+#include <wx/buffer.h>
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
-// for getting geometry from sql query
-// only used for DataBaseGetNextGeometryResult()
-//#include <ogrsf_frmts.h> 
+class DataBase
+	{
+	private:
+		// member
+		bool		m_IsLibraryStarted;
+		bool		m_IsDatabaseOpened;
+		MYSQL	*	m_MySQL;
+		MYSQL_RES *	m_MySQLRes;
+		wxString	m_DBName;
+		wxString	m_DBPath;
+		
+		// functions
+		bool DBLibraryInit (const wxString & datadir);
+		void DBLibraryEnd ();
+		void DBLogLastError ();
+		bool DBUseDataBase(const wxString & dbname);
+		bool DBIsDataBaseReady ();
+		bool DBGetNextRecord (MYSQL_ROW & record);
+		
+	protected:
+	public:
+		DataBase();
+		~DataBase();
+		
+		// database operations
+		bool DataBaseCreateNew(const wxString & datadir, const wxString & name);
+		bool DataBaseOpen(const wxString & datadir, const wxString & name);
+		wxString DataBaseGetName ();
+		wxString DataBaseGetPath ();
+		wxString DataBaseGetSize (int precision = 2, const wxString & failmsg = _("Not available"));
+		static wxString DataBaseGetVersion ();
+		
+		// query operations
+		bool DataBaseQueryNoResults(const wxString & query);
+		bool DataBaseQuery (const wxString & query); 
+		int DataBaseQueriesNumber (const wxString & query);
+		long DataBaseGetLastInsertedID();
+		
+		// results operations
+		bool DataBaseHasResults();
+		void DataBaseClearResults();
+		// results by rows (clear after use)
+		bool DataBaseGetResultSize (unsigned int * pcols, long * prows); 
+		bool DataBaseGetNextResult(wxString & result);
+		bool DataBaseGetNextResult(wxArrayString & results);
+		bool DataBaseGetNextResult(long & result);
+		bool DataBaseGetNextResult(wxArrayLong & results);
+		bool DataBaseGetNextResult(double & result);
+		bool DataBaseGetNextResult(wxArrayDouble & results);
+		// results set (auto cleared after use)
+		bool DataBaseGetResults(wxArrayString & results);
+		bool DataBaseGetResults(wxArrayLong & results);
+		bool DataBaseGetResults(wxArrayDouble & results);
+		
+		
+};
 
-const wxString DATABASE_TYPE_STRING = _T("MySQL");
+
+
+
+
+
+
+#if(0)
+const wxString DATABASE_TYPE_STRING = _T("MYSQL");
 
 /*!
-    @enumeration 
     @brief enumeration of allowed values for
 	inisialisation.
 	*/
@@ -58,6 +121,10 @@ enum Lang_Flag
 	LANG_UTF8,
 	LANG_LATIN1
 };
+
+
+
+
 
 //----------------------------------------------------------------------------
 // DataBase
@@ -68,30 +135,36 @@ enum Lang_Flag
 	
 	This class used the embedded library of MySQL to open and connect to databases.
 */
+
+
+
+
+
+
 class DataBase 
 {
 public:
     // constructors and destructors
-    /*!
-    @method     
+    /*!   
     @brief   Constructor, do nothing
 	*/
-	DataBase();
-    /*!
-    @method    
+	//DataBase();
+    /*!  
 	
 	@brief Destructor, do nothing
 	*/
-	~DataBase();
-	/*!
-    @function  
+	//~DataBase();
+	/*!  
     @brief   Function used to init the MySql embedded server and to open a database
     
 	This function must be called before other Database functions.
     @param      path wxString containing the directory where live the database
+	@param		flag Character set for opening Database (see #Lang_Flag)
     @result     return true if library and connexion to the database ok
 	*/
-    bool DataBaseOpen(wxString path,enum Lang_Flag flag);
+//   bool DataBaseOpen(wxString path,enum Lang_Flag flag);
+	
+//	int DataBaseInitLibrary (const wxString & path);
 	
 	/*!
     @brief   Function called to close the database and free the library
@@ -99,35 +172,38 @@ public:
 	This function must be called before quitting the program
 	@result return TRUE if the database was close correctely
 	*/
-	bool DataBaseClose ();
+//	bool DataBaseClose ();
 	
 	/*!
     @brief  return TRUE if a database is open
 	@result return TRUE if the database is open
 	*/	
-	bool DataBaseIsOpen();
-	
-	wxString DataBaseGetLastError();
+	//bool DataBaseIsOpen();
+
+//	wxString DataBaseGetLastError();
 
 	/*!
-    @function 
+	
+	
     @brief   return an array of string containing all the database tables
     @result  an array of string (wxArrayString) containing all the tables names
 	*/
 	wxArrayString DataBaseListTables();
 	
 	/*!
-    @function 
     @brief   Return a wxString containing the version of the embedded server
 	
 	This function is the only one who may be called before DataBaseOpen().
     @result  a wxString containing the version number
 	*/
-	static wxString DatabaseGetVersion();
+	//static wxString DatabaseGetVersion();
 	
-	long DatabaseGetCountResults();
-	/*!
-    @function 
+
+//	long DatabaseGetCountResults();
+	
+//	int DatabaseGetCountCols();
+	
+	/*! 
     @brief Return an array containing all the selected table fields
     @param      sTable a String containing the table name
     @result     an array of string containing the fields name.
@@ -135,7 +211,6 @@ public:
 	wxArrayString DatabaseListFields(wxString sTable);
 	
 	/*!
-    @function 
     @brief Get all data stored in a table.
 	
 	This function just process the request, to get the result row
@@ -147,28 +222,32 @@ public:
 	bool DataBaseGetAllTableContent(wxString sTable);
 	
 	/*!
-    @function 
     @brief Return the result of the last request.
 	
     @result     An array of strings containing the values of one row.
 	*/		
-	wxArrayString DataBaseGetNextResult();
+//	wxArrayString DataBaseGetNextResult();
 	
-	bool DataBaseGetNextResult(wxString & result);
+	long DataBaseGetLastInsertID ();
+	
+//	bool DataBaseGetNextResult(wxString & result);
 	
 	unsigned long * DataBaseGetNextRowResult (MYSQL_ROW & row);
 	
 	bool DataBaseTableExist(const wxString & tableName);
 	
 	
-	int DataBaseGetResultAsInt();
+	//int DataBaseGetResultAsInt(bool ClearResultDirect = TRUE);
 	
-	double DataBaseGetResultAsDouble();
+//	long DataBaseGetNextResultAsLong();
+	
+//	void DataBaseGetNextResultAsLong(wxArrayLong & resultArray);
+	
+//	double DataBaseGetResultAsDouble();
 	
 	bool DataBaseIsTableEmpty(const wxString & tableName);
 	
-	/*!
-    @function 
+	/*! 
     @brief Used to execute multiple query on the database
 	
 	This function is mainly created to execute multiple query without results.
@@ -179,38 +258,43 @@ public:
 	@warning  This function process the query and then destroy the query results,
 	so no results could be see using DataBaseGetNextResult().
     @param     myQuery the string containing the query
+	@param	   logerror If set to true, log sql error in debug mode.
     @result    return 0 if the query works and the MYSQL error code otherwise.
 	@see DataBaseCutRequest(), DataBaseQuery()
 	 
 	*/
-	bool DataBaseQueryNoResult(wxString myQuery);
+	//bool DataBaseQueryNoResult(wxString myQuery, bool logerror = false);
 	/*!
-	@function 
 	@brief Used to execute one query on the database and then get the result
 	
 	This function works in a similar way as the DataBaseQueryNoResult() but is able
 	to send back the result of a query.
 	
 	@param myQuery the string containing the query
+	@param logerror If set to true, we log the error if the query doesn't work as expected.
 	@result true if the query was successfuly made otherwise false.
 	@warning User have to check the return value, and if false then one souldn't 
 	call the DataBaseGetNextResult()
 	@see DataBaseQueryNoResult()
 	 */
-	bool DataBaseQuery(const wxString & myQuery);
+	//bool DataBaseQuery(const wxString & myQuery, bool logerror = false);
+	
+	//wxArrayLong * DataBaseQuerySafe (const wxString & myQuery);
 	
 	
-	bool DataBaseHasResult ();
+//	bool DataBaseHasResult ();
 	
-	void DataBaseDestroyResults ();
+	//bool DataBaseResultExists();
+	
+//	void DataBaseDestroyResults ();
 	
 	/*! Execute multiple query 
 	 @bug NOT WORKING, CRASH WITH VERSION 5.1.23-rc (on windows and Mac)
 	 */
-	int DataBaseQueryMultiple (const wxString & myQuery);
+//	int DataBaseQueryMultiple (const wxString & myQuery);
 	
 
-	int DataBaseQueryReal (wxString myQuery);
+//	int DataBaseQueryReal (wxString myQuery);
 
 	/*!
     @brief  return the path of the database
@@ -218,7 +302,7 @@ public:
 	This function must be called only after DataBaseOpen().
 	@result return the path of the database
 	*/	
-	wxString DataBaseGetPath();
+	//wxString DataBaseGetPath();
 
 	/*!
     @brief  return the Name of the database
@@ -226,7 +310,7 @@ public:
 	This function must be called only after DataBaseOpen().
 	@result return the name of the database
 	*/	
-	wxString DataBaseGetName();
+	//wxString DataBaseGetName();
 	
 	/*!
     @brief  return the character set used for the transaction
@@ -234,7 +318,7 @@ public:
 	This function must be called only after DataBaseOpen().
 	@result return the name of the character set used.
 	*/	
-	wxString DatabaseGetCharacterSet();
+	//wxString DatabaseGetCharacterSet();
 	
 	/*!
     @brief  create a new database
@@ -245,7 +329,7 @@ public:
 	allowed values are (default)LANG_UTF8, LANG_LATIN1, 
 	@result return TRUE if the new database was created succesfully.
 	*/	
-	bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag=LANG_UTF8);
+	//bool DataBaseCreateNew(wxString DataBasePath, wxString DataBaseName,enum Lang_Flag Flag=LANG_UTF8);
 	
 	
 	/*!
@@ -257,44 +341,52 @@ public:
 	@param theRequest a wxString containing the full request.
 	@result a wxArrayString containing a unique request for each array.
 	*/	
-	wxArrayString DataBaseCutRequest (wxString theRequest);
+	//wxArrayString DataBaseCutRequest (wxString theRequest);
 	
 	/*!
-    @function 
     @brief   Compute the database file size
 	@param  iPrecision an integer giving the requested precision for the result 
 	(default is 2 decimals after the dot) 
 	@result  Return an human readable string containing the database size plus
 	the unit  (MB)
 	*/
-	wxString DataBaseGetSize (int iPrecision=2);
+//	wxString DataBaseGetSize (int iPrecision=2);
 
+//	static void DataBaseCloseLibrary();
+
+//   static void DataBaseConvertWindowsPath (wxString & spath);
 	
-   
+	bool DataBaseNewThreadInit();
+	
+	void DataBaseNewThreadUnInit();
+	
+	//bool DataBaseQueryBinary(const char * query, bool DestroyResult = FALSE);
     
-private:
-	MYSQL * pMySQL;
+protected:
+//	MYSQL * pMySQL;
 	
 	// for storing restults 
-	MYSQL_RES * pResults;
-	int m_resultNumber;
+//	MYSQL_RES * pResults;
+//	int m_resultNumber;
+//	long m_resultCount;
 	
 	// storing database path and name.
-	wxString m_DBPath;
-	wxString m_DBName;
+	//wxString m_DBPath;
+	//wxString m_DBName;
 	
 	
-	bool IsDatabaseOpen;
+//	bool IsDatabaseOpen;
+	
+//	static bool bIsLibInit;
 	
 	/*!
     @brief  convert the path into path and database name
 
 	@result true if all is OK.
 	*/	
-	bool DataBaseConvertFullPath(wxString fullpath);
+	//bool DataBaseConvertFullPath(wxString fullpath);
 	
-	/*!
-    @function 
+	/*! 
     @brief Function used in windows to convert all the '\' path separator
 	into a '/' separator.
 	
@@ -303,21 +395,21 @@ private:
     @result     the modified path in a wxString. This modified path may be used for
 	loading the MYSQL server.
 	*/
-	wxString DataBaseConvertMYSQLPath(wxString originalPath);
+	//wxString DataBaseConvertMYSQLPath(wxString originalPath);
+	
+	
 
 	/*!
-    @function 
     @brief Function used to set the character set used by the embedded server
 	
 	This function is call by DataBaseOpen(), do not call it directly.
 	*/
-	bool DataBaseSetCharacterSet (enum Lang_Flag myFlag);
+	//bool DataBaseSetCharacterSet (enum Lang_Flag myFlag);
 
 
 
-
-
+	
 };
-
+#endif
 
 #endif
