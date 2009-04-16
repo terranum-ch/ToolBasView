@@ -21,6 +21,7 @@
 // for svn version
 #include "../include/svn_version.h"
 
+const wxString DATABASE_TYPE_STRING = _T("MySQL");
 
 /* Application initialisation */
 bool TBVApp::OnInit()
@@ -81,7 +82,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxLogMessage(_("Program started"));
 	
 	// get the client version
-	wxString myVersion = _("Database embedded version : ") +  myDatabase.DatabaseGetVersion();
+	wxString myVersion = _("Database embedded version : ") +  DataBase::DatabaseGetVersion();
 	SetStatusText(myVersion ,1);
 	
 	// loading GDAL 
@@ -102,44 +103,54 @@ TBVFrame::~TBVFrame()
 {
 }
 
+
 void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 {
-	wxArrayString myStringArray;
-	
 	const wxString & dir = wxDirSelector (_("Choose the database folder"));
-	if (!dir.empty())
+	if (dir.empty())
+		return;
+	
+	// clear all the controls.
+	ClearCtrls();
+	
+	
+	
+	wxFileName myDirPath (dir);
+	if (myDirPath.IsOk()==false)
 	{
-		// clear all the controls.
-		ClearCtrls();
-		
-		if(myDatabase.DataBaseOpen(dir,LANG_UTF8))
-		{
-			wxLogMessage(_("Database opened"));
-			
-			wxLogMessage(_("Path : %s, Name : %s"),
-						 myDatabase.DataBaseGetPath().c_str(),
-						 myDatabase.DataBaseGetName().c_str());
-			
-			myStringArray = myDatabase.DataBaseListTables();
-			
-			// add database name
-			TreeAddItem((myDatabase.DataBaseGetName()),0);
-			
-			// add tables names
-			for (unsigned int i=0; i<myStringArray.Count(); i++) 
-			{
-				TreeAddItem(myStringArray.Item(i),1);
-			}
-			
-			// get the database size
-			wxLogMessage( myDatabase.DataBaseGetSize());
-			
-		}
-		else
-		{
-			wxLogError(_("Error opening the database"));
-		}
+		wxLogError(_T("Incorrect path"));
+		return;
 	}
+	
+	wxArrayString myDirsString = myDirPath.GetDirs();
+	myDirPath.RemoveLastDir();
+	
+	if(myDatabase.DataBaseOpen(myDirPath.GetPath(wxPATH_GET_SEPARATOR, wxPATH_UNIX),
+							   myDirsString.Item(myDirsString.GetCount()-1))==false)
+		return;
+	
+	wxLogMessage(_("Path : %s, Name : %s"),
+				 myDatabase.DataBaseGetPath().c_str(),
+				 myDatabase.DataBaseGetName().c_str());
+	
+	if (myDatabase.DataBaseQuery(_T("SHOW TABLES"))==false)
+		return;
+	
+	wxArrayString myStringArray;
+	myDatabase.DataBaseGetResults(myStringArray);
+	myDatabase.DataBaseClearResults();
+	
+	// add database name
+	TreeAddItem((myDatabase.DataBaseGetName()),0);
+	
+	// add tables names
+	for (unsigned int i=0; i<myStringArray.Count(); i++) 
+	{
+		TreeAddItem(myStringArray.Item(i),1);
+	}
+	
+	// get the database size
+	wxLogMessage( myDatabase.DataBaseGetSize());
 }
 
 void TBVFrame::OnDeleteData (wxCommandEvent & event)
@@ -163,22 +174,13 @@ void TBVFrame::OnMenuExit(wxCommandEvent & event)
 
 void TBVFrame::OnQuit(wxCloseEvent & event)
 {
-		// if the database is opened, we close the database.
-		if (myDatabase.DataBaseIsOpen()) 
-		{
-			myDatabase.DataBaseClose();
-		}
-		
-		this->Destroy();
-
+	this->Destroy();
 }
 
 
 void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 {
-	if (myDatabase.DataBaseIsOpen()) 
-	{
-		wxArrayString myStringArray;	
+			
 		
 		// create and display the SQLPROCESS dialog box.
 		SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this,
@@ -196,7 +198,10 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		{
 			// clear all the controls.
 			ClearCtrls();
-			myStringArray = myDatabase.DataBaseListTables();
+			myDatabase.DataBaseQuery(_T("SHOW TABLES"));
+			wxArrayString myStringArray;
+			myDatabase.DataBaseGetResults(myStringArray);
+			myDatabase.DataBaseClearResults();
 			
 			// add database name
 			TreeAddItem((myDatabase.DataBaseGetName()),0);
@@ -207,11 +212,6 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 				TreeAddItem(myStringArray.Item(i),1);
 			}
 		}	
-	}
-	else
-	{
-		wxLogError(_("No Database open, please open a database first"));
-	}
  	
 }
 
@@ -225,71 +225,71 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	int i=1;
 	long lFeatureCount = 0;
 	
-	if (myDatabase.DataBaseIsOpen()) 
+	ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &myDatabase, -1);
+	// show the dialog
+	if (myDlg->ShowModal() != wxID_OK)
 	{
-		ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &myDatabase, -1);
-		// show the dialog
-		if (myDlg->ShowModal() == wxID_OK)
-		{
-	
-			// try to open spatial data
-			myOgrData.GISOpen(myDlg->m_VectorFileName);
-			lFeatureCount = myOgrData.GISGetFeatureCount();
-			wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
-			
-			// try to open database data
-			myDBData.GISOpen(&myDatabase);
-			myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
-			
-			// create a progress dialog for showing
-			// import progress
-			int iMax = lFeatureCount / 1000;
-			wxProgressDialog myPrgDlg (_("Importing data into the Database"),
-									   _("Importing in progress, please wait..."),
-										 iMax);
-			
-			
-			// count elapsed time
-			wxStopWatch sw;
-		
-			while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 1000))
-			{
-			myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
-				
-				if (i <= iMax)
-				{
-					myPrgDlg.Update(i);
-					i++;	
-				}
-				
-				// clear the buffer
-				myReadData.Clear();
-			}
-			
-			// show elapsed time
-			wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
-						 lFeatureCount,  sw.Time());
-			
-			
-			// creating index if asked
-			if (myDlg->m_bComputeIndex == TRUE)
-			{
-				sw.Start();
-				wxArrayString myFields;
-			
-				if(myDBData.GISComputeIndex(myFields, myDlg->m_DBTableName))
-				{
-					wxLogMessage(_("Creating index take %u [ms]"), sw.Time());
-				}
-			}
-
-			// don't forget to close the spatial data
-			myOgrData.GISClose();
-			myDBData.GISClose();
-			
-		}
 		delete myDlg;
+		return;
 	}
+	
+
+	// try to open spatial data
+	myOgrData.GISOpen(myDlg->m_VectorFileName);
+	lFeatureCount = myOgrData.GISGetFeatureCount();
+	wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
+	
+	// try to open database data
+	myDBData.GISOpen(&myDatabase);
+	myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
+	
+	// create a progress dialog for showing
+	// import progress
+	int iMax = lFeatureCount / 1000;
+	wxProgressDialog myPrgDlg (_("Importing data into the Database"),
+							   _("Importing in progress, please wait..."),
+							   iMax);
+	
+	
+	// count elapsed time
+	wxStopWatch sw;
+	
+	while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 1000))
+	{
+		myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
+		
+		if (i <= iMax)
+		{
+			myPrgDlg.Update(i);
+			i++;	
+		}
+		
+		// clear the buffer
+		myReadData.Clear();
+	}
+	
+	// show elapsed time
+	wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
+				 lFeatureCount,  sw.Time());
+	
+	
+	// creating index if asked
+	if (myDlg->m_bComputeIndex == TRUE)
+	{
+		sw.Start();
+		wxArrayString myFields;
+		
+		if(myDBData.GISComputeIndex(myFields, myDlg->m_DBTableName))
+		{
+			wxLogMessage(_("Creating index take %u [ms]"), sw.Time());
+		}
+	}
+	
+	// don't forget to close the spatial data
+	myOgrData.GISClose();
+	myDBData.GISClose();
+	
+	delete myDlg;
 }
 
 
@@ -309,7 +309,11 @@ void TBVFrame::OnMenuIdle (wxIdleEvent & event)
 {
 	// function called during idle event for 
 	// hiding menu
-	EnableMenuItem(myDatabase.DataBaseIsOpen());
+	bool bStarted = false;
+	if (myDatabase.DataBaseGetName() != wxEmptyString)
+		bStarted = true;
+	
+	EnableMenuItem(bStarted);
 
 }
 
@@ -354,7 +358,8 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	wxTreeItemId myItemID = event.GetItem();
 	// get the table name
 	wxString myTempString = pTreeCtrl->GetItemText(myItemID);
-	myFieldArray = myDatabase.DatabaseListFields(myTempString);
+	myDatabase.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
+	myDatabase.DataBaseGetResults(myFieldArray);
 	
 	// check for field numbers (may be not a table)
 	if (myFieldArray.Count() > 0)
@@ -372,7 +377,7 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 		}
 		
 		// get the data....
-		if(myDatabase.DataBaseGetAllTableContent(myTempString))
+		if(myDatabase.DataBaseQuery(_T("SELECT * FROM ") + myTempString))
 		{
 			wxLogMessage(_("Reading table '%s' OK"),myTempString.c_str());
 			
@@ -380,13 +385,10 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 			
 			while (1) 
 			{
-				myFieldArray = myDatabase.DataBaseGetNextResult();
-				iArrayCount = myFieldArray.Count();
-				if (iArrayCount == 0) 
-				{
+				if(myDatabase.DataBaseGetNextResult(myFieldArray)==false)
 					break;
-				}
 				
+				iArrayCount = myFieldArray.Count();
 				// add a new line
 				pGridOp->GridOpAddDataRow(iArrayCount,
 										  &myFieldArray);
@@ -430,9 +432,8 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 {
 	// checking if a database is open ?
-	if (myDatabase.DataBaseIsOpen()) 
-	{
 		// getting the stats...
+	myDatabase.DataBaseQuery(_T("COUNT (SHOW TABLES)"))
 		wxArrayString myTablesList = myDatabase.DataBaseListTables();
 		wxString myDataBaseSize = myDatabase.DataBaseGetSize();
 		
@@ -442,13 +443,7 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 		//show a message box displaying statistics
 		wxMessageBox(myText,_("Database statistics"),wxOK | wxICON_INFORMATION,
 					 this);
-	}
-	else 
-	{
-		wxLogError(_("No database open, please open a database first"));
-	}
-
-	
+		
 }
 
 void TBVFrame::OnAboutDlg(wxCommandEvent & event)
