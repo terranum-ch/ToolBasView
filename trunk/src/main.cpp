@@ -125,7 +125,7 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	wxArrayString myDirsString = myDirPath.GetDirs();
 	myDirPath.RemoveLastDir();
 	
-	if(myDatabase.DataBaseOpen(myDirPath.GetPath(wxPATH_GET_SEPARATOR, wxPATH_UNIX),
+	if(myDatabase.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),
 							   myDirsString.Item(myDirsString.GetCount()-1))==false)
 		return;
 	
