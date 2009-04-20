@@ -135,14 +135,17 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 
 bool DataBase::DBUseDataBase(const wxString & dbname)
 {
-	char buf[dbname.Len()];
+	char * buf = new char [dbname.Len()];
 	strcpy( buf, (const char*)dbname.mb_str(wxConvUTF8));
 	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,buf,
 						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL)
 	{
+		delete [] buf;
 		DBLogLastError();
 		return false;
 	}
+	
+	delete[] buf;
 	if (dbname != wxEmptyString)
 		wxLogMessage(_("Opening database : ") + dbname);
 	
@@ -551,14 +554,16 @@ bool DataBase::DataBaseQueryNoResults(const wxString & query)
 		return false;
 	}
 		
-	char buf[query.Len()];
+	char * buf = new char[query.Len()];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)
 	{
+		delete [] buf;
 		DBLogLastError();
 		return false;
 	}
 	
+	delete [] buf;
 	m_MySQLRes = mysql_store_result(m_MySQL);
 	DataBaseClearResults();
 	return true;
@@ -577,14 +582,15 @@ bool DataBase::DataBaseQuery (const wxString & query)
 		return false;
 	}
 		
-	char buf[query.Len()];
+	char * buf = new char[query.Len()];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)
 	{
+		delete [] buf;
 		DBLogLastError();
 		return false;
 	}
-	
+	delete [] buf;	
 	m_MySQLRes = mysql_store_result(m_MySQL);
 	return true;
 }
