@@ -46,6 +46,7 @@ class DataBaseTEST : public CppUnit::TestFixture
 	CPPUNIT_TEST( TESTCreateNewDatabase );
 	CPPUNIT_TEST( TESTGetDataBaseSize );
 	CPPUNIT_TEST( TESTGetLastInsertID );
+	CPPUNIT_TEST( TESTGetRawRow );
 	CPPUNIT_TEST_SUITE_END();
 	
 private:
@@ -324,6 +325,21 @@ public:
 		
 		myIID = m_DB->DataBaseGetLastInsertedID();
 		CPPUNIT_ASSERT(myIID != wxNOT_FOUND);
+		
+	}
+	
+	void TESTGetRawRow ()
+	{
+		CPPUNIT_ASSERT(m_DB->DataBaseOpen(_T("/Users/Lucien/Downloads/"),_T("testfields"))==true);
+		CPPUNIT_ASSERT(m_DB->DataBaseQuery(_T("SELECT Envelope(OBJECT_GEOMETRY) FROM generic_lines WHERE OBJECT_ID = 1"))); //WHERE OBJECT_ID = 2")));
+		MYSQL_ROW myRow;
+		unsigned long myLength = 0;
+		CPPUNIT_ASSERT(m_DB->DataBaseGetNextRowResult(myRow, myLength));
+		CPPUNIT_ASSERT(myRow != NULL);
+		CPPUNIT_ASSERT(myLength != 0);
+		CPPUNIT_ASSERT(m_DB->DataBaseGetNextRowResult(myRow, myLength)==false);
+		CPPUNIT_ASSERT(myRow == NULL);
+		CPPUNIT_ASSERT(myLength == 0);
 		
 	}
 	

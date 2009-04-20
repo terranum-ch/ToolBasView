@@ -53,11 +53,20 @@ DELETETABLEDATA_DLG::DELETETABLEDATA_DLG( wxWindow* parent, wxWindowID id,
 	m_pDatabase = database;
 	
 	// init the table if database not empty
-	if (m_pDatabase != NULL && m_pDatabase->DataBaseIsOpen())
+	if (m_pDatabase == NULL)
+		return;
+	wxArrayString myListTables;
+	if (m_pDatabase->DataBaseQuery(_T("SHOW TABLES"))==false)
 	{
-		// get list of tables
-		m_DlgDel_ListTables->Append(m_pDatabase->DataBaseListTables());
+		m_pDatabase->DataBaseClearResults();
+		return;
 	}
+	
+	if (m_pDatabase->DataBaseGetResults(myListTables)==false)
+		return;
+	
+	m_DlgDel_ListTables->Append(myListTables);
+	
 	
 }
 
@@ -194,7 +203,7 @@ void DELETETABLEDATA_DLG::OnPressOK (wxCommandEvent & event)
 	}
 	
 	// finaly process the request
-	if (m_pDatabase->DataBaseQueryMultiple(sSentence) != 0)
+	if (m_pDatabase->DataBaseQuery(sSentence) != 0)
 	{
 		wxLogDebug(_T("Error processing delete query..."));
 		

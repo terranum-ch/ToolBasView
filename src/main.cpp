@@ -82,7 +82,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxLogMessage(_("Program started"));
 	
 	// get the client version
-	wxString myVersion = _("Database embedded version : ") +  DataBase::DatabaseGetVersion();
+	wxString myVersion = _("Database embedded version : ") +  DataBase::DataBaseGetVersion();
 	SetStatusText(myVersion ,1);
 	
 	// loading GDAL 
@@ -115,7 +115,7 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	
 	
 	
-	wxFileName myDirPath (dir);
+	wxFileName myDirPath (dir, _T(""));
 	if (myDirPath.IsOk()==false)
 	{
 		wxLogError(_T("Incorrect path"));
@@ -383,16 +383,14 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 			
 			int iArrayCount = 0;
 			
-			while (1) 
+			while (myDatabase.DataBaseGetNextResult(myFieldArray)) 
 			{
-				if(myDatabase.DataBaseGetNextResult(myFieldArray)==false)
-					break;
-				
 				iArrayCount = myFieldArray.Count();
 				// add a new line
 				pGridOp->GridOpAddDataRow(iArrayCount,
 										  &myFieldArray);
 			}
+			myDatabase.DataBaseClearResults();
 		
 		}
 		else 
@@ -432,15 +430,20 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 {
 	// checking if a database is open ?
-		// getting the stats...
-	myDatabase.DataBaseQuery(_T("COUNT (SHOW TABLES)"))
-		wxArrayString myTablesList = myDatabase.DataBaseListTables();
-		wxString myDataBaseSize = myDatabase.DataBaseGetSize();
+	// getting the stats...
+	long myiNumberTables = 0;
+	wxString mysNumberTables = _T("Unkhown");
+	myDatabase.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") 
+							 _T("FROM information_schema.tables ") 
+							 _T("WHERE table_schema = \"") + myDatabase.DataBaseGetName() + _T("\""));
+	if (myDatabase.DataBaseGetNextResult(myiNumberTables)==true)
+		mysNumberTables = wxString::Format(_T("%d"), myiNumberTables);
+	myDatabase.DataBaseClearResults();
+	wxString myDataBaseSize = myDatabase.DataBaseGetSize();
 		
 		wxString myText = wxString::Format(_("Database : '%s' open \n"),myDatabase.DataBaseGetName().c_str());
-		myText.Append(wxString::Format(_("Number of table(s) : %d \n"),myTablesList.Count()));
+		myText.Append(wxString::Format(_("Number of table(s) : %s \n"),mysNumberTables.c_str()));
 		myText.Append(_("Size of the database : ") + myDataBaseSize);
-		//show a message box displaying statistics
 		wxMessageBox(myText,_("Database statistics"),wxOK | wxICON_INFORMATION,
 					 this);
 		
