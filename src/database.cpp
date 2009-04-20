@@ -80,8 +80,8 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 	}
 	
 	//init library
-	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_UNIX);
-	char * bufDataDir = new char[myDatadir.Len()];
+	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_NATIVE);
+	char * bufDataDir = new char[myDatadir.Len() * sizeof(wxString)];
 	strcpy( bufDataDir, (const char*)myDatadir.mb_str(wxConvUTF8));
 	
 #if defined(__WINDOWS__)
@@ -135,7 +135,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 
 bool DataBase::DBUseDataBase(const wxString & dbname)
 {
-	char * buf = new char [dbname.Len()];
+	char * buf = new char [dbname.Len() * sizeof(wxString)];
 	strcpy( buf, (const char*)dbname.mb_str(wxConvUTF8));
 	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,buf,
 						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL)
@@ -553,8 +553,8 @@ bool DataBase::DataBaseQueryNoResults(const wxString & query)
 		wxLogDebug(_T("Not able to run query, results were not cleared"));
 		return false;
 	}
-		
-	char * buf = new char[query.Len()];
+
+	char * buf = new char[query.Len() * sizeof(wxString)];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)
 	{
@@ -582,7 +582,7 @@ bool DataBase::DataBaseQuery (const wxString & query)
 		return false;
 	}
 		
-	char * buf = new char[query.Len()];
+	char * buf = new char[query.Len() * sizeof(wxString)];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)
 	{
