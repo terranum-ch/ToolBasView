@@ -135,8 +135,18 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 
 bool DataBase::DBUseDataBase(const wxString & dbname)
 {
-	char * buf = new char [dbname.Len() * sizeof(wxString)];
-	strcpy( buf, (const char*)dbname.mb_str(wxConvUTF8));
+	char * buf = NULL;
+	if (dbname.IsEmpty())
+	{
+		buf = new char [3]; 
+		strcpy(buf, "");
+	}
+	else
+	{
+		buf = new char [dbname.Len() * sizeof(wxString)];
+		strcpy( buf, (const char*)dbname.mb_str(wxConvUTF8));
+	}
+
 	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,buf,
 						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL)
 	{
