@@ -104,90 +104,46 @@ void SQLPROCESS_DLG_OP2::SetDataBase(DataBase * pDatabase)
 
 void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 {
+	wxASSERT(m_DataBase);
 	wxArrayString myRequestArray; // contain multiple request if needed
-	wxString myComment;
 	wxArrayInt myErrorsArray;
 	wxString myTempRequest;
 	
+	wxBeginBusyCursor();
+	
+	// if results, destroy them
+	if (m_DataBase->DataBaseHasResults()==true)
+	{
+		m_DataBase->DataBaseClearResults();
+		wxLogDebug(_T("Results of last query where automatically cleared"));
+	}
+	
+	
 	// get the text to process.
 	wxString myRequest = ((wxTextCtrl*) FindWindow(ID_TEXTCTRL))->GetValue();
+	int myNumberOfRequest = m_DataBase->DataBaseQueriesNumber(myRequest);
+	wxLogMessage(_("Processing Request... %d Request Found"),myNumberOfRequest);
 	
-	if (!myRequest.IsEmpty()) 
+	wxString myComment = _("Query error, please check syntax");
+	if (m_DataBase->DataBaseQuery(myRequest)==true)
 	{
-		// busy cursor
-		wxBeginBusyCursor();
+		myComment = _("Query passed OK, no results");
 		
-		myRequestArray = m_DataBase->DataBaseCutRequest(myRequest);
-		
-		wxLogMessage(_("Processing Request... %d Request Found"),myRequestArray.Count());
-			
-		// check the number of Request for passing to multiple or single query
-		// needed if we wont the results back
-		
-		// SINGLE REQUEST
-		if (myRequestArray.Count() == 1) 
+		if (m_DataBase->DataBaseHasResults()==true)
 		{
-			if (m_DataBase->DataBaseQuery(myRequestArray.Item(0))) 
-			{
-				// the button show result is valid now...
-				(wxButton*)FindWindow(ID_BTN_SHOWRESULTS)->Enable(TRUE);
-				
-				myComment = wxString(_("Result : One request passed OK"));
-			}
-			else {
-				myComment = wxString(_("Result : Request Error, please check syntax"));
-				wxLogDebug(m_DataBase->DataBaseGetLastError());
-			}
-
-			
-			
+			myComment = _("Query passed OK");
+			wxButton * myShowResultButton = (wxButton*)FindWindow(ID_BTN_SHOWRESULTS);
+			wxASSERT(myShowResultButton);
+			myShowResultButton->Enable(true);
 		}
 		
-		// MULTIPLE REQUEST
-		else
-		{
-			if (m_DataBase->DataBaseQueryMultiple(myRequest) != 0)
-			{
-					myComment.Printf(_("Results : Requests Errors"),myRequestArray.Count());
-			
-//			for (unsigned int i=0; i< myRequestArray.Count(); i++) 
-//			{
-//				myTempRequest = myRequestArray.Item(i);
-//				if (myTempRequest.IsEmpty())
-//					break;
-//				if (m_DataBase->DataBaseQueryNoResult(myTempRequest))
-//				{
-//					myErrorsArray.Add(i+1);
-//				}
-//				else
-//				{
-//					m_hasRequest = TRUE;
-//				}
-//			}
-//			
-//			// if errors found
-//			if (myErrorsArray.Count() > 0) 
-//			{
-//				myComment.Printf(_("Results : Request failed on request n : "));
-//				for (unsigned int j=0; j < myErrorsArray.Count(); j++) 
-//				{
-//					myComment.Append(wxString::Format(_T("%d, "),myErrorsArray.Item(j)));
-//				}
-			}
-			// no errors found
-			else 
-			{
-				myComment.Printf(_("Results : %d request passed OK"),myRequestArray.Count());
-				m_hasRequest = TRUE;
-			}
-		}
-
-		// display results
-		((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);	
-
-		// end busy...
-		wxEndBusyCursor();
 	}
+
+	// display results
+	((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);	
+	
+	// end busy...
+	wxEndBusyCursor();
 	
 }
 
@@ -205,7 +161,9 @@ void SQLPROCESS_DLG_OP2::OnShowResult (wxCommandEvent & event)
 	myDlg->TransferDataToWindow(m_DataBase);
 	
 	// gray the button
-	(wxButton*)FindWindow(ID_BTN_SHOWRESULTS)->Enable(FALSE);
+	wxButton * myShowResultButton = (wxButton*)FindWindow(ID_BTN_SHOWRESULTS);
+	wxASSERT(myShowResultButton);
+	myShowResultButton->Enable(false);
 	
 	
 	// show the window
@@ -259,9 +217,13 @@ bool SHOWRESULT_OP2::TransferDataToWindow(DataBase * pmDataBase)
 	wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
 	GridOperation * myGridOP = new GridOperation(myGridCtrl);
 	
-	myResults = pmDataBase->DataBaseGetNextResult();		
+	if (pmDataBase->DataBaseGetNextResult(myResults)==false)
+	{
+		pmDataBase->DataBaseClearResults();
+		wxLogError(_T("No results, this is an error"));
+		return false;
+	}
 	myResultsNumber = myResults.Count();
-	
 	if (myResultsNumber > 0) 
 	{
 		// changing number of cols
@@ -270,25 +232,20 @@ bool SHOWRESULT_OP2::TransferDataToWindow(DataBase * pmDataBase)
 		// add the first line
 		myGridOP->GridOpAddDataRow(myResultsNumber,&myResults);
 		
-		while (1) 
+		while (pmDataBase->DataBaseGetNextResult(myResults)) 
 		{
-			myResults = pmDataBase->DataBaseGetNextResult();
-			myResultsNumber = myResults.Count();
-			if (myResultsNumber == 0) 
-			{
-				break;
-			}
-			// add a new line
 			myGridOP->GridOpAddDataRow(myResultsNumber,
 									  &myResults);
 		}
+		pmDataBase->DataBaseClearResults();
 	}
+	
 	else 
 	{
 		wxLogMessage(_("No results returned by your request"));
 	}
 
-	return TRUE;
+	return true;
 }
 
 void SHOWRESULT_OP2::OnCancel(wxCommandEvent &event)

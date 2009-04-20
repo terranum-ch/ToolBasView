@@ -384,52 +384,54 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	OGREnvelope * psExtent = new OGREnvelope();
 	OGREnvelope oEnv;
 	MYSQL_ROW row;
-	unsigned long *  row_length;
+	unsigned long  row_length = 0;
 	
 	// query for the geometry enveloppe for all lines
 	wxString sSentence = _T("SELECT Envelope(OBJECT_GEOMETRY) FROM ") + m_LayerName;
 	wxLogDebug(m_LayerName);
-	if (m_pActiveDB->DataBaseQuery(sSentence))
+	if (m_pActiveDB->DataBaseQuery(sSentence)==false)
 	{
-		// init extend based on the first object
-		// to avoid 0 values for Xmin.
-		row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
-		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
-		poGeometry->getEnvelope(&oEnv);
-		psExtent->MinX = oEnv.MinX;
-		psExtent->MinY = oEnv.MinY;
-		delete poGeometry;
-		
-		// loop all lines
-		while (1)
-		{
-			row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
-			if (row_length == NULL)
-				break;
-			
-			// compute the geometry and get the xmin xmax, ymin, ymax
-			OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
-			if ( poGeometry != NULL )
-			{
-				poGeometry->getEnvelope(&oEnv);
-				if (oEnv.MinX < psExtent->MinX) 
-					psExtent->MinX = oEnv.MinX;
-				if (oEnv.MinY < psExtent->MinY) 
-					psExtent->MinY = oEnv.MinY;
-				if (oEnv.MaxX > psExtent->MaxX) 
-					psExtent->MaxX = oEnv.MaxX;
-				if (oEnv.MaxY > psExtent->MaxY) 
-					psExtent->MaxY = oEnv.MaxY;
-			}
-			delete poGeometry;
-		}
-		return psExtent;
-		
+		wxLogDebug(_T("Error computing extend"));
+		m_pActiveDB->DataBaseClearResults();
+		return NULL;
 	}
 	
-	wxLogDebug(_T("Error computing extend : %s "),
-			   m_pActiveDB->DataBaseGetLastError().c_str());
-	return NULL;	
+	
+	// init extend based on the first object
+	// to avoid 0 values for Xmin.
+	if(m_pActiveDB->DataBaseGetNextRowResult(row, row_length)==false)
+	{
+		m_pActiveDB->DataBaseClearResults();
+		return NULL;
+	}
+	
+	OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, &row_length);
+	poGeometry->getEnvelope(&oEnv);
+	psExtent->MinX = oEnv.MinX;
+	psExtent->MinY = oEnv.MinY;
+	delete poGeometry;
+	
+	// loop all lines
+	while (m_pActiveDB->DataBaseGetNextRowResult(row, row_length)==true)
+	{
+		wxASSERT(row_length != 0);
+		// compute the geometry and get the xmin xmax, ymin, ymax
+		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, &row_length);
+		if ( poGeometry != NULL )
+		{
+			poGeometry->getEnvelope(&oEnv);
+			if (oEnv.MinX < psExtent->MinX) 
+				psExtent->MinX = oEnv.MinX;
+			if (oEnv.MinY < psExtent->MinY) 
+				psExtent->MinY = oEnv.MinY;
+			if (oEnv.MaxX > psExtent->MaxX) 
+				psExtent->MaxX = oEnv.MaxX;
+			if (oEnv.MaxY > psExtent->MaxY) 
+				psExtent->MaxY = oEnv.MaxY;
+		}
+		delete poGeometry;
+	}
+	return psExtent;
 }
 
 
@@ -437,14 +439,13 @@ long GISDBProvider::GISGetFeatureCount ()
 {
 	wxString sSentence = wxString::Format(_T("SELECT  COUNT(*) FROM %s"),
 										  m_LayerName.c_str());
-	
+	long iRetVal = wxNOT_FOUND;
 	if (m_pActiveDB->DataBaseQuery(sSentence))
 	{
-	  return m_pActiveDB->DataBaseGetResultAsInt();
+		m_pActiveDB->DataBaseGetNextResult(iRetVal);
+		m_pActiveDB->DataBaseClearResults();
 	}
-	// bellow function is slower as the one used
-	//return m_pLayer->GetFeatureCount();
-	return -1;
+	return iRetVal;
 }
 
 int GISDBProvider::GISGetLayerCount ()
@@ -461,8 +462,9 @@ bool GISDBProvider::GISSetActiveLayer (const wxString & layername)
 	if (m_pActiveDB->DataBaseQuery(sSentence))
 	{
 		// ok the table exist
-		if (m_pActiveDB->DataBaseHasResult())
+		if (m_pActiveDB->DataBaseHasResults())
 		{
+			m_pActiveDB->DataBaseClearResults();
 			m_LayerName = layername;
 			return TRUE;
 		}
@@ -524,25 +526,15 @@ bool GISDBProvider::GISComputeIndex (const wxArrayString & fields, const wxStrin
 	wxString sSentence = wxString::Format(_T("CREATE SPATIAL INDEX sp_index ON %s (OBJECT_GEOMETRY);"),
 										  table.c_str());
 	
-//	// append columns for size of string array
-//	for (unsigned int i = 0; i<fields.GetCount(); i++)
-//	{
-//		sSentence.Append(wxString::Format(_T("%s,"),(fields.Item(i)).c_str()));
-//	}
-//	
-//	// remove the last character (the last comma)
-//	sSentence.RemoveLast();
-//	sSentence.Append(_T("); "));
 	
 	// process the query and return true if ok
-	if(m_pActiveDB->DataBaseQueryMultiple(sSentence)==0)
+	if(m_pActiveDB->DataBaseQueryNoResults(sSentence)==true)
 	{
-		return TRUE;
+		return true;
 	}
 		
-	wxLogDebug(_T("Not able to create index : %s"),
-			   m_pActiveDB->DataBaseGetLastError().c_str());
-	return FALSE;
+	wxLogDebug(_T("Not able to create index"));
+	return false;
 }
 
 
@@ -603,12 +595,11 @@ bool GISDBProvider::GISSetFeatureAsWkTBuffer (const wxArrayString & featurelist,
 		
 	//wxLogDebug(sSentence);
 
-	if (m_pActiveDB->DataBaseQueryMultiple(sSentence) == 0)
+	if (m_pActiveDB->DataBaseQueryNoResults(sSentence) == 0)
 	{
-		return TRUE;
+		return true;
 	}
-	wxLogDebug (_T("Error is : %s"), m_pActiveDB->DataBaseGetLastError().c_str());
-	return FALSE;
+	return false;
 	
 	
 }
@@ -668,6 +659,7 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 													 int & iFidFound)
 {
 	OGRGeometry * myFoundLine = NULL;
+	long myRows = 0;
 	
 	// step one, create the buffer for point
 	OGRPolygon * myBuffPoint = (OGRPolygon *) GISCreateBufferPoint(x, y, ibuffer);
@@ -677,9 +669,9 @@ OGRGeometry * GISDBProvider:: GISGetFeatureByBuffer (const double & x,
 		if (GISSetSpatialFilter(m_LayerName, myBuffPoint))
 		{
 			
-			wxLogDebug(_T("Setting spatial filter OK, %d results fetched"),
-					   m_pActiveDB->DatabaseGetCountResults());
-			if (m_pActiveDB->DataBaseHasResult())
+			m_pActiveDB->DataBaseGetResultSize(NULL, &myRows);
+			wxLogDebug(_T("Setting spatial filter OK, %d results fetched"),myRows);
+			if (m_pActiveDB->DataBaseHasResults())
 			{
 				// step three, find the line
 				myFoundLine = GISSearchLines(NULL, myBuffPoint, iFidFound);
@@ -715,9 +707,6 @@ bool  GISDBProvider::GISSetSpatialFilter (const wxString & table, OGRGeometry * 
 		return TRUE;
 	}
 	
-	wxLogDebug(wxString::Format(_T("Error setting spatial filter : %s"),
-								m_pActiveDB->DataBaseGetLastError().c_str()));
-	
 	return FALSE;
 }
 
@@ -725,7 +714,7 @@ bool  GISDBProvider::GISSetSpatialFilter (const wxString & table, OGRGeometry * 
 
 bool	GISDBProvider::GISDeleteSpatialFilter (OGRLayer * templayer)
 {
-	m_pActiveDB->DataBaseDestroyResults();
+	m_pActiveDB->DataBaseClearResults();
 	return TRUE;
 }
 
@@ -770,19 +759,14 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 	//OGRFeature *poFeature;
 	OGRGeometry *iterateGeometry;
 	MYSQL_ROW row;
-	unsigned long * row_length;
+	unsigned long row_length;
 
 	// results are aleready created by setting spatial filter
 	// now we iterate through the selected lines
 	
-	while (1)
+	while (m_pActiveDB->DataBaseGetNextRowResult(row, row_length))
 	{
-		row_length = m_pActiveDB->DataBaseGetNextRowResult(row);
-		if (row_length == NULL)
-			break;
-		//iFID ++;
-		
-		iterateGeometry = GISCreateDataBaseGeometry(row, row_length, 1);
+		iterateGeometry = GISCreateDataBaseGeometry(row, &row_length, 1);
 		if (iterateGeometry != NULL)
 		{
 			if(pointbuffer->Intersect(iterateGeometry))

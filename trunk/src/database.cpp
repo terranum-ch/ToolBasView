@@ -419,6 +419,23 @@ bool DataBase::DataBaseGetNextResult(wxArrayDouble & results)
 
 
 
+
+bool DataBase::DataBaseGetNextRowResult(MYSQL_ROW & row, unsigned long & length)
+{
+	row = NULL;
+	length = 0;
+	
+	if (DBGetNextRecord(row)==false)
+		return false;
+	
+	unsigned long * myTempLength = mysql_fetch_lengths(m_MySQLRes);
+	wxASSERT(*myTempLength != 0);
+	length = *myTempLength;
+	return true;
+}
+
+
+
 bool DataBase::DataBaseGetResults(wxArrayString & results)
 {
 	results.Clear();
@@ -526,8 +543,11 @@ bool DataBase::DataBaseQueryNoResults(const wxString & query)
 		return false;
 	
 	if (DataBaseHasResults())
+	{
+		wxLogDebug(_T("Not able to run query, results were not cleared"));
 		return false;
-	
+	}
+		
 	char buf[query.Len()];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)
@@ -549,8 +569,11 @@ bool DataBase::DataBaseQuery (const wxString & query)
 		return false;
 	
 	if (DataBaseHasResults())
+	{
+		wxLogDebug(_T("Not able to run query, results were not cleared"));
 		return false;
-	
+	}
+		
 	char buf[query.Len()];
 	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
 	if (mysql_query(m_MySQL, buf) != 0)

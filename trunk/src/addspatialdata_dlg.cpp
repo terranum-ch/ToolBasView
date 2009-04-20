@@ -121,7 +121,13 @@ bool ADDSPATIALDATA_DLG::AddListOfTable ()
 	if (m_pDatabase != NULL)
 	{
 		// get list of tables from database
-		myListTables = m_pDatabase->DataBaseListTables();
+		if(m_pDatabase->DataBaseQuery(_T("SHOW TABLES"))==false)
+		{
+			m_pDatabase->DataBaseClearResults();
+			return false;
+		}
+		if (m_pDatabase->DataBaseGetResults(myListTables)==false)
+			return false;
 		
 		// put the list in the wxChoice
 		m_DLGAS_ListTables->Append(myListTables);
