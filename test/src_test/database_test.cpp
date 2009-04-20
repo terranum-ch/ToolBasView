@@ -22,6 +22,8 @@
 
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
+#include <iostream>
+using namespace std;
 
 
 class DataBaseTEST : public CppUnit::TestFixture 
@@ -47,6 +49,7 @@ class DataBaseTEST : public CppUnit::TestFixture
 	CPPUNIT_TEST( TESTGetDataBaseSize );
 	CPPUNIT_TEST( TESTGetLastInsertID );
 	CPPUNIT_TEST( TESTGetRawRow );
+	CPPUNIT_TEST( TESTPause );
 	CPPUNIT_TEST_SUITE_END();
 	
 private:
@@ -146,7 +149,7 @@ public:
 	{
 		CPPUNIT_ASSERT(m_DB->DataBaseOpen(_T("/Users/Lucien/DATA/SIG/COMBIOULA/CORRIGE/TOOLMAP/"),
 										  _T("combioula_correct"))==true);
-		uint myCols = 0;
+		unsigned int myCols = 0;
 		long myRows = 0;
 		CPPUNIT_ASSERT(m_DB->DataBaseGetResultSize(&myCols, &myRows)==false);
 		CPPUNIT_ASSERT(m_DB->DataBaseQuery(_T("SELECT * FROM dmn_layer_object WHERE OBJECT_ID = 17")));
@@ -177,7 +180,7 @@ public:
 										  _T("combioula_correct"))==true);
 		CPPUNIT_ASSERT(m_DB->DataBaseQuery(_T("SELECT OBJECT_ID, OBJECT_CD FROM dmn_layer_object WHERE OBJECT_ID <= 17")));
 		
-		uint myCols = 0;
+		unsigned int myCols = 0;
 		long myRows = 0;
 		
 		CPPUNIT_ASSERT (m_DB->DataBaseGetResultSize(&myCols, &myRows));
@@ -341,6 +344,16 @@ public:
 		CPPUNIT_ASSERT(myRow == NULL);
 		CPPUNIT_ASSERT(myLength == 0);
 		
+	}
+	
+	void TESTPause()
+	{
+		// this create a pause test
+		//int iReturn = wxMessageBox(_T("Program paused, press ok to continue"), _("Pause"), wxOK | wxICON_INFORMATION);
+		//system("pause");
+		int i = 0;
+		cout << "waiting for input...";
+		cin >> i;
 	}
 	
 };

@@ -81,7 +81,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 	
 	//init library
 	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_UNIX);
-	char bufDataDir[myDatadir.Len()];
+	char * bufDataDir = new char[myDatadir.Len()];
 	strcpy( bufDataDir, (const char*)myDatadir.mb_str(wxConvUTF8));
 	
 #if defined(__WINDOWS__)
@@ -114,14 +114,17 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 		(char *)NULL
 	};
 	
+	
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 	int myReturn = mysql_library_init(num_elements, server_args, server_groups);
 	if (myReturn != 0)
 	{
+		delete [] bufDataDir;
 		DBLogLastError();
 		return false;
 	}
 	
+	delete [] bufDataDir;
 	m_MySQL = mysql_init(NULL);
 	mysql_options(m_MySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
 	wxLogDebug(_T("Initing MySQL library..."));
@@ -326,7 +329,7 @@ bool DataBase::DataBaseGetNextResult(wxArrayString & results)
 	if (DBGetNextRecord(record)==false)
 		return false;
 	
-	uint myCols = 0;
+	unsigned int myCols = 0;
 	DataBaseGetResultSize(&myCols, NULL);
 	if (myCols == 1)
 	{
@@ -364,7 +367,7 @@ bool DataBase::DataBaseGetNextResult(wxArrayLong & results)
 	if (DBGetNextRecord(record)==false)
 		return false;
 	
-	uint myCols = 0;
+	unsigned int myCols = 0;
 	DataBaseGetResultSize(&myCols, NULL);
 	if (myCols == 1)
 	{
@@ -402,7 +405,7 @@ bool DataBase::DataBaseGetNextResult(wxArrayDouble & results)
 	if (DBGetNextRecord(record)==false)
 		return false;
 	
-	uint myCols = 0;
+	unsigned int myCols = 0;
 	DataBaseGetResultSize(&myCols, NULL);
 	if (myCols == 1)
 	{
