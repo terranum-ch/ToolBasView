@@ -154,7 +154,7 @@ class GISDBProvider : public GISDataProvider
 		bool		GISDeleteSpatialFilter (OGRLayer * templayer);
 		
 		// create function
-		OGRGeometry * GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length, int geometry_col=0);
+		OGRGeometry * GISCreateDataBaseGeometry(MYSQL_ROW & row, const  tmArrayULong & length, int geometry_col=0);
 		
 	};
 

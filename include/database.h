@@ -46,6 +46,9 @@
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
+//WX_DEFINE_ARRAY_(int, ArrayOfInts);
+WX_DEFINE_ARRAY_LONG(unsigned long, tmArrayULong);
+
 class DataBase
 	{
 	private:
@@ -64,6 +67,7 @@ class DataBase
 		bool DBUseDataBase(const wxString & dbname);
 		bool DBIsDataBaseReady ();
 		bool DBGetNextRecord (MYSQL_ROW & record);
+		bool DBResultsNotNull ();
 		
 	protected:
 	public:
@@ -73,10 +77,16 @@ class DataBase
 		// database operations
 		bool DataBaseCreateNew(const wxString & datadir, const wxString & name);
 		bool DataBaseOpen(const wxString & datadir, const wxString & name);
+		bool DataBaseDelete();
 		wxString DataBaseGetName ();
 		wxString DataBaseGetPath ();
 		wxString DataBaseGetSize (int precision = 2, const wxString & failmsg = _("Not available"));
 		static wxString DataBaseGetVersion ();
+		
+		// thread operations
+		bool DataBaseThreadInit();
+		void DataBaseThreadEnd();
+		
 		
 		// query operations
 		bool DataBaseQueryNoResults(const wxString & query);
@@ -95,7 +105,7 @@ class DataBase
 		bool DataBaseGetNextResult(wxArrayLong & results);
 		bool DataBaseGetNextResult(double & result);
 		bool DataBaseGetNextResult(wxArrayDouble & results);
-		bool DataBaseGetNextRowResult(MYSQL_ROW & row, unsigned long & length);
+		bool DataBaseGetNextRowResult(MYSQL_ROW & row, tmArrayULong & lengths);
 		
 		// results set (auto cleared after use)
 		bool DataBaseGetResults(wxArrayString & results);
