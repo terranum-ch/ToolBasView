@@ -37,22 +37,23 @@ INCLUDE ("cmake/Use_wxWindows.cmake")
 INCLUDE ("cmake/findMySQLEmbedded.cmake")
 
 
+
 #GEOS - GDAL libs
  INCLUDE ("cmake/findGISLib.cmake")
 
 # Getting the subversion number and
 # generating a file called svn_version.h
-IF (WIN32)
-	EXECUTE_PROCESS(
-		COMMAND version_svn_win.bat
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-	)
-ELSE (WIN32)
-	EXECUTE_PROCESS(
-		COMMAND sh version_svn_unix.sh
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-	)
-ENDIF(WIN32)
+#IF (WIN32)
+#	EXECUTE_PROCESS(
+#		COMMAND version_svn_win.bat
+#		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
+#	)
+#ELSE (WIN32)
+#	EXECUTE_PROCESS(
+#		COMMAND sh version_svn_unix.sh
+#		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
+#	)
+#ENDIF(WIN32)
 
 
 IF( APPLE )
@@ -72,10 +73,10 @@ IF( APPLE )
 	EXEC_PROGRAM( "cp ${PROJECT_SOURCE_DIR}/../art/${APP_ICON} ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
 	
 	# Copy errmsg.sys into file
-	EXECUTE_PROCESS(
-		COMMAND sh copy_mysql_errmsg_mac.sh "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app"
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-		)
+	#EXECUTE_PROCESS(
+	#	COMMAND sh copy_mysql_errmsg_mac.sh "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app"
+	#	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
+	#	)
 
 ENDIF (APPLE)
 
@@ -88,14 +89,18 @@ ENDIF (APPLE)
 IF (WIN32)
 
 	SOURCE_GROUP (resource FILES ../src/ToolBasView.rc)
- 	ADD_EXECUTABLE (${PROGNAME} WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
- 	TARGET_LINK_LIBRARIES (${PROGNAME} ${WXWINDOWS_LIBS})
+	ADD_EXECUTABLE (${PROGNAME} WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
+	TARGET_LINK_LIBRARIES (${PROGNAME} ${WXWINDOWS_LIBS})
 
 ELSE (WIN32)
- 	ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
+	ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
  
 ENDIF (WIN32)
 
+
+
+#SVN NUMBERING
+ INCLUDE ("cmake/use_svnnumber.cmake")
 
 # copy libs to bundle if we are under mac...
 # check is done internally.
@@ -121,6 +126,9 @@ ENDIF (WIN32)
 # CHECK ARE DONE INTERNALLY YOU 
 # CAN CALL THIS WITHOUT FEAR...
 INCLUDE ("cmake/Use_wingdiplus.cmake")
+
+#Copy errmsg.sys to correct path
+INCLUDE ("cmake/useMySQLEmbedded.cmake")
 
 # UNIT TEST PROGRAM
 SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${PROGNAME}")

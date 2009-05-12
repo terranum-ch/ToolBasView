@@ -20,6 +20,8 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 
+#define UNIT_TESTING
+
 // INCLUDE TESTS FILES
 #include "../../src/database.cpp"
 #include "database_test.cpp"	// testing the database

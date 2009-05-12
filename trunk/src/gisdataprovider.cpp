@@ -384,7 +384,7 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	OGREnvelope * psExtent = new OGREnvelope();
 	OGREnvelope oEnv;
 	MYSQL_ROW row;
-	unsigned long  row_length = 0;
+	tmArrayULong row_length;
 	
 	// query for the geometry enveloppe for all lines
 	wxString sSentence = _T("SELECT Envelope(OBJECT_GEOMETRY) FROM ") + m_LayerName;
@@ -405,7 +405,7 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 		return NULL;
 	}
 	
-	OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, &row_length);
+	OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
 	poGeometry->getEnvelope(&oEnv);
 	psExtent->MinX = oEnv.MinX;
 	psExtent->MinY = oEnv.MinY;
@@ -414,9 +414,9 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	// loop all lines
 	while (m_pActiveDB->DataBaseGetNextRowResult(row, row_length)==true)
 	{
-		wxASSERT(row_length != 0);
+		wxASSERT(row_length.GetCount() > 0);
 		// compute the geometry and get the xmin xmax, ymin, ymax
-		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, &row_length);
+		OGRGeometry *poGeometry = GISCreateDataBaseGeometry(row, row_length);
 		if ( poGeometry != NULL )
 		{
 			poGeometry->getEnvelope(&oEnv);
@@ -719,14 +719,14 @@ bool	GISDBProvider::GISDeleteSpatialFilter (OGRLayer * templayer)
 }
 
 
-OGRGeometry * GISDBProvider::GISCreateDataBaseGeometry(MYSQL_ROW & row, unsigned long * length, int geometry_col)
+OGRGeometry * GISDBProvider::GISCreateDataBaseGeometry(MYSQL_ROW & row, const  tmArrayULong & length, int geometry_col)
 {
 	OGRGeometry * geometry = NULL;
 	// Geometry columns will have the first 4 bytes contain the SRID.
 	OGRGeometryFactory::createFromWkb(((unsigned char *)row[geometry_col]) + 4, 
 												  NULL,
 												  &geometry,
-												  length[geometry_col] - 4 );
+												  length.Item(geometry_col) - 4 );
 	return geometry;
 }
 
@@ -759,14 +759,14 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 	//OGRFeature *poFeature;
 	OGRGeometry *iterateGeometry;
 	MYSQL_ROW row;
-	unsigned long row_length;
+	tmArrayULong row_length;
 
 	// results are aleready created by setting spatial filter
 	// now we iterate through the selected lines
 	
 	while (m_pActiveDB->DataBaseGetNextRowResult(row, row_length))
 	{
-		iterateGeometry = GISCreateDataBaseGeometry(row, &row_length, 1);
+		iterateGeometry = GISCreateDataBaseGeometry(row, row_length, 1);
 		if (iterateGeometry != NULL)
 		{
 			if(pointbuffer->Intersect(iterateGeometry))
