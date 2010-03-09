@@ -34,6 +34,8 @@
     #endif
 #endif
 
+#include <wx/clipbrd.h>
+
 //----------------------------------------------------------------------------
 // ABOUTDLG_OP2
 //----------------------------------------------------------------------------
@@ -193,6 +195,7 @@ void SQLPROCESS_DLG_OP2::OnCancel(wxCommandEvent &event)
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SHOWRESULT_OP2,wxDialog)
     EVT_BUTTON( wxID_CANCEL, SHOWRESULT_OP2::OnCancel )
+	EVT_BUTTON(wxID_COPY, SHOWRESULT_OP2::OnCopyResults)
 END_EVENT_TABLE()
 
 SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -253,6 +256,33 @@ void SHOWRESULT_OP2::OnCancel(wxCommandEvent &event)
     event.Skip();
 }
 
+
+void SHOWRESULT_OP2::OnCopyResults(wxCommandEvent & event){
+	
+	//find the grid Ctrl 
+	wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
+	wxASSERT(myGridCtrl);
+	
+	wxString myValues = wxEmptyString;
+	for (int irow = 0; irow < myGridCtrl->GetNumberRows(); irow++){
+		for (int icol = 0; icol < myGridCtrl->GetNumberCols(); icol++) {			
+			myValues.Append(myGridCtrl->GetCellValue(irow, icol));
+			if (icol < myGridCtrl->GetNumberCols() -1) {
+				myValues.Append(_T("\t"));
+			}
+		}
+		myValues.Append(_T("\n"));
+	}
+	
+	if (wxTheClipboard->Open())
+    {
+        // This data objects are held by the clipboard,
+        // so do not delete them in the app.
+        wxTheClipboard->SetData(new wxTextDataObject(myValues));
+        wxTheClipboard->Close();
+    }
+}
+			   
 
 //----------------------------------------------------------------------------
 // NEWDBASE_OP2

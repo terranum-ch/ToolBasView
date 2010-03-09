@@ -165,8 +165,19 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->CreateGrid( 10, 10, wxGrid::wxGridSelectCells );
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item2 = new wxButton( parent, wxID_CANCEL, _("Exit results"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
+	
+	wxButton* m_button1;
+	m_button1 = new wxButton( parent, wxID_COPY, _("Copy Results"));
+	bSizer2->Add( m_button1, 0, wxALL, 5 );
+	
+	wxButton* m_button2;
+	m_button2 = new wxButton( parent, wxID_CANCEL, _("Exit Results"));
+	bSizer2->Add( m_button2, 0, wxALL, 5 );
+	
+	item0->Add( bSizer2, 0, wxALIGN_RIGHT | wxALL, 5 );
+	
 
     if (set_sizer)
     {
