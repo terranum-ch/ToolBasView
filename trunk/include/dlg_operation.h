@@ -127,6 +127,7 @@ public:
 private:
     // WDR: handler declarations for SHOWRESULT_OP2
     void OnCancel( wxCommandEvent &event );
+	void OnCopyResults (wxCommandEvent & event);
 
 private:
     DECLARE_EVENT_TABLE()
