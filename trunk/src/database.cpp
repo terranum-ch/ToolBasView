@@ -125,7 +125,8 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 		"this_program",       /* this string is not used */
 		bufDataDir,
 		mylanguagedir,
-		"--port=3309"
+		"--port=3309",
+		"--character-set-server=utf8"
 #ifndef UNIT_TESTING
 #if defined (MYSQL_IS_LOGGING)
 		, bufLogPath
@@ -162,6 +163,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 	delete [] bufDataDir;
 	m_MySQL = mysql_init(NULL);
 	mysql_options(m_MySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
+	mysql_options(m_MySQL, MYSQL_SET_CHARSET_NAME, "utf8");
 	wxLogDebug(_T("Initing MySQL library..."));
 	return true;
 }

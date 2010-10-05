@@ -32,7 +32,7 @@
 
 
 #include <ogrsf_frmts.h>	// compile GDAL with GEOS support !
-#include "geos_c.h"			// for geos (Geographic data processing)
+#include <geos.h>			// for geos (Geographic data processing)
 #include "database.h"		// for GISDBProvider to support direct com with DB
 
 enum GISPROVIDER_SUPPORTED_TYPE
