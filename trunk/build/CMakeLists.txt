@@ -1,16 +1,18 @@
 # CMAKE BUILD FILE FOR TOOLBASVIEW (LINUX AND WINDOWS)
 # USE WXIDGETS AND MYSQL
-# (c) LUCIEN SCHREIBER CREALP 2007
-cmake_minimum_required(VERSION 2.4)
+# (c) LUCIEN SCHREIBER CREALP 2011
+cmake_minimum_required(VERSION 2.6)
 
 ## POLICY FOR WINDOWS ONLY ???
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
+
 SET (PROGNAME ToolBasView)
 PROJECT (${PROGNAME})
 
+# SEARCH FILES --------------------------------
 #search all source files
 FILE (GLOB SRC_FILES ../src/*.cpp)
 SOURCE_GROUP (source FILES ${SRC_FILES})
@@ -20,57 +22,40 @@ FILE (GLOB HEAD_FILES "../include/*.h")
 SOURCE_GROUP (header FILES ${HEAD_FILES})
 
 
-#SET(TRUNK_PATH ${PROJECT_SOURCE_DIR}/.. CACHE PATH "Path to the trunk" )
-
 MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE})
 
+# INCLUDE LIBRARIES NEEDED ----------------------
 # WXWIDGETS
 # DEFINE ALL INCLUDES AND SO ON
- SET(WXWINDOWS_USE_GL 0)
+SET(WXWINDOWS_USE_GL 0)
 INCLUDE ("cmake/Use_wxWindows.cmake")
-
-
-#SQLite EMBEDDED
-# INCLUDE ("cmake/findSQLite.cmake")
 
 #MYSQL EMBEDDED
 INCLUDE ("cmake/findMySQLEmbedded.cmake")
 
-
-
 #GEOS - GDAL libs
- INCLUDE ("cmake/findGISLib.cmake")
-
-# Getting the subversion number and
-# generating a file called svn_version.h
-#IF (WIN32)
-#	EXECUTE_PROCESS(
-#		COMMAND version_svn_win.bat
-#		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-#	)
-#ELSE (WIN32)
-#	EXECUTE_PROCESS(
-#		COMMAND sh version_svn_unix.sh
-#		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-#	)
-#ENDIF(WIN32)
+INCLUDE ("cmake/findGISLib.cmake")
 
 
+
+# SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
 IF( APPLE )
-	SET (APP_ICON "fish.icns")
+	SET (APP_ICON "toolbasview.icns")
 	#bundle variables for compilation under Mac OS
-	SET(MACOSX_BUNDLE_INFO_STRING "Look into MySQL database")
+	SET(MACOSX_BUNDLE_INFO_STRING "ToolMap database Viewer")
 	SET(MACOSX_BUNDLE_ICON_FILE ${APP_ICON})
 	#MACOSX_BUNDLE_GUI_IDENTIFIER
 	#MACOSX_BUNDLE_LONG_VERSION_STRING
 	SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROGNAME}")
 	SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.1")
 	SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.1")
-	SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2008")
+	SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2011")
 	
 	# Need to copy the icon file
-	EXEC_PROGRAM( "mkdir -p       ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
-	EXEC_PROGRAM( "cp ${PROJECT_SOURCE_DIR}/../art/${APP_ICON} ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
+	set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+	set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
+	#EXEC_PROGRAM( "mkdir -p       ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
+	#EXEC_PROGRAM( "cp ${PROJECT_SOURCE_DIR}/../art/${APP_ICON} ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
 	
 	# Copy errmsg.sys into file
 	#EXECUTE_PROCESS(
@@ -100,7 +85,7 @@ ENDIF (WIN32)
 
 
 #SVN NUMBERING
- INCLUDE ("cmake/use_svnnumber.cmake")
+INCLUDE ("cmake/use_svnnumber.cmake")
 
 # copy libs to bundle if we are under mac...
 # check is done internally.

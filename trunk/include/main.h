@@ -25,8 +25,6 @@ const int ID_STATUS = 10003;
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
 
-// ART FILES
-#include "../art/Fish_sml.xpm"
 
 const wxString sProgName = _("ToolBasView version 1.3");
 

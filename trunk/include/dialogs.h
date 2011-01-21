@@ -30,7 +30,7 @@
 #include <wx/tglbtn.h>
 
 // ICON
-#include "../art/myslq.xpm" // the mysql logo
+#include "../art/toolbasview_bmp.h" // the mysql logo
 
 
 const int ID_TEXTCTRL = 10000;

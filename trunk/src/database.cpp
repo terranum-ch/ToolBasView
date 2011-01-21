@@ -75,10 +75,7 @@ DataBase::~DataBase()
 
 
 
-bool DataBase::DBLibraryInit (const wxString & datadir)
-{
-
-
+bool DataBase::DBLibraryInit (const wxString & datadir){
 	// path validity
 	wxFileName myValidPath (datadir, _T(""));
 	if (myValidPath.IsDirReadable()==false)
@@ -86,57 +83,47 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 		wxLogError(_("Directory : %s doesn't exists or isn't readable"),datadir.c_str());
 		return false;
 	}
-	
 
 	//init library
 	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_NATIVE);
-	char * bufDataDir = new char[myDatadir.Len() * sizeof(wxString)];
-	strcpy( bufDataDir, (const char*)myDatadir.mb_str(wxConvUTF8));
 	
 #ifndef UNIT_TESTING	
 	wxFileName myLogDirName (wxStandardPaths::Get().GetDocumentsDir(),_T("toolbasview_debug_log.txt"));
 	wxString myLogDirString = _T("--log=");
-	myLogDirString.Append(myLogDirName.GetFullPath());
-	
-#if defined (MYSQL_IS_LOGGING)
-	char * bufLogPath = new char[myLogDirString.Len() * sizeof(wxString)];
-	strcpy(bufLogPath, (const char*)myLogDirString.mb_str(wxConvUTF8));
+    myLogDirString.Append(myLogDirName.GetFullPath());
 #endif
 
-	
-#endif
-
+    
 #if defined(__WINDOWS__)
-	char * mylanguagedir = "--language=./mysql";
+	wxString mylanguagedir = _T("--language=./mysql");
 #elif defined(__WXMAC__)
-	char * mylanguagedir =	"--language=./ToolBasView.app/Contents/mysql";
+	wxString mylanguagedir =	_T("--language=./ToolBasView.app/Contents/mysql");
 #elif defined(__WXGTK20__)
-	char * mylanguagedir = "--language=./mysql";
+	wxString mylanguagedir = _T("--language=./mysql");
 #else
 	wxASSERT_MSG (0, _T("Check compilation option for MySQL"));
-	char * mylanguagedir = "";
+	wxString mylanguagedir = _T("");
 #endif
 
 
-
-
-	char *server_args[] =
+	char const *server_args[] =
 	{
 		"this_program",       /* this string is not used */
-		bufDataDir,
-		mylanguagedir,
+		myDatadir.mb_str(wxConvUTF8),
+		mylanguagedir.mb_str(wxConvUTF8),
 		"--port=3309",
-		"--character-set-server=utf8"
+		"--character-set-server=utf8",
+        "--default-storage-engine=MyISAM",
+        "--ignore-builtin-innodb"
 #ifndef UNIT_TESTING
 #if defined (MYSQL_IS_LOGGING)
-		, bufLogPath
+		, myLogDirString.mb_str(wxConvUTF8);
 #endif
 #endif
-		//"--character-sets-dir=./share/charsets",
-		//"--default-character-set=utf8"
 	};
 
-	char *server_groups[] =
+    
+    char const * server_groups[] =
 	{
 		"embedded",
 		"server",
@@ -146,25 +133,18 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 
 
 	int num_elements = (sizeof(server_args) / sizeof(char *));
-	int myReturn = mysql_library_init(num_elements, server_args, server_groups);
-#ifndef UNIT_TESTING	
-#if defined (MYSQL_IS_LOGGING)
-	delete [] bufLogPath; 
-#endif
-#endif
+	int myReturn = mysql_library_init(num_elements, const_cast<char**>(server_args), const_cast<char**>(server_groups));
 	
 	if (myReturn != 0)
 	{
-		delete [] bufDataDir;
 		DBLogLastError();
 		return false;
 	}
 
-	delete [] bufDataDir;
 	m_MySQL = mysql_init(NULL);
 	mysql_options(m_MySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
 	mysql_options(m_MySQL, MYSQL_SET_CHARSET_NAME, "utf8");
-	wxLogDebug(_T("Initing MySQL library..."));
+    wxLogDebug(_T("Initing MySQL library..."));
 	return true;
 }
 
@@ -172,30 +152,15 @@ bool DataBase::DBLibraryInit (const wxString & datadir)
 
 bool DataBase::DBUseDataBase(const wxString & dbname)
 {
-	char * buf = NULL;
-	if (dbname.IsEmpty())
-	{
-		buf = new char [3];
-		strcpy(buf, "");
-	}
-	else
-	{
-		buf = new char [dbname.Len() * sizeof(wxString)];
-		strcpy( buf, (const char*)dbname.mb_str(wxConvUTF8));
-	}
-
-	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,buf,
-						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL)
-	{
-		delete [] buf;
+	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,(const char *) dbname.mb_str(wxConvUTF8),
+						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL){
 		DBLogLastError();
 		return false;
 	}
 
-	delete[] buf;
-	if (dbname != wxEmptyString)
+	if (dbname != wxEmptyString){
 		wxLogMessage(_("Opening database : ") + dbname);
-
+    }
 	return true;
 }
 
