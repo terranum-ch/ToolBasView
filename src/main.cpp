@@ -20,6 +20,7 @@
 
 // for svn version
 #include "../include/svn_version.h"
+#include "../art/toolbasview_bmp.cpp"
 
 const wxString DATABASE_TYPE_STRING = _T("MySQL");
 
@@ -27,9 +28,8 @@ const wxString DATABASE_TYPE_STRING = _T("MySQL");
 bool TBVApp::OnInit()
 {
 	wxString myProgFrameName = sProgName;
-	myProgFrameName.Append(_T(".") SVN_VERSION);
+	myProgFrameName.Append(_T(".")); // + SVN_VERSION);
 	myProgFrameName.Append(wxString::Format(_T(" [%s]"), DATABASE_TYPE_STRING.c_str()));
-	
 	TBVFrame* frame = new TBVFrame(0L, myProgFrameName,wxPoint(50,50), wxSize(620,520));
 	
 	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
@@ -60,9 +60,13 @@ END_EVENT_TABLE()
 TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize size)
 			: wxFrame(frame, -1, title,pos,size)
 {
+    wxInitAllImageHandlers();
+    initialize_images();
+    
     // Loading icon
-	wxIcon icon(Fish_sml_xpm);
-    SetIcon(icon);
+	wxIcon myIcon;
+    myIcon.CopyFromBitmap(*_img_toolbasview);
+    SetIcon(myIcon);
 	
     // adding status bar
 	CreateStatusBar(2,0,ID_STATUS);
@@ -101,6 +105,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 /* Frame destruction */
 TBVFrame::~TBVFrame()
 {
+    uninitialize_images();
 }
 
 

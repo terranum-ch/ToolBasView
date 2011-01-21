@@ -78,14 +78,12 @@ wxSizer *ABOUT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 	
-	wxBitmap myBmp(myslq_xpm);
-
     wxStaticText *item1 = new wxStaticText( parent, ID_ABOUT_TEXT, 
         _("ToolBasView\n A small tool used to open\nembedded MySQL Databases\n\n(c) Lucien Schreiber CREALP 2008"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBitmap *item2 = new wxStaticBitmap( parent, ID_SQL_BMP, myBmp, wxDefaultPosition, wxDefaultSize );
+    wxStaticBitmap *item2 = new wxStaticBitmap( parent, ID_SQL_BMP, *_img_mysql, wxDefaultPosition, wxDefaultSize );
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticLine *item3 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
