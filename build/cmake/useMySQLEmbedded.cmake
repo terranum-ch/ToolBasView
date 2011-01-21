@@ -25,10 +25,10 @@ ELSEIF (WIN32)
 		TARGET ${PROGNAME}
 		PRE_BUILD
     	COMMAND ${CMAKE_COMMAND}
-    	-E make_directory "${PROJECT_BINARY_DIR}/$(OutDir)/mysql")
+    	-E make_directory "$(OutDir)mysql")
 		
 	SET (MYSQL_ERRSQL_FROM_PATH "${MYSQL_INCLUDE_DIR}../share/english")
-	SET (MYSQL_ERRSQL_TO_PATH "${PROJECT_BINARY_DIR}/$(OutDir)/mysql")
+	SET (MYSQL_ERRSQL_TO_PATH "$(OutDir)mysql")
 ELSE (APPLE)
 	# LINUX 
 	make_directory ("${PROJECT_BINARY_DIR}/mysql/")

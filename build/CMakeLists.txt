@@ -1,16 +1,15 @@
 # CMAKE BUILD FILE FOR TOOLBASVIEW (LINUX AND WINDOWS)
-# USE WXIDGETS AND MYSQL
-# (c) LUCIEN SCHREIBER CREALP 2011
-cmake_minimum_required(VERSION 2.6)
+# (c) Copyright 2011 Lucien Schreiber. All Rights Reserved. 
 
+cmake_minimum_required(VERSION 2.6)
 ## POLICY FOR WINDOWS ONLY ???
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-
 SET (PROGNAME ToolBasView)
 PROJECT (${PROGNAME})
+MESSAGE("Project Name is : ${CMAKE_PROJECT_NAME}")
 
 # SEARCH FILES --------------------------------
 #search all source files
@@ -21,12 +20,10 @@ SOURCE_GROUP (source FILES ${SRC_FILES})
 FILE (GLOB HEAD_FILES "../include/*.h")
 SOURCE_GROUP (header FILES ${HEAD_FILES})
 
-
-MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE})
+#MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE}) 
 
 # INCLUDE LIBRARIES NEEDED ----------------------
 # WXWIDGETS
-# DEFINE ALL INCLUDES AND SO ON
 SET(WXWINDOWS_USE_GL 0)
 INCLUDE ("cmake/Use_wxWindows.cmake")
 
@@ -35,6 +32,9 @@ INCLUDE ("cmake/findMySQLEmbedded.cmake")
 
 #GEOS - GDAL libs
 INCLUDE ("cmake/findGISLib.cmake")
+
+# LSVERSION
+INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
 
 
@@ -54,15 +54,6 @@ IF( APPLE )
 	# Need to copy the icon file
 	set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
-	#EXEC_PROGRAM( "mkdir -p       ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
-	#EXEC_PROGRAM( "cp ${PROJECT_SOURCE_DIR}/../art/${APP_ICON} ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/ToolBasView.app/Contents/Resources")
-	
-	# Copy errmsg.sys into file
-	#EXECUTE_PROCESS(
-	#	COMMAND sh copy_mysql_errmsg_mac.sh "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app"
-	#	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../build/
-	#	)
-
 ENDIF (APPLE)
 
 
@@ -70,18 +61,13 @@ ENDIF (APPLE)
  
 # ADD ALSO HEADERS NOT REALY NEEDED JUST FOR VS
 # COMPILING
-
 IF (WIN32)
-
 	SOURCE_GROUP (resource FILES ../src/ToolBasView.rc)
 	ADD_EXECUTABLE (${PROGNAME} WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
 	TARGET_LINK_LIBRARIES (${PROGNAME} ${WXWINDOWS_LIBS})
-
 ELSE (WIN32)
 	ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
- 
 ENDIF (WIN32)
-
 
 
 #SVN NUMBERING
