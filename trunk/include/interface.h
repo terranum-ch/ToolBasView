@@ -29,6 +29,7 @@
 #include <wx/grid.h>
 #include <wx/toolbar.h>
 #include <wx/tglbtn.h>
+#include <wx/headerctrl.h>
 
 // Declare window functions
 

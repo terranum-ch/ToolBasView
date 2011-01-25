@@ -22,15 +22,11 @@
 #include "../include/svn_version.h"
 #include "../art/toolbasview_bmp.cpp"
 
-const wxString DATABASE_TYPE_STRING = _T("MySQL");
 
 /* Application initialisation */
 bool TBVApp::OnInit()
 {
-	wxString myProgFrameName = sProgName;
-	myProgFrameName.Append(_T(".")); // + SVN_VERSION);
-	myProgFrameName.Append(wxString::Format(_T(" [%s]"), DATABASE_TYPE_STRING.c_str()));
-	TBVFrame* frame = new TBVFrame(0L, myProgFrameName,wxPoint(50,50), wxSize(620,520));
+	TBVFrame* frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(620,520));
 	
 	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
 	frame->Centre();
@@ -91,7 +87,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
 	// loading GDAL 
 	OGRRegisterAll();
-	wxLogDebug(_T("All GDAL driver registered..."));
+	wxLogMessage(_T("All GDAL driver registered..."));
 	
 	// getting the tree ctrl
 	pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,this);

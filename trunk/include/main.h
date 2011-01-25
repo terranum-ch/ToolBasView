@@ -26,8 +26,6 @@ const int ID_STATUS = 10003;
 
 
 
-const wxString sProgName = _("ToolBasView version 1.3");
-
 /*!
 @class		TBVApp
 @abstract    (brief description)
