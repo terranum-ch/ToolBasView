@@ -45,7 +45,7 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSplitterWindow *item2 = new wxSplitterWindow( parent, ID_LEFT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_3DBORDER|wxSP_3DSASH|wxSP_LIVE_UPDATE|wxNO_BORDER );
+    wxSplitterWindow *item2 = new wxSplitterWindow( parent, ID_LEFT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_LIVE_UPDATE|wxNO_BORDER );
     item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	wxPanel * Leftwindow = new wxPanel(item2,-1);
@@ -61,6 +61,8 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 	
 	item2->SplitVertically (Leftwindow,Rightwindow,150);
 	item2->SetMinimumPaneSize(20);
+    item2->SetSashSize(4);
+    item2->SetSashGravity(0.1);
 
     if (set_sizer)
     {
@@ -97,7 +99,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSplitterWindow *item1 = new wxSplitterWindow( parent, ID_RIGHT_SPLIT, wxDefaultPosition, wxSize(200,160),wxSP_3DBORDER|wxSP_3DSASH|wxSP_LIVE_UPDATE|wxNO_BORDER);
+    wxSplitterWindow *item1 = new wxSplitterWindow( parent, ID_RIGHT_SPLIT, wxDefaultPosition, wxSize(200,160), wxSP_LIVE_UPDATE|wxNO_BORDER);
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxPanel * TopWindow = new wxPanel(item1,-1);
@@ -111,8 +113,11 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 	item1->Initialize(BottomWindow);
 	BottomWindow->Show(true);
 	
-	item1->SplitHorizontally (TopWindow,BottomWindow,300);
+	item1->SplitHorizontally (TopWindow,BottomWindow,200);
 	item1->SetMinimumPaneSize(20);
+    item1->SetSashGravity(0.8); // Resize only top panel
+    item1->SetSashSize(4);
+    //item1->SetSashPosition(200, true);
 
 	
 	if (set_sizer)
@@ -129,7 +134,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 wxSizer *RIGHT_TOP( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
-
+    
     wxGrid *item1 = new wxGrid( parent, ID_GRID, wxDefaultPosition, wxSize(200,160), wxWANTS_CHARS );
     item1->CreateGrid( 10, 10, wxGrid::wxGridSelectCells );
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -149,11 +154,11 @@ wxSizer *RIGHT_BTM( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, _("Logging Console"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
-    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5 );
+    //wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, _("Logging Console"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
+    //item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5 );
 
-    wxTextCtrl *item2 = new wxTextCtrl( parent, ID_LOG, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_MULTILINE );
-    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP, 5 );
+    wxTextCtrl *item2 = new wxTextCtrl( parent, ID_LOG, _("Log:\n"), wxDefaultPosition, wxSize(80,80), wxTE_MULTILINE );
+    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     if (set_sizer)
     {
