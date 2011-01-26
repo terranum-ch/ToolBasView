@@ -30,6 +30,7 @@
 #include <wx/toolbar.h>
 #include <wx/tglbtn.h>
 #include <wx/headerctrl.h>
+#include <wx/generic/statbmpg.h>
 
 // Declare window functions
 
