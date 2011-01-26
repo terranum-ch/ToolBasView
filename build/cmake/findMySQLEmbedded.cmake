@@ -16,9 +16,10 @@ FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
   /usr/include/mysql
 )
 
+SET (MYSQL_IGNORE_NORMAL CACHE BOOL "Ignore Standard MySQL library ?")
 
 # if mysql is installed in a normal directory
-IF (MYSQL_INCLUDE_DIR)
+IF (MYSQL_INCLUDE_DIR AND NOT MYSQL_IGNORE_NORMAL)
 
 	MESSAGE ("MYSQL Include dir defined")
 	SET(MYSQL_NAMES mysqld)
@@ -48,7 +49,7 @@ IF (MYSQL_INCLUDE_DIR)
 
 # if mysql is not installed in a normal
 #directory, specify the main directory
-ELSE (MYSQL_INCLUDE_DIR)
+ELSE (MYSQL_INCLUDE_DIR AND NOT MYSQL_IGNORE_NORMAL)
 	SET (MYSQL_MAIN_DIR CACHE PATH "Path to the main MySQL directory")
 	
 	IF (WIN32)
@@ -93,7 +94,7 @@ ELSE (MYSQL_INCLUDE_DIR)
 
 	ENDIF(WIN32)
 
-ENDIF (MYSQL_INCLUDE_DIR)
+ENDIF (MYSQL_INCLUDE_DIR AND NOT MYSQL_IGNORE_NORMAL)
 
 
 

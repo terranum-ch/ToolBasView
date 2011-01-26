@@ -86,14 +86,14 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
 
 	//init library
 	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_NATIVE);
-	
-#ifndef UNIT_TESTING	
+
+#ifndef UNIT_TESTING
 	wxFileName myLogDirName (wxStandardPaths::Get().GetDocumentsDir(),_T("toolbasview_debug_log.txt"));
 	wxString myLogDirString = _T("--log=");
     myLogDirString.Append(myLogDirName.GetFullPath());
 #endif
 
-    
+
 #if defined(__WINDOWS__)
 	wxString mylanguagedir = _T("--language=./mysql");
 #elif defined(__WXMAC__)
@@ -122,7 +122,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
 #endif
 	};
 
-    
+
     char const * server_groups[] =
 	{
 		"embedded",
@@ -134,7 +134,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
 
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 	int myReturn = mysql_library_init(num_elements, const_cast<char**>(server_args), const_cast<char**>(server_groups));
-	
+
 	if (myReturn != 0)
 	{
 		DBLogLastError();
@@ -510,19 +510,19 @@ bool DataBase::DataBaseGetNextRowResult(MYSQL_ROW & row, tmArrayULong & lengths)
 	lengths.Clear();
 
 
-	
+
 	if (DBGetNextRecord(row)==false)
 		return false;
 
 	unsigned int myNumFields = mysql_field_count(m_MySQL);
 	wxASSERT(myNumFields > 0);
-	
+
 	unsigned long * myTempLength = mysql_fetch_lengths(m_MySQLRes);
 	wxASSERT(*myTempLength != 0);
-	
+
 	for (unsigned int i =  0; i<myNumFields;i++)
 		lengths.Add(myTempLength[i]);
-	
+
 	//delete [] myTempLength; (not needed ?)
 	return true;
 }
