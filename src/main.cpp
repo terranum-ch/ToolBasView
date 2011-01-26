@@ -17,6 +17,7 @@
 
 #include "../include/main.h"
 #include "../include/interface.h"
+#include "lsversion_dlg.h"
 
 // for svn version
 #include "../include/svn_version.h"
@@ -126,37 +127,23 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	wxArrayString myDirsString = myDirPath.GetDirs();
 	myDirPath.RemoveLastDir();
 	
-	if(myDatabase.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),
-							   myDirsString.Item(myDirsString.GetCount()-1))==false)
+	if(m_Database.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),
+							   myDirsString.Item(myDirsString.GetCount()-1))==false){
 		return;
+    }
 	
 	wxLogMessage(_("Path : %s, Name : %s"),
-				 myDatabase.DataBaseGetPath().c_str(),
-				 myDatabase.DataBaseGetName().c_str());
-	
-	if (myDatabase.DataBaseQuery(_T("SHOW TABLES"))==false)
-		return;
-	
-	wxArrayString myStringArray;
-	myDatabase.DataBaseGetResults(myStringArray);
-	myDatabase.DataBaseClearResults();
-	
-	// add database name
-	TreeAddItem((myDatabase.DataBaseGetName()),0);
-	
-	// add tables names
-	for (unsigned int i=0; i<myStringArray.Count(); i++) 
-	{
-		TreeAddItem(myStringArray.Item(i),1);
-	}
-	
+				 m_Database.DataBaseGetPath().c_str(),
+				 m_Database.DataBaseGetName().c_str());
+	_LoadTablesIntoToc();
+		
 	// get the database size
-	wxLogMessage( myDatabase.DataBaseGetSize());
+	wxLogMessage( m_Database.DataBaseGetSize());
 }
 
 void TBVFrame::OnDeleteData (wxCommandEvent & event)
 {	
-	DELETETABLEDATA_DLG myDelDlg (this, wxID_ANY, &myDatabase);
+	DELETETABLEDATA_DLG myDelDlg (this, wxID_ANY, &m_Database);
 	// set the active possibilities for the database
 	// deleting
 	myDelDlg.SetActiveFlags(DEL_FLAGS_DATA | DEL_FLAGS_TABLE);
@@ -189,7 +176,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 														  wxDefaultPosition,wxDefaultSize,
 														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
 		
-		myDlg->SetDataBase(&myDatabase);
+		myDlg->SetDataBase(&m_Database);
 		//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
 		myDlg->SetMinSize(wxSize(300,200));
 		myDlg->SetSize(wxSize(500,400));
@@ -197,21 +184,7 @@ void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 		myDlg->Show();
 		if ( myDlg->GetSuccess()) 
 		{
-			// clear all the controls.
-			ClearCtrls();
-			myDatabase.DataBaseQuery(_T("SHOW TABLES"));
-			wxArrayString myStringArray;
-			myDatabase.DataBaseGetResults(myStringArray);
-			myDatabase.DataBaseClearResults();
-			
-			// add database name
-			TreeAddItem((myDatabase.DataBaseGetName()),0);
-			
-			// add tables names
-			for (unsigned int i=0; i<myStringArray.Count(); i++) 
-			{
-				TreeAddItem(myStringArray.Item(i),1);
-			}
+            _LoadTablesIntoToc();
 		}	
  	
 }
@@ -226,7 +199,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	int i=1;
 	long lFeatureCount = 0;
 	
-	ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &myDatabase, -1);
+	ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &m_Database, -1);
 	// show the dialog
 	if (myDlg->ShowModal() != wxID_OK)
 	{
@@ -241,7 +214,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 	wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
 	
 	// try to open database data
-	myDBData.GISOpen(&myDatabase);
+	myDBData.GISOpen(&m_Database);
 	myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
 	
 	// create a progress dialog for showing
@@ -297,7 +270,7 @@ void TBVFrame::OnSpatialDataAdd (wxCommandEvent & event)
 
 void TBVFrame::OnSpatialDataSearch (wxCommandEvent & event)
 {
-	SEARCHSPATIALPOINT_DLG myDlg (this, &myDatabase);
+	SEARCHSPATIALPOINT_DLG myDlg (this, &m_Database);
 	if (myDlg.OpenDBGISData(_T(""),_T("GENERIC_LINES")))
 	{
 		myDlg.ShowModal();
@@ -311,7 +284,7 @@ void TBVFrame::OnMenuIdle (wxIdleEvent & event)
 	// function called during idle event for 
 	// hiding menu
 	bool bStarted = false;
-	if (myDatabase.DataBaseGetName() != wxEmptyString)
+	if (m_Database.DataBaseGetName() != wxEmptyString)
 		bStarted = true;
 	
 	EnableMenuItem(bStarted);
@@ -350,6 +323,32 @@ void TBVFrame::ClearCtrls ()
 }
 
 
+void TBVFrame::_LoadTablesIntoToc(){
+
+    pGridOp->GridClear();
+    wxWindowUpdateLocker noUpdates(pTreeCtrl);
+    pTreeCtrl->DeleteAllItems();
+    
+    if (m_Database.DataBaseQuery(_T("SHOW TABLES"))==false){
+        return;
+    }
+
+	wxArrayString myStringArray;
+	m_Database.DataBaseGetResults(myStringArray);
+	m_Database.DataBaseClearResults();
+	
+	// add database name
+	TreeAddItem((m_Database.DataBaseGetName()),0);
+	
+	// add tables names
+	for (unsigned int i=0; i<myStringArray.Count(); i++){
+		TreeAddItem(myStringArray.Item(i),1);
+	}
+    pTreeCtrl->ExpandAll();
+}
+
+
+
 
 void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 {
@@ -359,8 +358,8 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	wxTreeItemId myItemID = event.GetItem();
 	// get the table name
 	wxString myTempString = pTreeCtrl->GetItemText(myItemID);
-	myDatabase.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
-	myDatabase.DataBaseGetResults(myFieldArray);
+	m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
+	m_Database.DataBaseGetResults(myFieldArray);
 	
 	// check for field numbers (may be not a table)
 	if (myFieldArray.Count() > 0)
@@ -378,20 +377,20 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 		}
 		
 		// get the data....
-		if(myDatabase.DataBaseQuery(_T("SELECT * FROM ") + myTempString))
+		if(m_Database.DataBaseQuery(_T("SELECT * FROM ") + myTempString))
 		{
 			wxLogMessage(_("Reading table '%s' OK"),myTempString.c_str());
 			
 			int iArrayCount = 0;
 			
-			while (myDatabase.DataBaseGetNextResult(myFieldArray)) 
+			while (m_Database.DataBaseGetNextResult(myFieldArray)) 
 			{
 				iArrayCount = myFieldArray.Count();
 				// add a new line
 				pGridOp->GridOpAddDataRow(iArrayCount,
 										  &myFieldArray);
 			}
-			myDatabase.DataBaseClearResults();
+			m_Database.DataBaseClearResults();
 		
 		}
 		else 
@@ -418,7 +417,7 @@ void TBVFrame::OnNewDataBase (wxCommandEvent & event)
 		ClearCtrls();
 		
 		// create realy the database...
-		myDatabase.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
+		m_Database.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
 		
 		wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
 		
@@ -434,17 +433,17 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 	// getting the stats...
 	long myiNumberTables = 0;
 	wxString mysNumberTables = _T("Unkhown");
-	myDatabase.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") 
+	m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") 
 							 _T("FROM information_schema.tables ") 
-							 _T("WHERE table_schema = \"") + myDatabase.DataBaseGetName() + _T("\""));
-	if (myDatabase.DataBaseGetNextResult(myiNumberTables)==true)
+							 _T("WHERE table_schema = \"") + m_Database.DataBaseGetName() + _T("\""));
+	if (m_Database.DataBaseGetNextResult(myiNumberTables)==true)
 		mysNumberTables = wxString::Format(_T("%d"), myiNumberTables);
-	myDatabase.DataBaseClearResults();
-	wxString myDataBaseSize = myDatabase.DataBaseGetSize();
+	m_Database.DataBaseClearResults();
+	wxString m_DatabaseSize = m_Database.DataBaseGetSize();
 		
-		wxString myText = wxString::Format(_("Database : '%s' open \n"),myDatabase.DataBaseGetName().c_str());
+		wxString myText = wxString::Format(_("Database : '%s' open \n"),m_Database.DataBaseGetName().c_str());
 		myText.Append(wxString::Format(_("Number of table(s) : %s \n"),mysNumberTables.c_str()));
-		myText.Append(_("Size of the database : ") + myDataBaseSize);
+		myText.Append(_("Size of the database : ") + m_DatabaseSize);
 		wxMessageBox(myText,_("Database statistics"),wxOK | wxICON_INFORMATION,
 					 this);
 		
@@ -452,10 +451,8 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 
 void TBVFrame::OnAboutDlg(wxCommandEvent & event)
 {
-	wxLogMessage (_("About the program"));
-	ABOUTDLG_OP2 * myDlg = new ABOUTDLG_OP2(this,wxID_ANY,_("About"),
-		wxDefaultPosition,wxDefaultSize);
-	myDlg->CenterOnParent();
-	myDlg->ShowModal();
+	lsVersionDlg myDlg(this, wxID_ANY, _("About"));
+    myDlg.SetBitmapLogo(*_img_toolbasview);
+    myDlg.ShowModal();
 }
 

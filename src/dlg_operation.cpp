@@ -36,36 +36,6 @@
 
 #include <wx/clipbrd.h>
 
-//----------------------------------------------------------------------------
-// ABOUTDLG_OP2
-//----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ABOUTDLG_OP2,wxDialog)
-    EVT_BUTTON( wxID_OK, ABOUTDLG_OP2::OnOk )
-END_EVENT_TABLE()
-
-ABOUTDLG_OP2::ABOUTDLG_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    wxDialog( parent, id, title, position, size, style )
-{
-    wxLogMessage (_("Coucou"));
-    ABOUT (this,true);
-	
-}
-
-ABOUTDLG_OP2::~ABOUTDLG_OP2()
-{
-	Destroy();
-}
-
-
-
-void ABOUTDLG_OP2::OnOk(wxCommandEvent &event)
-{
-	Destroy();
-	event.Skip();
-}
-
-
 
 
 //----------------------------------------------------------------------------

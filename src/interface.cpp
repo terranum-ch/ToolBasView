@@ -18,6 +18,7 @@
 
 // Include private header
 #include "../include/interface.h"
+#include "../art/toolbasview_bmp.h"
 
 #include <wx/intl.h>
 
@@ -60,7 +61,7 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 	Rightwindow->Show(true);
 	
 	item2->SplitVertically (Leftwindow,Rightwindow,150);
-	item2->SetMinimumPaneSize(20);
+	item2->SetMinimumPaneSize(150);
     item2->SetSashSize(4);
     item2->SetSashGravity(0.1);
 
@@ -79,9 +80,24 @@ wxSizer *LEFT( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxTreeCtrl *item1 = new wxTreeCtrl( parent, ID_LISTTABLE, wxDefaultPosition, wxSize(120,160), wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
+    wxTreeCtrl *item1 = new wxTreeCtrl( parent, ID_LISTTABLE, wxDefaultPosition, wxSize(120,160), wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxBORDER_NONE );
     item0->Add( item1, 1, wxGROW | wxALIGN_CENTER, 5 );
 	
+    
+    wxPanel* m_panel1;
+	m_panel1 = new wxPanel( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxBORDER_THEME );
+	//m_panel1->SetBackgroundColour( *wxWHITE );
+	
+	wxBoxSizer* bSizer3;
+	bSizer3 = new wxBoxSizer( wxVERTICAL );
+	
+	wxGenericStaticBitmap* m_bitmap1 = new wxGenericStaticBitmap( m_panel1, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer3->Add( m_bitmap1, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	m_panel1->SetSizer( bSizer3 );
+	m_panel1->Layout();
+	bSizer3->Fit( m_panel1 );
+	item0->Add( m_panel1, 0, wxEXPAND, 5 );
 	
     
 	if (set_sizer)
@@ -115,7 +131,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 	
 	item1->SplitHorizontally (TopWindow,BottomWindow,200);
 	item1->SetMinimumPaneSize(20);
-    item1->SetSashGravity(0.8); // Resize only top panel
+    item1->SetSashGravity(0.7); // Resize only top panel
     item1->SetSashSize(4);
     //item1->SetSashPosition(200, true);
 

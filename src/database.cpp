@@ -42,7 +42,7 @@
 #include <wx/filename.h> // to create the database path and name.
 
 
-#include "../include/database-config.h" // for logging
+#include "database-config.h" // for logging
 #ifndef UNIT_TESTING
 	#include <wx/stdpaths.h>	// std path for logging too.
 #endif
