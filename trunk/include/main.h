@@ -21,6 +21,7 @@ const int ID_STATUS = 10003;
 
 #include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 #include <wx/progdlg.h>				// progress dialog.
+#include <wx/wupdlock.h>
 #include "../include/deletetabledata_dlg.h"	// deleting data dialog
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
@@ -67,6 +68,8 @@ public:
 	the grid table.
 	*/
 	void ClearCtrls();
+    
+    void _LoadTablesIntoToc();
 	
 	
 private:
@@ -99,7 +102,7 @@ private:
 	DECLARE_EVENT_TABLE();
 	
 	
-	DataBase myDatabase;
+	DataBase m_Database;
 	
 	wxTreeCtrl * pTreeCtrl;
 	

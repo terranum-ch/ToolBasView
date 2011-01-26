@@ -41,7 +41,7 @@ wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit, bool set_sizer )
       wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
     wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_REQUEST_RESULT, _("Result :"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -60,7 +60,7 @@ wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxButton *item7 = new wxButton( parent, wxID_CANCEL, _("Exit"), wxDefaultPosition, wxDefaultSize, 0 );
     item7->SetDefault();
-    item5->Add( item7, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item5->Add( item7, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
 
     item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
@@ -161,7 +161,7 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxGrid *item1 = new wxGrid( parent, ID_GRID_PROCESS, wxDefaultPosition, wxSize(200,160), wxWANTS_CHARS );
     item1->CreateGrid( 10, 10, wxGrid::wxGridSelectCells );
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxHORIZONTAL );

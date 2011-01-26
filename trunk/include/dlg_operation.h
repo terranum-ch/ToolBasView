@@ -42,28 +42,6 @@
 #include <wx/hyperlink.h>
 
 
-//----------------------------------------------------------------------------
-// ABOUTDLG_OP
-//----------------------------------------------------------------------------
-class ABOUTDLG_OP2: public wxDialog
-{
-public:
-    // constructors and destructors
-    ABOUTDLG_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-     virtual ~ABOUTDLG_OP2();
-    
-    
-    
-private:
-    void OnOk( wxCommandEvent &event );
-
-private:
-    DECLARE_EVENT_TABLE()
-};
-
 
 
 //----------------------------------------------------------------------------
