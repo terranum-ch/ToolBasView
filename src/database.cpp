@@ -117,9 +117,10 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
         "--ignore-builtin-innodb"
 #ifndef UNIT_TESTING
 #if defined (MYSQL_IS_LOGGING)
-		, myLogDirString.mb_str(wxConvUTF8);
+		, myLogDirString.mb_str(wxConvUTF8)
 #endif
 #endif
+		
 	};
 
 
