@@ -25,7 +25,7 @@ SOURCE_GROUP (header FILES ${HEAD_FILES})
 # INCLUDE LIBRARIES NEEDED ----------------------
 # WXWIDGETS
 SET(WXWINDOWS_USE_GL 0)
-INCLUDE ("cmake/Use_wxWindows.cmake")
+INCLUDE ("cmake/FindwxWidgets.cmake")
 
 #MYSQL EMBEDDED
 INCLUDE ("cmake/findMySQLEmbedded.cmake")

@@ -16,7 +16,7 @@ IF (APPLE)
 	# EMBEDD ERRMSG.SYS
 	make_directory ("${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app/Contents/mysql/")
 	SET (MYSQL_ERRSQL_FROM_PATH "${MYSQL_INCLUDE_DIR}../share/english")
-	SET (MYSQL_ERRSQL_TO_PATH "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PROGNAME}.app/Contents/mysql")
+	SET (MYSQL_ERRSQL_TO_PATH "${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${PROGNAME}.app/Contents/mysql")
 	
 	
 ELSEIF (WIN32)
@@ -25,24 +25,28 @@ ELSEIF (WIN32)
 		TARGET ${PROGNAME}
 		PRE_BUILD
     	COMMAND ${CMAKE_COMMAND}
-    	-E make_directory "$(OutDir)mysql")
+    	-E make_directory "${PROJECT_BINARY_DIR}/$(OutDir)/mysql")
 		
 	SET (MYSQL_ERRSQL_FROM_PATH "${MYSQL_INCLUDE_DIR}../share/english")
 	SET (MYSQL_ERRSQL_TO_PATH "$(OutDir)mysql")
+	MESSAGE (${MYSQL_ERRSQL_TO_PATH})
 ELSE (APPLE)
 	# LINUX 
-	make_directory ("${PROJECT_BINARY_DIR}/mysql/")
-	SET (MYSQL_ERRSQL_FROM_PATH "${MYSQL_INCLUDE_DIR}../share/english")
-	SET (MYSQL_ERRSQL_TO_PATH "${PROJECT_BINARY_DIR}/mysql")
+	# don't copy anything!
+	#make_directory ("${PROJECT_BINARY_DIR}/mysql/")
+	#SET (MYSQL_ERRSQL_FROM_PATH "${MYSQL_INCLUDE_DIR}../share/mysql/english")
+	#SET (MYSQL_ERRSQL_TO_PATH "${PROJECT_BINARY_DIR}/mysql")
 ENDIF (APPLE)
 
 
+IF (APPLE OR WIN32)
 ADD_CUSTOM_COMMAND (
 	TARGET ${PROGNAME}
 	POST_BUILD
     COMMAND ${CMAKE_COMMAND}
     -E copy ${MYSQL_ERRSQL_FROM_PATH}/errmsg.sys  
 	${MYSQL_ERRSQL_TO_PATH}/errmsg.sys)
+ENDIF (APPLE OR WIN32)
 
 	
 ENDIF (MYSQL_INCLUDE_DIR)
