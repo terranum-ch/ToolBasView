@@ -33,12 +33,14 @@ class DataBase;
 class TableExport {
 private:
     DataBase * m_Database;
+    wxString m_Encoding;
     
     
 public:
     TableExport(DataBase * database);
     virtual ~TableExport();
     
+    void SetEncoding(const wxString & encoding){m_Encoding = encoding;}
     bool ExportCSV(const wxString & tablename, const wxFileName & path, int limit = wxNOT_FOUND);
     
 };

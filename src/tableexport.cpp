@@ -20,6 +20,7 @@
 
 TableExport::TableExport(DataBase * database) {
     m_Database = database;
+    m_Encoding = wxEmptyString;
     wxASSERT(m_Database);
 }
 
@@ -27,6 +28,7 @@ TableExport::TableExport(DataBase * database) {
 
 TableExport::~TableExport() {
 }
+
 
 
 
@@ -67,7 +69,12 @@ bool TableExport::ExportCSV(const wxString & tablename, const wxFileName & path,
     wxArrayString myColsName;
     myResult.GetColName(myColsName);
     for (unsigned int i = 0; i<myColsName.GetCount(); i++) {
-        myFile.Write(myColsName[i] + mySeparator);
+        if(m_Encoding != wxEmptyString){
+            myFile.Write(myColsName[i] + mySeparator, wxCSConv(m_Encoding));
+        }
+        else{ // unicode
+            myFile.Write(myColsName[i] + mySeparator);
+        }
     }
     
     // export content
@@ -77,7 +84,13 @@ bool TableExport::ExportCSV(const wxString & tablename, const wxFileName & path,
         for (unsigned long col = 0; col< myResult.GetColCount(); col++) {
             wxString myText = "";
             myResult.GetValue(col, myText);
-            myFile.Write(myText + mySeparator);
+            if(m_Encoding != wxEmptyString){
+                myFile.Write(myText + mySeparator, wxCSConv(m_Encoding));
+            }
+            else{ // unicode
+                myFile.Write(myText + mySeparator);
+                
+            }
         }
     }
 
