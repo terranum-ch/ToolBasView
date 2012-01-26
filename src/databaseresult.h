@@ -1,7 +1,8 @@
 /***************************************************************************
- exportcsv_dlg.h
+ databaseresult.h
+ 
  -------------------
- copyright            : (C) 2012 CREALP Lucien Schreiber 
+ copyright            : (C) 2010 CREALP Lucien Schreiber 
  email                : lucien.schreiber at crealp dot vs dot ch
  ***************************************************************************/
 
@@ -13,46 +14,51 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef _EXPORTCSV_DLG_H
-#define _EXPORTCSV_DLG_H
+
+#ifndef _DATABASERESULT_H
+#define _DATABASERESULT_H
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
 // Include wxWidgets' headers
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-#include <wx/spinctrl.h>
-#include <wx/wupdlock.h>
 
+#include "mysql.h"
+#include "ogrsf_frmts.h"		// OGR accessing
+#include "database.h"
 
-
-class DataBase;
-
-const int ID_EXPORTCSV_DLG = wxID_HIGHEST + 1;
-const int  ID_M_LISTTABLESCTRL = wxID_HIGHEST + 2;
-const int  ID_SELECT_ALL = wxID_HIGHEST + 3;
-const int  ID_SELECT_CLEAR = wxID_HIGHEST + 4;
-const int  ID_LIMIT_ENABLE = wxID_HIGHEST + 5;
-
-
-class ExportCSV_DLG : public wxDialog {
+class DataBaseResult {
 private:
-    wxCheckListBox* m_ListTablesCtrl;
-    wxSpinCtrl* m_LimitRecordValueCtrl;
-    wxCheckBox* m_LimitRecordUse;
-    DataBase * m_Database;
-
-    void _CreateControls();
-    
-    void OnListSelect(wxCommandEvent & event);
-    void OnListClear(wxCommandEvent & event);    
-    void OnOk(wxCommandEvent & event);
-    DECLARE_EVENT_TABLE();
-    
+    MYSQL_RES ** m_ResultSet;
+	MYSQL_ROW m_Row;
+	long m_RowIndex;
+    tmArrayULong m_RowLengths;
+	
+protected:
+    bool _GetRowLength();
+	
+	
 public:
-    ExportCSV_DLG(wxWindow * window, wxWindowID id, const wxString & title, DataBase * database);
-    virtual ~ExportCSV_DLG();
+	DataBaseResult();
+    DataBaseResult(MYSQL_RES ** results);
+	void Create(MYSQL_RES ** results);
+    ~DataBaseResult();
+	
+	bool HasResults();
+    int GetColCount();
+    long GetRowCount();
+	
+    bool GetColName(wxArrayString & fields);
+    bool GetValue(int col, wxString & value);
+    bool GetValue(int col, long & value);
+	bool GetValue(int col, OGRGeometry ** geometry);
+	
+	
+    bool NextRow();
+    bool IsRowOk();
+	bool GotoRow (long row);
+
 };
 #endif

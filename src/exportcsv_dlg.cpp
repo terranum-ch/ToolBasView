@@ -16,6 +16,7 @@
 
 #include "exportcsv_dlg.h"
 #include "database.h"
+#include "tableexport.h"
 
 
 BEGIN_EVENT_TABLE( ExportCSV_DLG, wxDialog )
@@ -77,9 +78,8 @@ void ExportCSV_DLG::_CreateControls() {
 	wxStaticBoxSizer* sbSizer1;
 	sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Limit") ), wxVERTICAL );
 	
-	wxCheckBox* m_checkBox1;
-	m_checkBox1 = new wxCheckBox( this, ID_LIMIT_ENABLE, _("Limit records"), wxDefaultPosition, wxDefaultSize, 0 );
-	sbSizer1->Add( m_checkBox1, 0, wxALL, 5 );
+	m_LimitRecordUse = new wxCheckBox( this, ID_LIMIT_ENABLE, _("Limit records"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer1->Add( m_LimitRecordUse, 0, wxALL, 5 );
 	
 	m_LimitRecordValueCtrl = new wxSpinCtrl( this, wxID_ANY, wxT("500"), wxDefaultPosition, wxSize( 150,-1 ), wxSP_ARROW_KEYS, 1, 100000, 500 );
 	sbSizer1->Add( m_LimitRecordValueCtrl, 0, wxALL|wxEXPAND, 5 );
@@ -129,6 +129,31 @@ void ExportCSV_DLG::OnListClear(wxCommandEvent & event) {
 
 
 void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
+    wxArrayString myTableToExport;
+    for (unsigned int i = 0; i<m_ListTablesCtrl->GetCount(); i++) {
+        if (m_ListTablesCtrl->IsChecked(i) == true) {
+            myTableToExport.Add(m_ListTablesCtrl->GetString(i));
+        }
+    }
+    
+    if (myTableToExport.GetCount() == 0) {
+        Close();
+        return;
+    }
+    
+    // select export folder
+    wxFileName myPath(wxDirSelector("Select a folder for exporting"));
+    
+    // export
+    TableExport myExport(m_Database);
+    int myLimit = wxNOT_FOUND;
+    if (m_LimitRecordUse->IsChecked() == true) {
+        myLimit = m_LimitRecordValueCtrl->GetValue();
+    }
+    
+    for (unsigned int t = 0; t<myTableToExport.GetCount(); t++) {
+        myExport.ExportCSV(myTableToExport[t], myPath, myLimit);
+    }
     Close();
 }
 
