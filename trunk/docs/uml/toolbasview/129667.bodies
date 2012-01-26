@@ -1,35 +1,7 @@
-/*!
-    @file gridoperation.cpp
-    @brief	class used to manage one grid ctrl
-*/
-
-
-#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma implementation "../src/gridoperation.cpp"
-#endif
-
-// For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
-
-#include "gridoperation.h"
-
-
-
-GridOperation::GridOperation(wxGrid * fgrid)
-{
+class GridOperation
+!!!141955.cpp!!!	GridOperation(inout fgrid : wxGrid)
 	pGrid = fgrid;
-}
-
-GridOperation::~GridOperation()
-{
-}
-
-void GridOperation::GridOpChangeColumnText(wxString ColumnText, int iColumn, bool bSize)
-{
+!!!142211.cpp!!!	GridOpChangeColumnText(in ColumnText : wxString, in iColumn : int, in bSize : bool = TRUE) : void
 	pGrid->SetColLabelValue (iColumn,ColumnText);
 	
 	// check if there is enough place for the label
@@ -42,11 +14,7 @@ void GridOperation::GridOpChangeColumnText(wxString ColumnText, int iColumn, boo
 		}		
 	}
 	
-}
-
-
-void GridOperation::GridOpSetNumberOfColumn(int iNumber)
-{
+!!!142339.cpp!!!	GridOpSetNumberOfColumn(in iNumber : int) : void
 	int myNumberOfCols = pGrid->GetNumberCols();
 	int myDiff = abs(myNumberOfCols - iNumber);
 	
@@ -65,12 +33,7 @@ void GridOperation::GridOpSetNumberOfColumn(int iNumber)
 		pGrid->DeleteRows(0,pGrid->GetNumberRows(),FALSE);
 	
 	
-}
-
-
-
-void GridOperation::GridOpAddDataRow(int iColumn, wxArrayString * myArray)
-{
+!!!142467.cpp!!!	GridOpAddDataRow(in iColumn : int, inout myArray : wxArrayString) : void
 	// append a new row
 	pGrid->AppendRows(1,FALSE);
 	
@@ -81,10 +44,7 @@ void GridOperation::GridOpAddDataRow(int iColumn, wxArrayString * myArray)
 	 {
 		pGrid->SetCellValue(iRow-1,i,myArray->Item(i));
 	}
-}
-
-void GridOperation::GridClear (int iColumn,int iRows)
-{
+!!!142595.cpp!!!	GridClear(in iColumn : int = 10, in iRows : int = 10) : void
 	pGrid->BeginBatch();
 	if (pGrid->GetNumberCols() > 0)
 		pGrid->DeleteCols(0,pGrid->GetCols());
@@ -94,6 +54,3 @@ void GridOperation::GridClear (int iColumn,int iRows)
 	pGrid->AppendCols(iColumn);
 	pGrid->AppendRows(iRows);
 	pGrid->EndBatch();
-}
-
-

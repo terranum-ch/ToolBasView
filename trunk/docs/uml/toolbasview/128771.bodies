@@ -1,0 +1,80 @@
+class SQLPROCESS_DLG_OP2
+!!!135555.cpp!!!	~SQLPROCESS_DLG_OP2()
+	Destroy();
+!!!135683.cpp!!!	SetDataBase(inout pDatabase : DataBase) : void
+	m_DataBase = pDatabase;
+!!!135811.cpp!!!	GetSuccess() : bool
+	return m_hasRequest;
+!!!135939.cpp!!!	OnProcess(inout event : wxCommandEvent) : void
+	wxASSERT(m_DataBase);
+	wxArrayString myRequestArray; // contain multiple request if needed
+	wxArrayInt myErrorsArray;
+	wxString myTempRequest;
+	
+	wxBeginBusyCursor();
+	
+	// if results, destroy them
+	if (m_DataBase->DataBaseHasResults()==true)
+	{
+		m_DataBase->DataBaseClearResults();
+		wxLogDebug(_T("Results of last query where automatically cleared"));
+	}
+	
+	
+	// get the text to process.
+	wxString myRequest = ((wxTextCtrl*) FindWindow(ID_TEXTCTRL))->GetValue();
+	int myNumberOfRequest = m_DataBase->DataBaseQueriesNumber(myRequest);
+	wxLogMessage(_("Processing Request... %d Request Found"),myNumberOfRequest);
+	
+	wxString myComment = _("Query error, please check syntax");
+	if (m_DataBase->DataBaseQuery(myRequest)==true)
+	{
+		myComment = _("Query passed OK, no results");
+		
+		if (m_DataBase->DataBaseHasResults()==true)
+		{
+			myComment = _("Query passed OK");
+			wxButton * myShowResultButton = (wxButton*)FindWindow(ID_BTN_SHOWRESULTS);
+			wxASSERT(myShowResultButton);
+			myShowResultButton->Enable(true);
+		}
+		
+	}
+
+	// display results
+	((wxStaticText *) FindWindow(ID_REQUEST_RESULT))->SetLabel(myComment);	
+	
+	// end busy...
+	wxEndBusyCursor();
+	
+!!!136195.cpp!!!	OnShowResult(inout event : wxCommandEvent) : void
+		
+	// new dialog 
+	SHOWRESULT_OP2 * myDlg = new SHOWRESULT_OP2(this,
+											  -1, _("SQL Results"),
+											  wxDefaultPosition,wxSize(500,500),
+											  wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	
+	
+	// transfert data to the window
+	myDlg->TransferDataToWindow(m_DataBase);
+	
+	// gray the button
+	wxButton * myShowResultButton = (wxButton*)FindWindow(ID_BTN_SHOWRESULTS);
+	wxASSERT(myShowResultButton);
+	myShowResultButton->Enable(false);
+	
+	
+	// show the window
+	//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);
+	myDlg->SetMinSize(wxSize(300,300));
+	myDlg->SetSize(wxSize(500,400));
+	myDlg->Show(TRUE);
+	
+!!!136963.cpp!!!	OnCancel(inout event : wxCommandEvent) : void
+	if (m_hasRequest) 
+	{
+		SetReturnCode(ID_PROCESS);
+	}
+	this->Destroy();
+    event.Skip();

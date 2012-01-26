@@ -17,7 +17,7 @@
 
 // comment doxygen
 
-#include "../include/gisdataprovider.h"
+#include "gisdataprovider.h"
 
 
 /*************************  GENERIC GIS PROVIDER ***************************/

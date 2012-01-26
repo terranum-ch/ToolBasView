@@ -17,7 +17,7 @@ FILE (GLOB SRC_FILES ../src/*.cpp)
 SOURCE_GROUP (source FILES ${SRC_FILES})
 
 # search all headers files
-FILE (GLOB HEAD_FILES "../include/*.h")
+FILE (GLOB HEAD_FILES "../src/*.h")
 SOURCE_GROUP (header FILES ${HEAD_FILES})
 
 #MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE}) 
@@ -77,7 +77,7 @@ ENDIF(USE_VERSION)
 
 
 #SVN NUMBERING
-INCLUDE ("cmake/use_svnnumber.cmake")
+#INCLUDE ("cmake/use_svnnumber.cmake")
 
 # copy libs to bundle if we are under mac...
 # check is done internally.

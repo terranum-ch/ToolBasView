@@ -1,0 +1,539 @@
+class DataBase
+!!!129539.cpp!!!	DBLibraryInit(in datadir : wxString) : bool
+	// path validity
+	wxFileName myValidPath (datadir, _T(""));
+	if (myValidPath.IsDirReadable()==false)
+	{
+		wxLogError(_("Directory : %s doesn't exists or isn't readable"),datadir.c_str());
+		return false;
+	}
+
+	//init library
+	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_NATIVE);
+
+#ifndef UNIT_TESTING
+	wxFileName myLogDirName (wxStandardPaths::Get().GetDocumentsDir(),_T("toolbasview_debug_log.txt"));
+	wxString myLogDirString = _T("--log=");
+    myLogDirString.Append(myLogDirName.GetFullPath());
+#endif
+
+
+#if defined(__WINDOWS__)
+	wxString mylanguagedir = _T("--language=./mysql");
+#elif defined(__WXMAC__)
+	wxString mylanguagedir =	_T("--language=./ToolBasView.app/Contents/mysql");
+#elif defined(__WXGTK20__)
+	wxString mylanguagedir = _T("--language=./mysql");
+#else
+	wxASSERT_MSG (0, _T("Check compilation option for MySQL"));
+	wxString mylanguagedir = _T("");
+#endif
+
+
+	char const *server_args[] =
+	{
+		"this_program",       /* this string is not used */
+		myDatadir.mb_str(wxConvUTF8),
+		mylanguagedir.mb_str(wxConvUTF8),
+		"--port=3309",
+		"--character-set-server=utf8",
+        "--default-storage-engine=MyISAM",
+        "--ignore-builtin-innodb"
+#ifndef UNIT_TESTING
+#if defined (MYSQL_IS_LOGGING)
+		, myLogDirString.mb_str(wxConvUTF8)
+#endif
+#endif
+		
+	};
+
+
+    char const * server_groups[] =
+	{
+		"embedded",
+		"server",
+		"this_program_SERVER",
+		(char *)NULL
+	};
+
+
+	int num_elements = (sizeof(server_args) / sizeof(char *));
+	int myReturn = mysql_library_init(num_elements, const_cast<char**>(server_args), const_cast<char**>(server_groups));
+
+	if (myReturn != 0)
+	{
+		DBLogLastError();
+		return false;
+	}
+
+	m_MySQL = mysql_init(NULL);
+	mysql_options(m_MySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
+	mysql_options(m_MySQL, MYSQL_SET_CHARSET_NAME, "utf8");
+    wxLogDebug(_T("Initing MySQL library..."));
+	return true;
+!!!129667.cpp!!!	DBLibraryEnd() : void
+	m_DBName = wxEmptyString;
+	m_DBPath = wxEmptyString;
+
+	wxLogDebug(_T("Ending MySQL library..."));
+	mysql_close(m_MySQL);
+	mysql_library_end();
+!!!129795.cpp!!!	DBLogLastError() : void
+	wxString myTextError = wxString::FromAscii(mysql_error(m_MySQL));
+	wxLogError(_("MySQL Error : %s"), myTextError.c_str());
+!!!129923.cpp!!!	DBUseDataBase(in dbname : wxString) : bool
+	if(mysql_real_connect(m_MySQL,NULL,NULL,NULL,(const char *) dbname.mb_str(wxConvUTF8),
+						  3309,NULL,CLIENT_MULTI_STATEMENTS) == NULL){
+		DBLogLastError();
+		return false;
+	}
+
+	if (dbname != wxEmptyString){
+		wxLogMessage(_("Opening database : ") + dbname);
+    }
+	return true;
+!!!130051.cpp!!!	DBIsDataBaseReady() : bool
+	if (m_IsLibraryStarted == false)
+	{
+		wxLogError(_("MySQL library not started"));
+		return false;
+	}
+
+	if (m_IsDatabaseOpened == false)
+	{
+		wxLogError(_("No database open"));
+		return false;
+	}
+	return true;
+!!!130179.cpp!!!	DBGetNextRecord(inout record : MYSQL_ROW) : bool
+	if (DBIsDataBaseReady()==false)
+		return false;
+
+	if (DBResultsNotNull()==false)
+		return false;
+
+
+	record = mysql_fetch_row(m_MySQLRes);
+	if (record == NULL)
+		return false;
+
+	return true;
+!!!130307.cpp!!!	DBResultsNotNull() : bool
+	if (m_MySQLRes == NULL)
+		return false;
+
+	return true;
+!!!130435.cpp!!!	DataBase()
+	IsDatabaseOpen = FALSE;
+	pMySQL = NULL;
+!!!130563.cpp!!!	~DataBase()
+	DataBaseClose();
+!!!130691.cpp!!!	DataBaseCreateNew(in datadir : wxString, in name : wxString) : bool
+	if (m_IsLibraryStarted)
+	{
+		DBLibraryEnd();
+		m_IsLibraryStarted=false;
+	}
+
+	m_IsLibraryStarted = DBLibraryInit(datadir);
+	if (m_IsLibraryStarted == false)
+		return false;
+
+	m_IsDatabaseOpened = DBUseDataBase(wxEmptyString);
+	if (m_IsDatabaseOpened == false)
+		return false;
+
+	wxString myDBNewQuery (name);
+	myDBNewQuery.Prepend(_T("CREATE DATABASE "));
+	myDBNewQuery.Append (_T(" DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"));
+	if(DataBaseQueryNoResults(myDBNewQuery)==false)
+	{
+		wxLogError(_("Error creating database : ") + name);
+		return false;
+	}
+
+	m_IsDatabaseOpened = DBUseDataBase(name);
+	if (m_IsDatabaseOpened == false)
+		return false;
+
+	m_DBName = name;
+	m_DBPath = datadir;
+	return true;
+!!!130819.cpp!!!	DataBaseOpen(in datadir : wxString, in name : wxString) : bool
+	if (m_IsLibraryStarted)
+	{
+		DBLibraryEnd();
+		m_IsLibraryStarted = false;
+	}
+
+	m_IsLibraryStarted = DBLibraryInit(datadir);
+	if (m_IsLibraryStarted == false)
+		return false;
+
+	m_IsDatabaseOpened = DBUseDataBase(name);
+	if (m_IsDatabaseOpened == false)
+		return false;
+
+	m_DBName = name;
+	m_DBPath = datadir;
+
+	return true;
+!!!130947.cpp!!!	DataBaseDelete() : bool
+	if (DBIsDataBaseReady() == false)
+		return false;
+
+	if (DataBaseQuery(_T("DROP DATABASE ") + DataBaseGetName())==false)
+		return false;
+
+	long ldeltables = wxNOT_FOUND;
+	if (DataBaseGetNextResult(ldeltables)==true)
+		wxLogDebug(_T("%d tables deleted"), ldeltables);
+
+	DataBaseClearResults();
+	return true;
+!!!131075.cpp!!!	DataBaseGetName() : wxString
+	return m_DBName;
+!!!131203.cpp!!!	DataBaseGetPath() : wxString
+	return m_DBPath;
+!!!131331.cpp!!!	DataBaseGetSize(in precision : int = 2, in failmsg : wxString = _("Not available")) : wxString
+	if (DBIsDataBaseReady() == false)
+		return failmsg;
+
+	wxFileName myDBFileName (DataBaseGetPath(), DataBaseGetName());
+	if (myDBFileName.IsOk()==false)
+		return failmsg;
+
+	wxArrayString mySkipedFiles;
+	wxULongLong myDBDirSize = wxDir::GetTotalSize(myDBFileName.GetFullPath(), &mySkipedFiles);
+	if (mySkipedFiles.GetCount() > 0)
+		wxLogDebug(_T("%d files skipped, size may not be 100% accurate"));
+
+
+	wxString myDBStringSize = wxFileName::GetHumanReadableSize(myDBDirSize, failmsg);
+	return 	myDBStringSize;
+!!!131459.cpp!!!	DataBaseGetVersion() : wxString
+	return wxString(mysql_get_client_info(), wxConvUTF8);
+!!!131587.cpp!!!	DataBaseThreadInit() : bool
+	if (mysql_thread_init() == 0)
+	{
+		return true;
+	}
+	else
+	{
+		// try to get the last error
+		DBLogLastError();
+		return false;
+	}
+!!!131715.cpp!!!	DataBaseThreadEnd() : void
+	mysql_thread_end();
+!!!131843.cpp!!!	DataBaseQueryNoResults(in query : wxString) : bool
+	if (DBIsDataBaseReady() == false)
+		return false;
+
+	if (DBResultsNotNull())
+	{
+		wxASSERT_MSG(0, _T("Not able to run query, results were not cleared"));
+		wxLogDebug(_T("Not able to run query, results were not cleared"));
+		return false;
+	}
+
+	char * buf = new char[query.Len() * sizeof(wxString)];
+	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
+	if (mysql_query(m_MySQL, buf) != 0)
+	{
+		delete [] buf;
+		DBLogLastError();
+		return false;
+	}
+
+	delete [] buf;
+	m_MySQLRes = mysql_store_result(m_MySQL);
+	DataBaseClearResults();
+	return true;
+!!!131971.cpp!!!	DataBaseQuery(in query : wxString) : bool
+	if (DBIsDataBaseReady() == false)
+		return false;
+
+	if (DBResultsNotNull())
+	{
+		wxASSERT_MSG(0, _T("Not able to run query, results were not cleared"));
+		wxLogDebug(_T("Not able to run query, results were not cleared"));
+		return false;
+	}
+
+	char * buf = new char[query.Len() * sizeof(wxString)];
+	strcpy( buf, (const char*)query.mb_str(wxConvUTF8));
+	if (mysql_query(m_MySQL, buf) != 0)
+	{
+		delete [] buf;
+		DBLogLastError();
+		return false;
+	}
+	delete [] buf;
+	m_MySQLRes = mysql_store_result(m_MySQL);
+	return true;
+!!!132099.cpp!!!	DataBaseQueriesNumber(in query : wxString) : int
+	wxStringTokenizer tokenizer(query, _T(";"), wxTOKEN_DEFAULT);
+	return tokenizer.CountTokens();
+!!!132227.cpp!!!	DataBaseGetLastInsertedID() : long
+	long myIID = wxNOT_FOUND;
+	if (DBIsDataBaseReady()==false)
+		return myIID;
+
+	myIID = mysql_insert_id(m_MySQL);
+	if (myIID == 0)
+		myIID = wxNOT_FOUND;
+
+	return myIID;
+!!!132355.cpp!!!	DataBaseHasResults() : bool
+	if (DBResultsNotNull()==false)
+		return false;
+
+	long lrow = 0;
+	if (DataBaseGetResultSize(NULL, &lrow)==false)
+	{
+		wxLogError(_T("Unable to compute number of results"));
+	}
+
+	if (lrow <= 0)
+	{
+		DataBaseClearResults();
+		return false;
+	}
+
+	return true;
+!!!132483.cpp!!!	DataBaseClearResults() : void
+	if (m_MySQLRes != NULL)
+	{
+		mysql_free_result(m_MySQLRes);
+		m_MySQLRes = NULL;
+	}
+!!!132611.cpp!!!	DataBaseGetResultSize(inout pcols : uint, inout prows : long) : bool
+	if (DBIsDataBaseReady()==false)
+		return false;
+
+	if (DBResultsNotNull() == false)
+		return false;
+
+	if (pcols != NULL)
+		*pcols = mysql_num_fields(m_MySQLRes);
+
+	if (prows != NULL)
+		*prows = mysql_num_rows(m_MySQLRes);
+
+	return true;
+!!!132739.cpp!!!	DataBaseGetNextResult(inout result : wxString) : bool
+	MYSQL_ROW record;
+
+	if (m_resultNumber > 0 && pResults != NULL)
+	{
+		record = mysql_fetch_row(pResults);
+		if(record != NULL)
+		{
+			result = wxString ( record[0], wxConvUTF8);
+			// if only one result clean imediately
+			if (m_resultCount == 1)
+			{
+				// clean
+				m_resultNumber=0;
+				m_resultCount=0;
+				mysql_free_result(pResults);
+				pResults = NULL;
+			}
+
+			return TRUE;
+		}
+		else
+		{
+			// clean
+			m_resultNumber=0;
+			m_resultCount=0;
+			mysql_free_result(pResults);
+			pResults = NULL;
+		}
+	}
+	return FALSE;
+!!!132867.cpp!!!	DataBaseGetNextResult(inout results : wxArrayString) : bool
+	results.Clear();
+
+	MYSQL_ROW record = NULL;
+	if (DBGetNextRecord(record)==false)
+		return false;
+
+	unsigned int myCols = 0;
+	DataBaseGetResultSize(&myCols, NULL);
+	if (myCols == 1)
+	{
+		wxLogDebug(_T("Only one columns returned, use the ")
+				   _T("DataBaseGetNextResult(wxString) function instead of this one"));
+	}
+
+	for (unsigned int i = 0; i< myCols; i++)
+	{
+		results.Add(wxString ( record[i], wxConvUTF8));
+	}
+	return true;
+!!!132995.cpp!!!	DataBaseGetNextResult(inout result : long) : bool
+	result = wxNOT_FOUND;
+
+	MYSQL_ROW record = NULL;
+	if (DBGetNextRecord(record)==false)
+		return false;
+
+	result = atol(record[0]);
+	return true;
+!!!133123.cpp!!!	DataBaseGetNextResult(inout results : wxArrayLong) : bool
+	results.Clear();
+
+	MYSQL_ROW record = NULL;
+	if (DBGetNextRecord(record)==false)
+		return false;
+
+	unsigned int myCols = 0;
+	DataBaseGetResultSize(&myCols, NULL);
+	if (myCols == 1)
+	{
+		wxLogDebug(_T("Only one columns returned, use the ")
+				   _T("DataBaseGetNextResult(long) function instead of this one"));
+	}
+
+	for (unsigned int i = 0; i< myCols; i++)
+	{
+		results.Add(atol(record[i]));
+	}
+	return true;
+!!!133251.cpp!!!	DataBaseGetNextResult(inout result : double) : bool
+	result = 0;
+
+	MYSQL_ROW record = NULL;
+	if (DBGetNextRecord(record)==false)
+		return false;
+
+	result = atof(record[0]);
+	return true;
+!!!133379.cpp!!!	DataBaseGetNextResult(inout results : wxArrayDouble) : bool
+	results.Clear();
+
+	MYSQL_ROW record = NULL;
+	if (DBGetNextRecord(record)==false)
+		return false;
+
+	unsigned int myCols = 0;
+	DataBaseGetResultSize(&myCols, NULL);
+	if (myCols == 1)
+	{
+		wxLogDebug(_T("Only one columns returned, use the ")
+				   _T("DataBaseGetNextResult(double) function instead of this one"));
+	}
+
+	for (unsigned int i = 0; i< myCols; i++)
+	{
+		results.Add(atof(record[i]));
+	}
+	return true;
+!!!133507.cpp!!!	DataBaseGetNextRowResult(inout row : MYSQL_ROW, inout lengths : tmArrayULong) : bool
+	row = NULL;
+	lengths.Clear();
+
+
+
+	if (DBGetNextRecord(row)==false)
+		return false;
+
+	unsigned int myNumFields = mysql_field_count(m_MySQL);
+	wxASSERT(myNumFields > 0);
+
+	unsigned long * myTempLength = mysql_fetch_lengths(m_MySQLRes);
+	wxASSERT(*myTempLength != 0);
+
+	for (unsigned int i =  0; i<myNumFields;i++)
+		lengths.Add(myTempLength[i]);
+
+	//delete [] myTempLength; (not needed ?)
+	return true;
+!!!133635.cpp!!!	DataBaseGetResults(inout results : wxArrayString) : bool
+	results.Clear();
+	MYSQL_ROW record = NULL;
+
+	while (1)
+	{
+		if (DBGetNextRecord(record)==false)
+			break;
+
+		results.Add(wxString ( record[0], wxConvUTF8));
+	}
+
+	DataBaseClearResults();
+	switch (results.GetCount())
+	{
+		case 0:
+			return false;
+			break;
+
+		case 1:
+			wxLogDebug(_T("Only one value returned, maybe should use the")
+					   _T(" DataBaseGetNextResult(wxString) function instead ?"));
+			break;
+
+		default:
+			break;
+	}
+	return true;
+!!!133763.cpp!!!	DataBaseGetResults(inout results : wxArrayLong) : bool
+	results.Clear();
+	MYSQL_ROW record = NULL;
+
+	while (1)
+	{
+		if (DBGetNextRecord(record)==false)
+			break;
+
+		results.Add(atol(record[0]));
+	}
+
+
+	DataBaseClearResults();
+	switch (results.GetCount())
+	{
+		case 0:
+			return false;
+			break;
+
+		case 1:
+			wxLogDebug(_T("Only one value returned, maybe should use the")
+					   _T(" DataBaseGetNextResult(long) function instead ?"));
+			break;
+
+		default:
+			break;
+	}
+	return true;
+!!!133891.cpp!!!	DataBaseGetResults(inout results : wxArrayDouble) : bool
+	results.Clear();
+	MYSQL_ROW record = NULL;
+
+	while (1)
+	{
+		if (DBGetNextRecord(record)==false)
+			break;
+
+		results.Add(atof(record[0]));
+	}
+
+
+	DataBaseClearResults();
+	switch (results.GetCount())
+	{
+		case 0:
+			return false;
+			break;
+
+		case 1:
+			wxLogDebug(_T("Only one value returned, maybe should use the")
+					   _T(" DataBaseGetNextResult(double) function instead ?"));
+			break;
+
+		default:
+			break;
+	}
+	return true;

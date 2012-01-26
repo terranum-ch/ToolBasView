@@ -34,9 +34,9 @@
 #include <wx/toolbar.h>
 
 
-#include "../include/dialogs.h"
-#include "../include/gridoperation.h"
-#include "../include/database.h" 
+#include "dialogs.h"
+#include "gridoperation.h"
+#include "database.h" 
 #include <wx/filename.h> // for verification purpose
 
 #include <wx/hyperlink.h>

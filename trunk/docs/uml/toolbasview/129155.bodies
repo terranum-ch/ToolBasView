@@ -1,0 +1,17 @@
+class GISDataProvider
+!!!137219.cpp!!!	GISDataProvider()
+	m_GISisOpen = FALSE;
+
+!!!137347.cpp!!!	~GISDataProvider()
+
+!!!137475.cpp!!!	GISOpen(in filename : wxString) : bool
+	m_GISisOpen = TRUE;
+	return TRUE;
+!!!137603.cpp!!!	GISGetExtend() : OGREnvelope
+
+	return NULL;
+!!!137731.cpp!!!	GISClose() : bool
+	m_GISisOpen = FALSE;
+	return TRUE;
+!!!137859.cpp!!!	GISIsOpened() : bool
+	return m_GISisOpen;

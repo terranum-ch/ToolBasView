@@ -36,7 +36,7 @@
 #pragma hdrstop
 #endif
 
-#include "../include/database.h"
+#include "database.h"
 
 
 #include <wx/filename.h> // to create the database path and name.

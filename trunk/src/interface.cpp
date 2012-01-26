@@ -17,7 +17,7 @@
 #endif
 
 // Include private header
-#include "../include/interface.h"
+#include "interface.h"
 #include "../art/toolbasview_bmp.h"
 
 #include <wx/intl.h>
@@ -195,8 +195,11 @@ wxMenuBar *MENU()
     wxMenu* item1 = new wxMenu;
 	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
     item1->Append( ID_OPEN_DB, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
+    item1->AppendSeparator();
     item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
 	item1->AppendSeparator();
+    item1->Append( wxID_SAVEAS, _("Export as CSV...\tCtrl-Alt-E"), _("Select and Export data as CSV.") );    
+    item1->AppendSeparator();
     item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
     item0->Append( item1, _("File") );
     

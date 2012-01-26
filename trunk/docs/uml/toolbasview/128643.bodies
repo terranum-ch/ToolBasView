@@ -1,171 +1,5 @@
-/***************************************************************************
- deletetabledata_dlg.cpp
- dialog for deleting data from database 
- -------------------
- copyright            : (C) 2007 CREALP Lucien Schreiber 
- email                : lucien.schreiber at crealp dot vs dot ch
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-// For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-
-#include "deletetabledata_dlg.h"
-
-
-
-IMPLEMENT_DYNAMIC_CLASS( DELETETABLEDATA_DLG, wxDialog )
-
-BEGIN_EVENT_TABLE( DELETETABLEDATA_DLG, wxDialog )
-	EVT_BUTTON(wxID_OK, DELETETABLEDATA_DLG::OnPressOK)
-END_EVENT_TABLE()
-
-
-DELETETABLEDATA_DLG::DELETETABLEDATA_DLG()
-{
-    Init();
-}
-
-DELETETABLEDATA_DLG::DELETETABLEDATA_DLG( wxWindow* parent, wxWindowID id,
-										 DataBase * database,
-										 const wxString& caption, const wxPoint& pos, 
-										 const wxSize& size, long style )
-{
-    Init();
-    Create(parent, id, caption, pos, size, style);
-	m_pDatabase = database;
-	
-	// init the table if database not empty
-	if (m_pDatabase == NULL)
-		return;
-	wxArrayString myListTables;
-	if (m_pDatabase->DataBaseQuery(_T("SHOW TABLES"))==false)
-	{
-		m_pDatabase->DataBaseClearResults();
-		return;
-	}
-	
-	if (m_pDatabase->DataBaseGetResults(myListTables)==false)
-		return;
-	
-	m_DlgDel_ListTables->Append(myListTables);
-	
-	
-}
-
-
-bool DELETETABLEDATA_DLG::Create( wxWindow* parent, wxWindowID id, 
-								 const wxString& caption, 
-								 const wxPoint& pos, const wxSize& size, long style )
-{
-    SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
-    wxDialog::Create( parent, id, caption, pos, size, style );
-
-    CreateControls();
-    if (GetSizer())
-    {
-        GetSizer()->SetSizeHints(this);
-    }
-    Centre();
-    return true;
-}
-
-
-
-DELETETABLEDATA_DLG::~DELETETABLEDATA_DLG()
-{
-}
-
-
-void DELETETABLEDATA_DLG::Init()
-{
-    m_DlgDel_Chk_Data = NULL;
-    m_DlgDel_Chk_table = NULL;
-    m_DlgDel_Chk_Vacuum = NULL;
-	m_pDatabase = NULL;
-	m_DlgDel_ListTables = NULL;
-	m_DlgFlags = DEL_FLAGS_ALL;
-}
-
-
-
-bool DELETETABLEDATA_DLG::TransferDataToWindow()
-{
-	if((m_DlgFlags & DEL_FLAGS_DATA) != DEL_FLAGS_DATA)
-	{
-		m_DlgDel_Chk_Data->SetValue(FALSE);
-		m_DlgDel_Chk_Data->Enable(FALSE);
-	}
-	
-	if((m_DlgFlags & DEL_FLAGS_TABLE) != DEL_FLAGS_TABLE)
-	{
-		m_DlgDel_Chk_table->SetValue(FALSE);
-		m_DlgDel_Chk_table->Enable(FALSE);
-	}
-	
-	if((m_DlgFlags & DEL_FLAGS_VACUUM) != DEL_FLAGS_VACUUM)
-	{
-		m_DlgDel_Chk_Vacuum->SetValue(FALSE);
-		m_DlgDel_Chk_Vacuum->Enable(FALSE);
-	}
-	
-	return TRUE;
-}
-
-bool DELETETABLEDATA_DLG::TransferDataFromWindow()
-{
-	// put selected operations into the flags object
-	m_DlgFlags = 0;
-	
-	if (m_DlgDel_Chk_Data->IsChecked())
-	{
-		m_DlgFlags = m_DlgFlags | DEL_FLAGS_DATA;
-	}
-	
-	if (m_DlgDel_Chk_table->IsChecked())
-	{
-		m_DlgFlags = m_DlgFlags | DEL_FLAGS_TABLE;
-	}
-	
-	if (m_DlgDel_Chk_Vacuum->IsChecked())
-	{
-		m_DlgFlags = m_DlgFlags | DEL_FLAGS_VACUUM;
-	}
-	
-	
-	// get selected tables 
-	wxArrayInt mySelectedItems;
-	m_DlgDel_ListTables->GetSelections(mySelectedItems);
-	
-	for (unsigned int i = 0; i<mySelectedItems.GetCount(); i++)
-	{
-		m_SelectedTables.Add(m_DlgDel_ListTables->GetString(mySelectedItems.Item(i)));
-	}
-
-	
-	return TRUE;	
-}
-
-
-void DELETETABLEDATA_DLG::OnPressOK (wxCommandEvent & event)
-{
+class DELETETABLEDATA_DLG
+!!!134019.cpp!!!	OnPressOK(inout event : wxCommandEvent) : void
 	wxString sSentence = _T("");
 	
 	for (unsigned int i = 0; i<m_DlgDel_ListTables->GetCount(); i++)
@@ -211,12 +45,98 @@ void DELETETABLEDATA_DLG::OnPressOK (wxCommandEvent & event)
 	wxLogDebug(sSentence);
 	
 	Close();
-}
+!!!134275.cpp!!!	DELETETABLEDATA_DLG(inout parent : wxWindow, in id : wxWindowID = SYMBOL_DELETETABLEDATA_DLG_IDNAME, inout database : DataBase = NULL, in caption : wxString = SYMBOL_DELETETABLEDATA_DLG_TITLE, in pos : wxPoint = SYMBOL_DELETETABLEDATA_DLG_POSITION, in size : wxSize = SYMBOL_DELETETABLEDATA_DLG_SIZE, in style : long = SYMBOL_DELETETABLEDATA_DLG_STYLE)
+    Init();
+    Create(parent, id, caption, pos, size, style);
+	m_pDatabase = database;
+	
+	// init the table if database not empty
+	if (m_pDatabase == NULL)
+		return;
+	wxArrayString myListTables;
+	if (m_pDatabase->DataBaseQuery(_T("SHOW TABLES"))==false)
+	{
+		m_pDatabase->DataBaseClearResults();
+		return;
+	}
+	
+	if (m_pDatabase->DataBaseGetResults(myListTables)==false)
+		return;
+	
+	m_DlgDel_ListTables->Append(myListTables);
+	
+	
+!!!134403.cpp!!!	Create(inout parent : wxWindow, in id : wxWindowID = SYMBOL_DELETETABLEDATA_DLG_IDNAME, in caption : wxString = SYMBOL_DELETETABLEDATA_DLG_TITLE, in pos : wxPoint = SYMBOL_DELETETABLEDATA_DLG_POSITION, in size : wxSize = SYMBOL_DELETETABLEDATA_DLG_SIZE, in style : long = SYMBOL_DELETETABLEDATA_DLG_STYLE) : bool
+    SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
+    wxDialog::Create( parent, id, caption, pos, size, style );
 
+    CreateControls();
+    if (GetSizer())
+    {
+        GetSizer()->SetSizeHints(this);
+    }
+    Centre();
+    return true;
+!!!134659.cpp!!!	Init() : void
+    m_DlgDel_Chk_Data = NULL;
+    m_DlgDel_Chk_table = NULL;
+    m_DlgDel_Chk_Vacuum = NULL;
+	m_pDatabase = NULL;
+	m_DlgDel_ListTables = NULL;
+	m_DlgFlags = DEL_FLAGS_ALL;
+!!!135043.cpp!!!	TransferDataToWindow() : bool
+	if((m_DlgFlags & DEL_FLAGS_DATA) != DEL_FLAGS_DATA)
+	{
+		m_DlgDel_Chk_Data->SetValue(FALSE);
+		m_DlgDel_Chk_Data->Enable(FALSE);
+	}
+	
+	if((m_DlgFlags & DEL_FLAGS_TABLE) != DEL_FLAGS_TABLE)
+	{
+		m_DlgDel_Chk_table->SetValue(FALSE);
+		m_DlgDel_Chk_table->Enable(FALSE);
+	}
+	
+	if((m_DlgFlags & DEL_FLAGS_VACUUM) != DEL_FLAGS_VACUUM)
+	{
+		m_DlgDel_Chk_Vacuum->SetValue(FALSE);
+		m_DlgDel_Chk_Vacuum->Enable(FALSE);
+	}
+	
+	return TRUE;
+!!!135171.cpp!!!	TransferDataFromWindow() : bool
+	// put selected operations into the flags object
+	m_DlgFlags = 0;
+	
+	if (m_DlgDel_Chk_Data->IsChecked())
+	{
+		m_DlgFlags = m_DlgFlags | DEL_FLAGS_DATA;
+	}
+	
+	if (m_DlgDel_Chk_table->IsChecked())
+	{
+		m_DlgFlags = m_DlgFlags | DEL_FLAGS_TABLE;
+	}
+	
+	if (m_DlgDel_Chk_Vacuum->IsChecked())
+	{
+		m_DlgFlags = m_DlgFlags | DEL_FLAGS_VACUUM;
+	}
+	
+	
+	// get selected tables 
+	wxArrayInt mySelectedItems;
+	m_DlgDel_ListTables->GetSelections(mySelectedItems);
+	
+	for (unsigned int i = 0; i<mySelectedItems.GetCount(); i++)
+	{
+		m_SelectedTables.Add(m_DlgDel_ListTables->GetString(mySelectedItems.Item(i)));
+	}
 
-
-void DELETETABLEDATA_DLG::CreateControls()
-{    
+	
+	return TRUE;	
+!!!135299.cpp!!!	CreateControls() : void
+    
     DELETETABLEDATA_DLG* itemDialog1 = this;
 
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
@@ -265,6 +185,4 @@ void DELETETABLEDATA_DLG::CreateControls()
     itemStdDialogButtonSizer12->AddButton(itemButton14);
 
     itemStdDialogButtonSizer12->Realize();
-
-}
 

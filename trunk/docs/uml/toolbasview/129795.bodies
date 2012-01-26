@@ -1,0 +1,10 @@
+class TBVApp
+!!!142723.cpp!!!	OnInit() : bool
+	TBVFrame* frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(620,520));
+	
+	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
+	frame->Centre();
+	frame->Show();
+	
+	
+	return true;

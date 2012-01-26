@@ -20,7 +20,7 @@
 /*!
  * Includes
  */
-#include "../include/database.h"
+#include "database.h"
 #include <wx/filepicker.h>
 #include "wx/statline.h"
 

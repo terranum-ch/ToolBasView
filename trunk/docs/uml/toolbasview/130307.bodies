@@ -1,60 +1,8 @@
-/***************************************************************************
- searchspatialpoint.cpp
- Dialog functions for searching spatial data. Mainly used for benchmarks 
- -------------------
- copyright            : (C) 2007 CREALP Lucien Schreiber 
- email                : lucien.schreiber at crealp dot vs dot ch
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-#include "searchspatialpoint_dlg.h"
-
-IMPLEMENT_DYNAMIC_CLASS( SEARCHSPATIALPOINT_DLG, wxDialog )
-
-
-BEGIN_EVENT_TABLE( SEARCHSPATIALPOINT_DLG, wxDialog )
-	EVT_BUTTON (wxID_CLOSE, SEARCHSPATIALPOINT_DLG::OnButtonClose)
-	EVT_IDLE (SEARCHSPATIALPOINT_DLG::OnIdleActivateButton)
-	EVT_BUTTON (wxID_FIND, SEARCHSPATIALPOINT_DLG::OnButtonFind) 
-END_EVENT_TABLE()
-
-
-/***************************** EVENT FUNCTIONS ***************************/
-void SEARCHSPATIALPOINT_DLG::OnButtonClose(wxCommandEvent & event)
-{
-	// Quit the dialog...
-	Close();
-	
-}
-
-
-void SEARCHSPATIALPOINT_DLG::OnIdleActivateButton (wxIdleEvent & event)
-{
+class SEARCHSPATIALPOINT_DLG
+!!!145283.cpp!!!	OnIdleActivateButton(inout event : wxIdleEvent) : void
 	// enable button if controls are filled
 	m_DLGSS_FindButton->Enable(IsControlFilled());
-}
-
-
-void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
-{
+!!!145411.cpp!!!	OnButtonFind(inout event : wxCommandEvent) : void
 	// get value from control
 	m_xvalue = m_DLGSS_coord_x->GetValue();
 	m_yvalue = m_DLGSS_coord_y->GetValue();
@@ -82,48 +30,22 @@ void SEARCHSPATIALPOINT_DLG::OnButtonFind (wxCommandEvent & event)
 	m_DLGSS_result_status->SetLabel(_("Line is : ") + sStatusString);
 	m_DLGSS_result_status_tm->SetLabel(wxString::Format(_T("%d [ms]"), sw.Time()));
 	
-}
-
-
-
-
-/***************************** PRIVATE FUNCTIONS ***************************/
-bool SEARCHSPATIALPOINT_DLG::IsControlFilled ()
-{
+!!!145539.cpp!!!	IsControlFilled() : bool
 	if (!m_DLGSS_coord_x->IsEmpty() && !m_DLGSS_coord_y->IsEmpty())
 		return TRUE;
 	
 	return FALSE;
-}
-
-
-
-
-
-/*****************************  FUNCTIONS ***************************/
-SEARCHSPATIALPOINT_DLG::SEARCHSPATIALPOINT_DLG()
-{
+!!!145667.cpp!!!	SEARCHSPATIALPOINT_DLG()
     Init();
-}
-
-
-SEARCHSPATIALPOINT_DLG::SEARCHSPATIALPOINT_DLG( wxWindow* parent, DataBase * database,
-											   wxWindowID id, const wxString& caption,
-											   const wxPoint& pos, const wxSize& size, long style )
-{
+!!!145795.cpp!!!	SEARCHSPATIALPOINT_DLG(inout parent : wxWindow, inout database : DataBase, in id : wxWindowID = SYMBOL_SEARCHSPATIALPOINT_DLG_IDNAME, in caption : wxString = SYMBOL_SEARCHSPATIALPOINT_DLG_TITLE, in pos : wxPoint = SYMBOL_SEARCHSPATIALPOINT_DLG_POSITION, in size : wxSize = SYMBOL_SEARCHSPATIALPOINT_DLG_SIZE, in style : long = SYMBOL_SEARCHSPATIALPOINT_DLG_STYLE)
     Init();
 	
 	m_pDatabase = database;
     Create(parent, id, caption, pos, size, style);
-}
-
-
-
-
-bool SEARCHSPATIALPOINT_DLG::Create( wxWindow* parent, wxWindowID id, 
-									const wxString& caption, const wxPoint& pos, 
-									const wxSize& size, long style )
-{
+!!!145923.cpp!!!	~SEARCHSPATIALPOINT_DLG()
+	if (m_GISDB.GISIsOpened())
+		m_GISDB.GISClose();
+!!!146051.cpp!!!	Create(inout parent : wxWindow, in id : wxWindowID = SYMBOL_SEARCHSPATIALPOINT_DLG_IDNAME, in caption : wxString = SYMBOL_SEARCHSPATIALPOINT_DLG_TITLE, in pos : wxPoint = SYMBOL_SEARCHSPATIALPOINT_DLG_POSITION, in size : wxSize = SYMBOL_SEARCHSPATIALPOINT_DLG_SIZE, in style : long = SYMBOL_SEARCHSPATIALPOINT_DLG_STYLE) : bool
     SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
     wxDialog::Create( parent, id, caption, pos, size, style );
 
@@ -134,41 +56,7 @@ bool SEARCHSPATIALPOINT_DLG::Create( wxWindow* parent, wxWindowID id,
     }
     Centre();
     return true;
-}
-
-
-
-
-SEARCHSPATIALPOINT_DLG::~SEARCHSPATIALPOINT_DLG()
-{
-	if (m_GISDB.GISIsOpened())
-		m_GISDB.GISClose();
-}
-
-void SEARCHSPATIALPOINT_DLG::Init()
-{
-    m_DLGSS_Map_Xmin = NULL;
-    m_DLGSS_Map_Xmax = NULL;
-    m_DLGSS_Map_Ymin = NULL;
-    m_DLGSS_Map_Ymax = NULL;
-    m_DLGSS_coord_x = NULL;
-    m_DLGSS_coord_x = NULL;
-    m_DLGSS_buffer = NULL;
-    m_DLGSS_result_index = NULL;
-    m_DLGSS_result_index_tm = NULL;
-    m_DLGSS_result_status = NULL;
-    m_DLGSS_result_status_tm = NULL;
-	
-	m_pDatabase = NULL;
-		m_DLGSS_FindButton = NULL;
-	
-	m_xvalue = _T("");
-	m_yvalue = _T("");
-}
-
-// dbname is not used for mysql
-bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxString & table)
-{
+!!!146179.cpp!!!	OpenDBGISData(in dbname : wxString, in table : wxString) : bool
 	// store the OGRenveloppe, must be deleted after use
 	// but only if not null
 	OGREnvelope * myDBEnveloppe;
@@ -208,15 +96,26 @@ bool SEARCHSPATIALPOINT_DLG::OpenDBGISData (const wxString & dbname, const wxStr
 	}
 	wxLogDebug(_T("Error opening the Database"));
 	return FALSE;
-}
-
-
-
-
-
-
-void SEARCHSPATIALPOINT_DLG::CreateControls()
-{    
+!!!146307.cpp!!!	Init() : void
+    m_DLGSS_Map_Xmin = NULL;
+    m_DLGSS_Map_Xmax = NULL;
+    m_DLGSS_Map_Ymin = NULL;
+    m_DLGSS_Map_Ymax = NULL;
+    m_DLGSS_coord_x = NULL;
+    m_DLGSS_coord_x = NULL;
+    m_DLGSS_buffer = NULL;
+    m_DLGSS_result_index = NULL;
+    m_DLGSS_result_index_tm = NULL;
+    m_DLGSS_result_status = NULL;
+    m_DLGSS_result_status_tm = NULL;
+	
+	m_pDatabase = NULL;
+		m_DLGSS_FindButton = NULL;
+	
+	m_xvalue = _T("");
+	m_yvalue = _T("");
+!!!146435.cpp!!!	CreateControls() : void
+    
 ////@begin SEARCHSPATIALPOINT_DLG content construction
     SEARCHSPATIALPOINT_DLG* itemDialog1 = this;
 
@@ -327,6 +226,4 @@ void SEARCHSPATIALPOINT_DLG::CreateControls()
     wxButton* itemButton37 = new wxButton( itemDialog1, wxID_CLOSE, _("&Close"), wxDefaultPosition, wxDefaultSize, 0 );
     itemButton37->SetDefault();
     itemBoxSizer35->Add(itemButton37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-
-}
 
