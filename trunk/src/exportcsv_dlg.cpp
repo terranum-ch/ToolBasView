@@ -27,7 +27,7 @@ END_EVENT_TABLE()
 
 
 ExportCSV_DLG::ExportCSV_DLG(wxWindow * window, wxWindowID id, const wxString & title, DataBase * database) : 
-wxDialog(window, id, title) {
+wxDialog(window, id, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER) {
     m_Database = database;
     wxASSERT(m_Database);
     _CreateControls();
@@ -86,6 +86,9 @@ void ExportCSV_DLG::_CreateControls() {
 	
 	bSizer3->Add( sbSizer1, 0, wxEXPAND|wxALL, 5 );
 	
+    m_UnicodeExportCtrl = new wxCheckBox( this, wxID_ANY, _("Export to Unicode"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer3->Add( m_UnicodeExportCtrl, 0, wxALL, 5 );
+    
 	bSizer2->Add( bSizer3, 0, wxEXPAND, 5 );
 	
 	bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
@@ -145,7 +148,11 @@ void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
     wxFileName myPath(wxDirSelector("Select a folder for exporting"));
     
     // export
-    TableExport myExport(m_Database);
+    TableExport myExport(m_Database);   
+    if (m_UnicodeExportCtrl->IsChecked() == false){
+        myExport.SetEncoding("ISO 8859-1");
+    }
+    
     int myLimit = wxNOT_FOUND;
     if (m_LimitRecordUse->IsChecked() == true) {
         myLimit = m_LimitRecordValueCtrl->GetValue();

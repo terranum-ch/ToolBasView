@@ -42,6 +42,7 @@ private:
     wxCheckListBox* m_ListTablesCtrl;
     wxSpinCtrl* m_LimitRecordValueCtrl;
     wxCheckBox* m_LimitRecordUse;
+    wxCheckBox* m_UnicodeExportCtrl;
     DataBase * m_Database;
 
     void _CreateControls();
