@@ -1,0 +1,184 @@
+class GISOgrProvider
+!!!137987.cpp!!!	GISOgrProvider()
+	//m_NumOfVector		= 0;
+	m_pLayer			= NULL;
+	m_pDatasource		= NULL;
+	m_iFeatureLoop		= 0;
+	m_LayerSpatType		= GISSPATIAL_ERROR;
+	
+!!!138115.cpp!!!	~GISOgrProvider()
+	
+!!!138243.cpp!!!	GetLayerSpatialType() : GISSPATIAL_TYPE
+	OGRGeometry *poGeometry;
+	OGRFeature *poFeature;
+	GISSPATIAL_TYPE retvalue = GISSPATIAL_ERROR;
+	
+	wxASSERT(m_pLayer);
+	
+	// computing features count, not able to know the
+	// spatial type if no features are present.
+	if (m_pLayer->GetFeatureCount () <= 0)
+	{
+		wxLogError(_("Unable to add the layer, layer is empty"));
+		return GISSPATIAL_ERROR;
+	}
+	
+	
+	// computing layer type (point, line, polygon or unknown)
+	if ((poFeature = m_pLayer->GetNextFeature()) == NULL)
+	{
+		wxLogError(_("Unable to read feature, layer may be corrupted"));
+		return GISSPATIAL_ERROR;
+	}
+	
+	wxString sLogType = _T("Layer type : ");
+	poGeometry = poFeature->GetGeometryRef();
+	if( poGeometry != NULL)
+	{	
+		switch (wkbFlatten(poGeometry->getGeometryType()))
+		{
+			case wkbLineString:
+				sLogType.Append(_T("Line"));
+				retvalue = GISSPATIAL_LINE;
+				break;
+			case wkbPoint:
+				sLogType.Append(_T("Point"));
+				retvalue = GISSPATIAL_POINT;
+				break;
+			case wkbPolygon:
+				sLogType.Append(_T("Polygon"));
+				retvalue = GISSPATIAL_POLYGON;
+				break;
+			default:
+				sLogType.Append(_T("Error"));
+				retvalue = GISSPATIAL_ERROR;
+				break;
+		}
+	}
+	
+	wxLogMessage(sLogType);
+	
+	OGRFeature::DestroyFeature( poFeature );
+	
+	if (retvalue == GISSPATIAL_ERROR)
+	{
+		wxLogDebug(_T("Error getting spatial layer type"));
+	}
+	
+	// reset reading 
+	m_pLayer->ResetReading();
+	
+	return retvalue;
+!!!138371.cpp!!!	GISOpen(in filename : wxString) : bool
+		
+	m_pDatasource = OGRSFDriverRegistrar::Open(filename.ToAscii(), FALSE );
+    if( m_pDatasource != NULL )
+    {
+		GISDataProvider::GISOpen(filename);
+		m_pLayer = m_pDatasource->GetLayer(0);
+		m_pLayer->ResetReading();
+		
+		wxLogDebug(_T("Opening vector file OK"));
+		
+		// compute spatial type
+		m_LayerSpatType = GetLayerSpatialType();
+		if (m_LayerSpatType == GISSPATIAL_ERROR)
+			return FALSE;
+				
+		
+		return TRUE;
+    }
+	
+	// if we couldn't open the vector file try to know why
+	// ERROR WITH WINDOWS WHY ???
+	const char * myError; // = CPLGetLastErrorMsg();
+	wxString myErrMsg = wxString::FromAscii(myError);
+	wxLogDebug(_T("Open vector failed for file %s, error msg is : %s"), 
+			   filename.c_str(), myErrMsg.c_str());
+	return FALSE;
+!!!138499.cpp!!!	GISGetExtend() : OGREnvelope
+	// if returned value is not NULL then 
+	// caller must delete OGREnveloppe *
+	// otherwise OGREnveloppe is deleted
+	// here...
+	OGREnvelope * myEnveloppe = new OGREnvelope();
+	// compute the extend
+	if (m_pLayer->GetExtent(myEnveloppe, TRUE) == OGRERR_NONE)
+	{
+		return myEnveloppe;
+	}
+	else 
+	{
+		delete myEnveloppe;
+	}
+	return NULL;
+!!!138627.cpp!!!	GISGetFeatureCount() : long
+	return m_pLayer->GetFeatureCount();
+!!!138755.cpp!!!	GISGetNextFeatureAsWkT(inout wkbstring : wxString) : bool
+	OGRFeature *poFeature;
+	OGRGeometry *poGeometry;
+	char * myExport;
+	
+	poFeature = m_pLayer->GetNextFeature();
+	poGeometry = poFeature->GetGeometryRef();
+	if (poGeometry != NULL)
+	{
+		if (wkbFlatten(poGeometry->getGeometryType()) == wkbLineString )
+		{
+					
+			OGRLineString * poLine = (OGRLineString *) poGeometry;
+			
+			poLine->exportToWkt(&myExport);
+			wkbstring = wxString::FromAscii(myExport);
+			delete myExport;
+		}
+		m_iFeatureLoop ++;
+		OGRFeature::DestroyFeature( poFeature );
+		return TRUE;
+			
+	}
+	
+	OGRFeature::DestroyFeature( poFeature );
+	wxLogDebug(_T("No Geometery / Feature found"));
+	return FALSE;
+!!!138883.cpp!!!	GISGetNextFeatureAsWktBuffer(inout featurelist : wxArrayString, in iBufferSize : int) : bool
+	OGRGeometry *poGeometry;
+	bool bReturnValue = FALSE;
+	
+	// loop for reading multiple feature in memory
+	// specify number of feature to read with iBuffersize
+	for (int i=0; i<iBufferSize; i++)
+	{
+		OGRFeature *poFeature;
+		char * myExport;
+		if ((poFeature = m_pLayer->GetNextFeature()) != NULL)
+		{
+			poGeometry = poFeature->GetGeometryRef();
+			if (poGeometry != NULL)
+			{
+				poGeometry->exportToWkt(&myExport);
+				
+				featurelist->Add(wxString::FromAscii(myExport));
+				OGRFree(myExport);
+				bReturnValue = TRUE;
+			}
+			
+			OGRFeature::DestroyFeature( poFeature );
+		}
+		else
+		{
+			wxLogDebug(_T("No Geometery / Feature found"));
+			break;
+		}
+	}
+	return bReturnValue;
+!!!139011.cpp!!!	GISClose() : bool
+	if (GISIsOpened())
+	{
+		OGRDataSource::DestroyDataSource( m_pDatasource);
+		GISDataProvider::GISClose();
+		return TRUE;
+	}
+	
+	wxLogDebug(_T("Unable to close, no data open."));
+	return FALSE;

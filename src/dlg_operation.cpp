@@ -17,7 +17,7 @@
 #endif
 
 // Include private header
-#include "../include/dlg_operation.h"
+#include "dlg_operation.h"
 
 #include <wx/intl.h>
 

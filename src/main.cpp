@@ -15,12 +15,10 @@
 #include <wx/wx.h>
 #endif
 
-#include "../include/main.h"
-#include "../include/interface.h"
+#include "main.h"
+#include "interface.h"
 #include "lsversion_dlg.h"
-
-// for svn version
-#include "../include/svn_version.h"
+#include "exportcsv_dlg.h"
 #include "../art/toolbasview_bmp.cpp"
 
 
@@ -38,18 +36,19 @@ bool TBVApp::OnInit()
 }
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
-  EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
-  EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
-  EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
-  EVT_CLOSE(TBVFrame::OnQuit)
-  EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
-  EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
-  EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
-  EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
-  EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
-  EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
-  EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
-EVT_IDLE (TBVFrame::OnMenuIdle)
+    EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
+    EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
+    EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
+    EVT_CLOSE(TBVFrame::OnQuit)
+    EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
+    EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
+    EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
+    EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
+    EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
+    EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
+    EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
+    EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
+    EVT_IDLE (TBVFrame::OnMenuIdle)
 END_EVENT_TABLE()
 
 
@@ -279,6 +278,13 @@ void TBVFrame::OnSpatialDataSearch (wxCommandEvent & event)
 }
 
 
+void TBVFrame::OnExportData (wxCommandEvent & event){
+    ExportCSV_DLG myDlg(this, wxID_ANY, _("Export Data"), &m_Database);
+    myDlg.ShowModal();
+}
+
+
+
 void TBVFrame::OnMenuIdle (wxIdleEvent & event)
 {
 	// function called during idle event for 
@@ -300,6 +306,7 @@ void TBVFrame::EnableMenuItem (bool benable)
 	mypMenu->Enable(ID_MENU_SPATIAL_ADD, benable);
 	mypMenu->Enable(ID_MENU_SPATIAL_SEARCH, benable);
 	mypMenu->Enable(ID_MENU_DELETE, benable);
+    mypMenu->Enable(wxID_SAVEAS,benable);
 }
 
 

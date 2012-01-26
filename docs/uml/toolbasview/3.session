@@ -1,0 +1,9 @@
+window_sizes 1440 852 337 1097 659 136
+diagrams
+  active  classdiagram_ref 128003 // toolbasview
+    1093 639 100 4 216 0
+end
+show_stereotypes
+selected 
+  package_ref 129 // toolbasview
+end

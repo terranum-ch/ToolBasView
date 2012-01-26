@@ -16,7 +16,7 @@
 #endif
 
 // Include private header
-#include "../include/dialogs.h"
+#include "dialogs.h"
 
 
 

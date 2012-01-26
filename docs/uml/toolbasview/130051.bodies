@@ -1,0 +1,291 @@
+class TBVFrame
+!!!142979.cpp!!!	~TBVFrame()
+    uninitialize_images();
+!!!143107.cpp!!!	TreeAddItem(in tname : wxString, in parent : int = 0) : void
+	if (parent == 0) 
+	{
+		pTreeCtrl->AddRoot (tname); 
+	}
+	else 
+		pTreeCtrl->AppendItem(pTreeCtrl->GetRootItem(),tname);	
+!!!143235.cpp!!!	ClearCtrls() : void
+	pTreeCtrl->DeleteAllItems();
+	
+	pGridOp->GridClear();
+!!!143363.cpp!!!	_LoadTablesIntoToc() : void
+
+    pGridOp->GridClear();
+    wxWindowUpdateLocker noUpdates(pTreeCtrl);
+    pTreeCtrl->DeleteAllItems();
+    
+    if (m_Database.DataBaseQuery(_T("SHOW TABLES"))==false){
+        return;
+    }
+
+	wxArrayString myStringArray;
+	m_Database.DataBaseGetResults(myStringArray);
+	m_Database.DataBaseClearResults();
+	
+	// add database name
+	TreeAddItem((m_Database.DataBaseGetName()),0);
+	
+	// add tables names
+	for (unsigned int i=0; i<myStringArray.Count(); i++){
+		TreeAddItem(myStringArray.Item(i),1);
+	}
+    pTreeCtrl->ExpandAll();
+!!!143491.cpp!!!	OnQuit(inout event : wxCloseEvent) : void
+	this->Destroy();
+!!!143619.cpp!!!	OnOpenDatabase(inout event : wxCommandEvent) : void
+	const wxString & dir = wxDirSelector (_("Choose the database folder"));
+	if (dir.empty())
+		return;
+	
+	// clear all the controls.
+	ClearCtrls();
+	
+	
+	
+	wxFileName myDirPath (dir, _T(""));
+	if (myDirPath.IsOk()==false)
+	{
+		wxLogError(_T("Incorrect path"));
+		return;
+	}
+	
+	wxArrayString myDirsString = myDirPath.GetDirs();
+	myDirPath.RemoveLastDir();
+	
+	if(m_Database.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),
+							   myDirsString.Item(myDirsString.GetCount()-1))==false){
+		return;
+    }
+	
+	wxLogMessage(_("Path : %s, Name : %s"),
+				 m_Database.DataBaseGetPath().c_str(),
+				 m_Database.DataBaseGetName().c_str());
+	_LoadTablesIntoToc();
+		
+	// get the database size
+	wxLogMessage( m_Database.DataBaseGetSize());
+!!!143747.cpp!!!	OnProcessRequest(inout event : wxCommandEvent) : void
+			
+		
+		// create and display the SQLPROCESS dialog box.
+		SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this,
+														  -1, _("Process SQL User Request"),
+														  wxDefaultPosition,wxDefaultSize,
+														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
+		
+		myDlg->SetDataBase(&m_Database);
+		//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
+		myDlg->SetMinSize(wxSize(300,200));
+		myDlg->SetSize(wxSize(500,400));
+		myDlg->CentreOnParent();
+		myDlg->Show();
+		if ( myDlg->GetSuccess()) 
+		{
+            _LoadTablesIntoToc();
+		}	
+ 	
+!!!143875.cpp!!!	OnDisplayStatistics(inout event : wxCommandEvent) : void
+	// checking if a database is open ?
+	// getting the stats...
+	long myiNumberTables = 0;
+	wxString mysNumberTables = _T("Unkhown");
+	m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") 
+							 _T("FROM information_schema.tables ") 
+							 _T("WHERE table_schema = \"") + m_Database.DataBaseGetName() + _T("\""));
+	if (m_Database.DataBaseGetNextResult(myiNumberTables)==true)
+		mysNumberTables = wxString::Format(_T("%d"), myiNumberTables);
+	m_Database.DataBaseClearResults();
+	wxString m_DatabaseSize = m_Database.DataBaseGetSize();
+		
+		wxString myText = wxString::Format(_("Database : '%s' open \n"),m_Database.DataBaseGetName().c_str());
+		myText.Append(wxString::Format(_("Number of table(s) : %s \n"),mysNumberTables.c_str()));
+		myText.Append(_("Size of the database : ") + m_DatabaseSize);
+		wxMessageBox(myText,_("Database statistics"),wxOK | wxICON_INFORMATION,
+					 this);
+		
+!!!144003.cpp!!!	OnAboutDlg(inout event : wxCommandEvent) : void
+	lsVersionDlg myDlg(this, wxID_ANY, _("About"));
+    myDlg.SetBitmapLogo(*_img_toolbasview);
+    myDlg.ShowModal();
+!!!144131.cpp!!!	OnMenuExit(inout event : wxCommandEvent) : void
+	Close();
+!!!144259.cpp!!!	OnDeleteData(inout event : wxCommandEvent) : void
+	
+	DELETETABLEDATA_DLG myDelDlg (this, wxID_ANY, &m_Database);
+	// set the active possibilities for the database
+	// deleting
+	myDelDlg.SetActiveFlags(DEL_FLAGS_DATA | DEL_FLAGS_TABLE);
+	
+	// if we choose to delete some tables
+	// processing is done into the dialog itself.
+	myDelDlg.ShowModal();
+!!!144387.cpp!!!	OnSpatialDataAdd(inout event : wxCommandEvent) : void
+	GISOgrProvider myOgrData;
+	GISDBProvider myDBData;
+	wxString myWkbString;
+	wxArrayString myReadData;
+	int i=1;
+	long lFeatureCount = 0;
+	
+	ADDSPATIALDATA_DLG * myDlg = new ADDSPATIALDATA_DLG(this, &m_Database, -1);
+	// show the dialog
+	if (myDlg->ShowModal() != wxID_OK)
+	{
+		delete myDlg;
+		return;
+	}
+	
+
+	// try to open spatial data
+	myOgrData.GISOpen(myDlg->m_VectorFileName);
+	lFeatureCount = myOgrData.GISGetFeatureCount();
+	wxLogDebug(_T("Number of feature read : %d"), lFeatureCount);
+	
+	// try to open database data
+	myDBData.GISOpen(&m_Database);
+	myDBData.GISSetActiveLayer(myDlg->m_DBTableName);
+	
+	// create a progress dialog for showing
+	// import progress
+	int iMax = lFeatureCount / 1000;
+	wxProgressDialog myPrgDlg (_("Importing data into the Database"),
+							   _("Importing in progress, please wait..."),
+							   iMax);
+	
+	
+	// count elapsed time
+	wxStopWatch sw;
+	
+	while (myOgrData.GISGetNextFeatureAsWktBuffer(&myReadData, 1000))
+	{
+		myDBData.GISSetFeatureAsWkTBuffer(myReadData, TRUE);
+		
+		if (i <= iMax)
+		{
+			myPrgDlg.Update(i);
+			i++;	
+		}
+		
+		// clear the buffer
+		myReadData.Clear();
+	}
+	
+	// show elapsed time
+	wxLogMessage(_("Elapsed time for adding %d spatial data is : %u [ms]"), 
+				 lFeatureCount,  sw.Time());
+	
+	
+	// creating index if asked
+	if (myDlg->m_bComputeIndex == TRUE)
+	{
+		sw.Start();
+		wxArrayString myFields;
+		
+		if(myDBData.GISComputeIndex(myFields, myDlg->m_DBTableName))
+		{
+			wxLogMessage(_("Creating index take %u [ms]"), sw.Time());
+		}
+	}
+	
+	// don't forget to close the spatial data
+	myOgrData.GISClose();
+	myDBData.GISClose();
+	
+	delete myDlg;
+!!!144515.cpp!!!	OnSpatialDataSearch(inout event : wxCommandEvent) : void
+	SEARCHSPATIALPOINT_DLG myDlg (this, &m_Database);
+	if (myDlg.OpenDBGISData(_T(""),_T("GENERIC_LINES")))
+	{
+		myDlg.ShowModal();
+	}
+	
+!!!144643.cpp!!!	OnMenuIdle(inout event : wxIdleEvent) : void
+	// function called during idle event for 
+	// hiding menu
+	bool bStarted = false;
+	if (m_Database.DataBaseGetName() != wxEmptyString)
+		bStarted = true;
+	
+	EnableMenuItem(bStarted);
+
+!!!144771.cpp!!!	EnableMenuItem(in benable : bool) : void
+	wxMenuBar * mypMenu = GetMenuBar();
+	mypMenu->Enable(ID_MENU_STATISTICS, benable);
+	mypMenu->Enable(ID_PROCESS_MENU, benable);
+	mypMenu->Enable(ID_MENU_SPATIAL_ADD, benable);
+	mypMenu->Enable(ID_MENU_SPATIAL_SEARCH, benable);
+	mypMenu->Enable(ID_MENU_DELETE, benable);
+!!!144899.cpp!!!	OnDoubleClickListe(inout event : wxTreeEvent) : void
+	wxArrayString myFieldArray;
+	unsigned int i; // loop
+	
+	wxTreeItemId myItemID = event.GetItem();
+	// get the table name
+	wxString myTempString = pTreeCtrl->GetItemText(myItemID);
+	m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
+	m_Database.DataBaseGetResults(myFieldArray);
+	
+	// check for field numbers (may be not a table)
+	if (myFieldArray.Count() > 0)
+	{
+		// debug message...
+		wxLogMessage(_("%d fields readed from the table '%s'"),
+					 myFieldArray.Count(),myTempString.c_str());
+		
+		// change the number of cols
+		pGridOp->GridOpSetNumberOfColumn(myFieldArray.Count());
+		
+		for (i = 0; i<myFieldArray.Count(); i++) 
+		{
+			pGridOp->GridOpChangeColumnText(myFieldArray.Item(i),i,TRUE);
+		}
+		
+		// get the data....
+		if(m_Database.DataBaseQuery(_T("SELECT * FROM ") + myTempString))
+		{
+			wxLogMessage(_("Reading table '%s' OK"),myTempString.c_str());
+			
+			int iArrayCount = 0;
+			
+			while (m_Database.DataBaseGetNextResult(myFieldArray)) 
+			{
+				iArrayCount = myFieldArray.Count();
+				// add a new line
+				pGridOp->GridOpAddDataRow(iArrayCount,
+										  &myFieldArray);
+			}
+			m_Database.DataBaseClearResults();
+		
+		}
+		else 
+		{
+			wxLogError(_("Error reading the table '%s'"),myTempString.c_str());
+		}
+
+		
+		
+	}
+	
+!!!145027.cpp!!!	OnNewDataBase(inout event : wxCommandEvent) : void
+	wxLogMessage (_("New database"));
+	NEWDBASE_OP2 * myDlg = new NEWDBASE_OP2(this,-1,_("Create a new database"),
+				wxDefaultPosition, wxDefaultSize);
+	myDlg->CenterOnParent();
+	if (myDlg->ShowModal()==wxID_OK)
+	{
+	// clean the tree ctrl
+		ClearCtrls();
+		
+		// create realy the database...
+		m_Database.DataBaseCreateNew(myDlg->m_DLG_DB_PATH,myDlg->m_DLG_DB_NAME);
+		
+		wxLogMessage(_("Database '%s' created OK"), myDlg->m_DLG_DB_NAME.c_str());
+		
+		// add database name
+		TreeAddItem((myDlg->m_DLG_DB_NAME),0);
+	}
+	

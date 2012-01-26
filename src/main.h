@@ -12,17 +12,17 @@ const int ID_RUN = 10001;
 const int ID_ABOUT = 10002;
 const int ID_STATUS = 10003;
 
-#include "../include/database.h"
+#include "database.h"
 #include <wx/treectrl.h> // for tree control
-#include "../include/gridoperation.h" // for grid operation.
-#include "../include/dlg_operation.h" // for dialogs operations.
-#include "../include/addspatialdata_dlg.h" // for adding spatial data
-#include "../include/gisdataprovider.h"	// for dealing with spatial data
+#include "gridoperation.h" // for grid operation.
+#include "dlg_operation.h" // for dialogs operations.
+#include "addspatialdata_dlg.h" // for adding spatial data
+#include "gisdataprovider.h"	// for dealing with spatial data
 
 #include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 #include <wx/progdlg.h>				// progress dialog.
 #include <wx/wupdlock.h>
-#include "../include/deletetabledata_dlg.h"	// deleting data dialog
+#include "deletetabledata_dlg.h"	// deleting data dialog
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
 
@@ -82,6 +82,8 @@ private:
 	void OnDeleteData (wxCommandEvent & event);
 	void OnSpatialDataAdd (wxCommandEvent & event);
 	void OnSpatialDataSearch (wxCommandEvent & event);
+    void OnExportData (wxCommandEvent & event);
+    
 	void OnMenuIdle (wxIdleEvent & event);
 	
 	void EnableMenuItem (bool benable);
