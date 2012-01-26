@@ -1,6 +1,6 @@
 format 75
 "toolbasview"
-  revision 2
+  revision 3
   modified_by 3 "lucien"
 
 
@@ -59,8 +59,8 @@ format 75
     package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
     show_infonote default drawing_language default show_stereotype_properties default
     classdiagram 128003 "toolbasview"
-      draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
-      size A4
+      draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition yes show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+      size A3-Landscape
     end
 
     class 130435 "ExportCSV_DLG"
@@ -186,6 +186,73 @@ ${inlines}
       explicit_switch_type ""
       
     end
+
+    class 137091 "TableExport"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 136579 // m_Database (<unidirectional association>)
+	relation 136579 --->
+	  a role_name "m_Database" private
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 136579 // m_Database (<unidirectional association>)
+	  b parent class_ref 128259 // DataBase
+      end
+
+      operation 153731 "TableExport"
+	public explicit_return_type ""
+	nparams 1
+	  param in name "database" type class_ref 128259 // DataBase
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}const ${t0} & ${p0}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 153859 "~TableExport"
+	cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 153987 "ExportCSV"
+	public explicit_return_type "bool"
+	nparams 2
+	  param in name "tablename" explicit_type "wxString"
+	  param in name "path" explicit_type "wxFileName"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+    end
   end
 
   deploymentview 134531 "toolbasview"
@@ -251,6 +318,68 @@ ${members}
 ${namespace_end}"
       associated_classes
 	class_ref 130435 // ExportCSV_DLG
+      end
+    end
+
+    artifact 141955 "tableexport"
+      stereotype "source"
+      cpp_h "/***************************************************************************
+ ${name}.h
+ -------------------
+ copyright            : (C) 2012 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+// For compilers that support precompilation, includes \"wx/wx.h\".
+#include \"wx/wxprec.h\"
+
+// Include wxWidgets' headers
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "/***************************************************************************
+ ${name}.cpp
+ -------------------
+ copyright            : (C) 2012 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 137091 // TableExport
       end
     end
   end
