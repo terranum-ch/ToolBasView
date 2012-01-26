@@ -7,14 +7,14 @@ REM 3) Run (manually) the vroomGIS compilation
 REM 4) Launch the app
 
 
-@SET TRUNKDIR=D:\LS\PROGRAMATION\ToolBasView\trunk
-@SET BINDIR=D:\LS\PROGRAMATION\ToolBasView\bin
-@SET VSDIR=C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE
+@SET TRUNKDIR=D:\PROGRAMMATION\ToolBasView\trunk
+@SET BINDIR=D:\PROGRAMMATION\ToolBasView\bin
+REM @SET VSDIR=C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE
 
 
-@SET PARAMGIS=D:\LS\PROGRAMATION\LIB\LIB_GDAL
-@SET PARAMGEOS=D:\LS\PROGRAMATION\LIB\geos-3.2.0
-@SET PARAMMYSQL=D:\LS\PROGRAMATION\LIB\mysql-5.1.48-VS2008
+@SET PARAMGIS=D:\LIB\LIB_GDAL
+@SET PARAMGEOS=D:\LIB\geos-3.3.0
+@SET PARAMMYSQL=D:\LIB\LIB_MYSQL
 @SET PARAMMYSQL_LOGGING=1
 
 
@@ -39,7 +39,7 @@ ECHO 1) Updating repositories ... DONE (version is : %REV%)
 
 ECHO 2) Making Visual studio solution...
 cd %bindir%
-cmake %trunkdir%\build\ -G "Visual Studio 9 2008" -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=%PARAMGIS% -DSEARCH_GEOS_LIB_PATH:PATH=%PARAMGEOS% -DUSE_MT_LIBRARY:BOOL=1 -DMYSQL_MAIN_DIR:PATH=%PARAMMYSQL% -DMYSQL_IS_LOGGING:BOOL=%PARAMMYSQL_LOGGING% -DUSE_GDIPLUS_LIBRARY:BOOL=1 -DSVN_DURING_BUILD:BOOL=1
+cmake %trunkdir%\build\ -G "Visual Studio 10" -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=%PARAMGIS% -DSEARCH_GEOS_LIB_PATH:PATH=%PARAMGEOS% -DUSE_MT_LIBRARY:BOOL=1 -DMYSQL_MAIN_DIR:PATH=%PARAMMYSQL% -DMYSQL_IS_LOGGING:BOOL=%PARAMMYSQL_LOGGING% -DUSE_GDIPLUS_LIBRARY:BOOL=1 -DSVN_DURING_BUILD:BOOL=1
 ECHO 2) Making Visual studio solution... DONE
 
 
@@ -49,12 +49,13 @@ ECHO 3) BUILDING TOOLBASEVIEW APP (MAY TAKE SOME TIMES)-----
 ECHO -----------------------------------------------
 
 cd %BINDIR%
-"%vsdir%\VCExpress.exe" ToolBasView.sln /Out solution.log /Build Debug
+REM "%vsdir%\VCExpress.exe" ToolBasView.sln /Out solution.log /Build Debug
+msbuild ToolBasView.sln /property:Configuration=Debug
 echo %ERRORLEVEL%
 IF ERRORLEVEL 1 goto QuitErrorBuildScript
 
 ECHO COPYING LIBRARY DEBUG...
-xcopy %PARAMMYSQL%\Embedded\DLL\debug\libmysqld.dll %BINDIR%\Debug /Y
+xcopy %PARAMMYSQL%\Embedded\DLL\release\libmysqld.dll %BINDIR%\Debug /Y
 xcopy %PARAMGIS%\bin\*.dll %BINDIR%\Debug /Y
 xcopy %PARAMGEOS%\source\geos_c.dll %BINDIR%\Debug /Y
 
@@ -67,7 +68,7 @@ IF ERRORLEVEL 1 goto QuitErrorBuildScript
 ECHO 4) INSTALLING LIBRARY RELEASE
 xcopy %PARAMMYSQL%\Embedded\DLL\release\libmysqld.dll %BINDIR%\Release /Y
 xcopy %PARAMGIS%\bin\*.dll %BINDIR%\Release /Y
-xcopy %PARAMGEOS%\source\geos_c.dll %BINDIR%\Release /Y
+xcopy %PARAMGEOS%\src\geos_c.dll %BINDIR%\Release /Y
 
 ECHO 3) BUILDING ToolBasView APP DONE
 
