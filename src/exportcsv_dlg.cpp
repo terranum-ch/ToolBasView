@@ -131,7 +131,7 @@ void ExportCSV_DLG::OnListClear(wxCommandEvent & event) {
 
 
 
-void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
+void ExportCSV_DLG::OnOk(wxCommandEvent & event) {  
     wxArrayString myTableToExport;
     for (unsigned int i = 0; i<m_ListTablesCtrl->GetCount(); i++) {
         if (m_ListTablesCtrl->IsChecked(i) == true) {
@@ -145,8 +145,16 @@ void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
     }
     
     // select export folder
-    wxFileName myPath(wxDirSelector("Select a folder for exporting"));
+    wxString myTxtPath = wxDirSelector("Select a folder for exporting");
+    if (myTxtPath.IsEmpty() == true){
+        Close();
+        return;
+    }
+    wxFileName myPath(myTxtPath);
     
+    wxWindowDisabler * disableAll = new wxWindowDisabler();
+    wxBusyInfo wait("Please wait, exporting ...");
+
     // export
     TableExport myExport(m_Database);   
     if (m_UnicodeExportCtrl->IsChecked() == false){
@@ -158,9 +166,12 @@ void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
         myLimit = m_LimitRecordValueCtrl->GetValue();
     }
     
+
     for (unsigned int t = 0; t<myTableToExport.GetCount(); t++) {
         myExport.ExportCSV(myTableToExport[t], myPath, myLimit);
+        wxTheApp->Yield();
     }
+    wxDELETE(disableAll);
     Close();
 }
 

@@ -25,6 +25,8 @@
 #endif
 #include <wx/spinctrl.h>
 #include <wx/wupdlock.h>
+#include <wx/busyinfo.h>
+
 
 
 
