@@ -86,8 +86,18 @@ void ExportCSV_DLG::_CreateControls() {
 	
 	bSizer3->Add( sbSizer1, 0, wxEXPAND|wxALL, 5 );
 	
-    m_UnicodeExportCtrl = new wxCheckBox( this, wxID_ANY, _("Export to Unicode"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_UnicodeExportCtrl, 0, wxALL, 5 );
+    
+    wxStaticBoxSizer* sbSizer2;
+	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Options") ), wxVERTICAL );
+	
+	m_TableNameCtrl = new wxCheckBox( this, wxID_ANY, _("Include table name"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_TableNameCtrl->SetValue(true); 
+	sbSizer2->Add( m_TableNameCtrl, 0, wxALL, 5 );
+	
+	m_UnicodeExportCtrl = new wxCheckBox( this, wxID_ANY, _("Export to Unicode"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer2->Add( m_UnicodeExportCtrl, 0, wxALL, 5 );
+	
+	bSizer3->Add( sbSizer2, 0, wxEXPAND|wxALL, 5 );
     
 	bSizer2->Add( bSizer3, 0, wxEXPAND, 5 );
 	
@@ -168,7 +178,7 @@ void ExportCSV_DLG::OnOk(wxCommandEvent & event) {
     
 
     for (unsigned int t = 0; t<myTableToExport.GetCount(); t++) {
-        myExport.ExportCSV(myTableToExport[t], myPath, myLimit);
+        myExport.ExportCSV(myTableToExport[t], myPath, myLimit, m_TableNameCtrl->GetValue());
         wxTheApp->Yield();
     }
     wxDELETE(disableAll);
