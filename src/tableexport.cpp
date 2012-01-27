@@ -32,7 +32,7 @@ TableExport::~TableExport() {
 
 
 
-bool TableExport::ExportCSV(const wxString & tablename, const wxFileName & path, int limit) {
+bool TableExport::ExportCSV(const wxString & tablename, const wxFileName & path, int limit, bool addtablename) {
     wxASSERT(m_Database);
     wxString mySeparator = ";";
     
@@ -66,6 +66,11 @@ bool TableExport::ExportCSV(const wxString & tablename, const wxFileName & path,
     m_Database->DataBaseGetResults(&myResult);
     
     // export header
+    if (addtablename == true) {
+        myFile.Write(tablename + "\n");
+    }
+    
+    
     wxArrayString myColsName;
     myResult.GetColName(myColsName);
     for (unsigned int i = 0; i<myColsName.GetCount(); i++) {
