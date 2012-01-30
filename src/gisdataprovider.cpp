@@ -120,7 +120,7 @@ bool GISOgrProvider::GISOpen (const wxString & filename)
 	
 	// if we couldn't open the vector file try to know why
 	// ERROR WITH WINDOWS WHY ???
-	const char * myError; // = CPLGetLastErrorMsg();
+	const char * myError = CPLGetLastErrorMsg();
 	wxString myErrMsg = wxString::FromAscii(myError);
 	wxLogDebug(_T("Open vector failed for file %s, error msg is : %s"), 
 			   filename.c_str(), myErrMsg.c_str());
@@ -357,7 +357,7 @@ bool GISDBProvider::GISOpen (const wxString & filename)
 	
 	// if we couldn't open the vector file try to know why
 	// ERROR WITH WINDOWS WHY ???
-	const char * myError; // = CPLGetLastErrorMsg();
+	const char * myError = CPLGetLastErrorMsg();
 	wxString myErrMsg = wxString::FromAscii(myError);
 	wxLogDebug(_T("Open vector failed for file %s, error msg is : %s"), 
 			   filename.c_str(), myErrMsg.c_str());
