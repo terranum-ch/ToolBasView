@@ -83,6 +83,7 @@ private:
 	void OnSpatialDataAdd (wxCommandEvent & event);
 	void OnSpatialDataSearch (wxCommandEvent & event);
     void OnExportData (wxCommandEvent & event);
+    void OnDatabaseOperation (wxCommandEvent & event);
     
 	void OnMenuIdle (wxIdleEvent & event);
 	

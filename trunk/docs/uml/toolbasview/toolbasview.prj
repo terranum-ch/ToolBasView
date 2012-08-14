@@ -1,6 +1,6 @@
 format 75
 "toolbasview"
-  revision 3
+  revision 4
   modified_by 3 "lucien"
 
 
@@ -252,6 +252,198 @@ ${inlines}
 	
 	
       end
+
+    end
+
+    class 143619 "DatabaseOp_DLG"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 143107 // <generalisation>
+	relation 143107 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 143107 // <generalisation>
+	  b parent class_ref 130563 // wxDialog
+      end
+
+      attribute 141571 "m_Check"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	get_oper operation_ref 161539 // GetCheck
+      end
+
+      attribute 141699 "m_Repair"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	get_oper operation_ref 161667 // GetRepair
+      end
+
+      attribute 141827 "m_Optimize"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	get_oper operation_ref 161795 // GetOptimize
+      end
+
+      operation 160899 "_CreateControls"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 161411 "TransferDataFromDialog"
+	cpp_virtual private explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 161283 "OnOk"
+	private explicit_return_type "void"
+	nparams 1
+	  param out name "event" explicit_type "wxCommandEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 160643 "DatabaseOp_DLG"
+	public explicit_return_type ""
+	nparams 3
+	  param in name "window" explicit_type "wxWindow"
+	  param in name "id" explicit_type "wxWindowID"
+	  param in name "title" explicit_type "wxString"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}, ${t1} ${p1}, const ${t2} & ${p2}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${t0} * ${p0}, ${t1} ${p1}, const ${t2} & ${p2}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 160771 "~DatabaseOp_DLG"
+	cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 161539 "GetCheck"
+	force_body_gen const cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_Check;
+}
+"
+	cpp_name_spec "GetCheck"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 141571 // m_Check
+      end
+
+      operation 161667 "GetRepair"
+	force_body_gen const cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_Repair;
+}
+"
+	cpp_name_spec "GetRepair"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 141699 // m_Repair
+      end
+
+      operation 161795 "GetOptimize"
+	force_body_gen const cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} ${name}${(}${)}${const}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}const ${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  return m_Optimize;
+}
+"
+	cpp_name_spec "GetOptimize"
+	final 
+	java_name_spec "get${Name}"
+	php_final 
+	php_name_spec "get${Name}"
+	
+	python_name_spec "get${Name}"
+	
+	idl_name_spec "get_${name}"
+	get_of_attribute attribute_ref 141827 // m_Optimize
+      end
     end
   end
 
@@ -380,6 +572,68 @@ ${members}
 ${namespace_end}"
       associated_classes
 	class_ref 137091 // TableExport
+      end
+      comment " "
+    end
+
+    artifact 148483 "databaseoperation"
+      stereotype "source"
+      cpp_h "/***************************************************************************
+ ${name}.h
+ -------------------
+ copyright            : (C) 2012 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+#ifndef _${NAMESPACE}${NAME}_H_
+#define _${NAMESPACE}${NAME}_H_
+
+// For compilers that support precompilation, includes \"wx/wx.h\".
+#include \"wx/wxprec.h\"
+
+// Include wxWidgets' headers
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "/***************************************************************************
+ ${name}.cpp
+ -------------------
+ copyright            : (C) 2012 CREALP Lucien Schreiber 
+ email                : lucien.schreiber at crealp dot vs dot ch
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 143619 // DatabaseOp_DLG
       end
     end
   end

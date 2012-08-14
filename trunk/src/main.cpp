@@ -19,6 +19,7 @@
 #include "interface.h"
 #include "lsversion_dlg.h"
 #include "exportcsv_dlg.h"
+#include "databaseoperation.h"
 #include "../art/toolbasview_bmp.cpp"
 
 
@@ -36,19 +37,20 @@ bool TBVApp::OnInit()
 }
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
-    EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
-    EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
-    EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
-    EVT_CLOSE(TBVFrame::OnQuit)
-    EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
-    EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
-    EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
-    EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
-    EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
-    EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
-    EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
-    EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
-    EVT_IDLE (TBVFrame::OnMenuIdle)
+EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
+EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
+EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
+EVT_CLOSE(TBVFrame::OnQuit)
+EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
+EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
+EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
+EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
+EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
+EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
+EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
+EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
+EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
+EVT_IDLE (TBVFrame::OnMenuIdle)
 END_EVENT_TABLE()
 
 
@@ -284,6 +286,88 @@ void TBVFrame::OnExportData (wxCommandEvent & event){
 }
 
 
+void TBVFrame::OnDatabaseOperation (wxCommandEvent & event){
+    DatabaseOp_DLG myDlg(this, wxID_ANY);
+    if (myDlg.ShowModal() != wxID_OK) {
+        return;
+    }
+    
+    // get all tables
+    wxString myQuery = _T("SHOW TABLES");
+    if (m_Database.DataBaseQuery(myQuery, true)==false) {
+        return;
+    }
+    wxArrayString myTables;
+    if (m_Database.DataBaseGetResults(myTables)==false) {
+        wxLogError(_("Listing database tables failed!"));
+        return;
+    }
+    m_Database.DataBaseClearResults();
+    
+    
+    wxArrayString myResults;
+    if (myDlg.GetCheck() == true) {
+        for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+            if(m_Database.DataBaseQuery(_T("CHECK TABLE ") + myTables[i],true)==false){
+                return;
+            }
+            myResults.Clear();
+            wxString myResultsAggregated = wxEmptyString;
+            m_Database.DataBaseGetNextResult(myResults);
+            for (unsigned int m = 0; m < myResults.GetCount(); m++) {
+                myResultsAggregated.Append(myResults[m] + _T(" | "));
+            }
+            myResultsAggregated.RemoveLast(3);
+            wxLogMessage(myResultsAggregated);
+            m_Database.DataBaseClearResults();
+        }
+    }
+    
+    
+    if (myDlg.GetOptimize() == true) {
+        for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+            if(m_Database.DataBaseQuery(_T("OPTIMIZE TABLE ") + myTables[i],true)==false){
+                return;
+            }
+            myResults.Clear();
+            wxString myResultsAggregated = wxEmptyString;
+            if(m_Database.DataBaseHasResults() == true){
+                m_Database.DataBaseGetNextResult(myResults);
+                for (unsigned int m = 0; m < myResults.GetCount(); m++) {
+                    myResultsAggregated.Append(myResults[m] + _T(" | "));
+                }
+                myResultsAggregated.RemoveLast(3);
+                wxLogMessage(myResultsAggregated);
+                m_Database.DataBaseClearResults();
+            }
+        }
+    }
+    
+    
+    if (myDlg.GetRepair() == true) {
+        for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+            if(m_Database.DataBaseQuery(_T("REPAIR TABLE ") + myTables[i],true)==false){
+                return;
+            }
+            myResults.Clear();
+            wxString myResultsAggregated = wxEmptyString;
+            if(m_Database.DataBaseHasResults() == true){
+                m_Database.DataBaseGetNextResult(myResults);
+                for (unsigned int m = 0; m < myResults.GetCount(); m++) {
+                    myResultsAggregated.Append(myResults[m] + _T(" | "));
+                }
+                myResultsAggregated.RemoveLast(3);
+                wxLogMessage(myResultsAggregated);
+                m_Database.DataBaseClearResults();
+            }
+        }
+    }
+
+
+    
+}
+
+
 
 void TBVFrame::OnMenuIdle (wxIdleEvent & event)
 {
@@ -307,6 +391,7 @@ void TBVFrame::EnableMenuItem (bool benable)
 	mypMenu->Enable(ID_MENU_SPATIAL_SEARCH, benable);
 	mypMenu->Enable(ID_MENU_DELETE, benable);
     mypMenu->Enable(wxID_SAVEAS,benable);
+    mypMenu->Enable(ID_MENU_DB_OPERATION, benable);
 }
 
 

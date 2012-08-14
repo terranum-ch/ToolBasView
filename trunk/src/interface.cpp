@@ -62,7 +62,7 @@ wxSizer *INTERFACE( wxWindow *parent, bool call_fit, bool set_sizer )
 	
 	item2->SplitVertically (Leftwindow,Rightwindow,150);
 	item2->SetMinimumPaneSize(150);
-    item2->SetSashSize(4);
+    //item2->SetSashSize(4);
     item2->SetSashGravity(0.1);
 
     if (set_sizer)
@@ -132,7 +132,7 @@ wxSizer *RIGHT( wxWindow *parent, bool call_fit, bool set_sizer )
 	item1->SplitHorizontally (TopWindow,BottomWindow,200);
 	item1->SetMinimumPaneSize(20);
     item1->SetSashGravity(0.7); // Resize only top panel
-    item1->SetSashSize(4);
+    //item1->SetSashSize(4);
     //item1->SetSashPosition(200, true);
 
 	
@@ -212,6 +212,7 @@ wxMenuBar *MENU()
 	item2->AppendSeparator();
 	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"), 
 				  _("Dialog for deleting data from the database") );
+    item2->Append(ID_MENU_DB_OPERATION, _("Database operations"), _("Perform maintenance Database operations"));
 
     item0->Append( item2, _("Operations") );
     
