@@ -60,6 +60,7 @@ const int ID_MENU_STATISTICS = 10112;
 const int ID_MENU_SPATIAL_ADD = 10113;
 const int ID_MENU_DELETE = 10114;
 const int ID_MENU_SPATIAL_SEARCH = 10115;
+const int ID_MENU_DB_OPERATION = 10116;
 wxMenuBar *MENU();
 
 #endif
