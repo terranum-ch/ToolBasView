@@ -8,7 +8,7 @@ Copyright (c) 2012 . All rights reserved.
 """
 
 import os
-from tkinter import *
+from Tkinter import *
 from subprocess import *
 
 def GetCmakeListPath():
@@ -29,12 +29,12 @@ def BuildMacPro():
 
 def BuildMacBook():
     print ("Configuring MacBook")
-    """builddir = "/Users/lucien/DATA/PRJ/TOOLMAP2/bin_apps"
+    builddir = "/Users/lucien/DATA/PROGRAMATION/toolbasview/bin"
     try:
-        p = Popen("cmake -GXcode " + filename + "  -DCMAKE_OSX_ARCHITECTURES:TEXT=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET:TEXT=10.6 -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS", shell=True, cwd=builddir)
+        p = Popen("cmake -GXcode " + GetCmakeListPath() + "  -DCMAKE_OSX_ARCHITECTURES:TEXT=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET:TEXT=10.6 -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GDAL_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS -DSEARCH_GEOS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS", shell=True, cwd=builddir)
         p.wait()
     except:
-        print("Error creating makefile")"""
+        print("Error creating makefile")
 
 
 if __name__ == '__main__':
