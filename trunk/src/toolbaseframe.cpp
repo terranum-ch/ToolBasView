@@ -4,37 +4,16 @@
 @author Lucien Schreiber (c) CREALP 2007
 */
 
-
-#include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include "main.h"
+#include "toolbaseframe.h"
 #include "interface.h"
 #include "lsversion_dlg.h"
 #include "exportcsv_dlg.h"
 #include "databaseoperation.h"
 #include "../art/toolbasview_bmp.cpp"
+#include "dlg_operation.h" // for dialogs operations.
 
 
-/* Application initialisation */
-bool TBVApp::OnInit()
-{
-	TBVFrame* frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(620,520));
-	
-	//frame->SetExtraStyle(wxDIALOG_EX_METAL);
-	frame->Centre();
-	frame->Show();
-	
-	
-	return true;
-}
+
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
 EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
@@ -96,13 +75,39 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
 	// Creating the gridoperation object
 	pGridOp = new GridOperation((wxGrid *) FindWindowById(ID_GRID,this));
-	
+    
+    // loading history
+    m_HistoryFileName = wxFileName(wxStandardPaths::Get().GetAppDocumentsDir(), _T("toolbasview_history.txt"));
+  	wxTextFile myHistoryFile (m_HistoryFileName.GetFullPath());
+    if(m_HistoryFileName.Exists() == false){
+        myHistoryFile.Create();
+    }
+    else{
+        myHistoryFile.Open();
+    }
+    m_History.Clear();
+    for (wxString str = myHistoryFile.GetFirstLine(); !myHistoryFile.Eof(); str = myHistoryFile.GetNextLine() ){
+        m_History.Add(str);
+    }
 }
 
 
 /* Frame destruction */
 TBVFrame::~TBVFrame()
 {
+    // write history (limit to 1000 records)
+    wxASSERT(m_HistoryFileName.Exists());
+    wxTextFile myHistoryFile (m_HistoryFileName.GetFullPath());
+    myHistoryFile.Open();
+    myHistoryFile.Clear();
+    
+    for (unsigned int i = 0; i< m_History.GetCount(); i++) {
+        myHistoryFile.AddLine(m_History[i]);
+        if (i >= 1000) {
+            break;
+        }
+    }
+    myHistoryFile.Write();
     uninitialize_images();
 }
 
@@ -532,5 +537,10 @@ void TBVFrame::OnAboutDlg(wxCommandEvent & event)
 	lsVersionDlg myDlg(this, wxID_ANY, _("About"));
     myDlg.SetBitmapLogo(*_img_toolbasview);
     myDlg.ShowModal();
+}
+
+
+wxArrayString * TBVFrame::GetHistory(){
+    return & m_History;
 }
 

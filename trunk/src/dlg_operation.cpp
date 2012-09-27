@@ -4,47 +4,17 @@
 @author Lucien Schreiber (c) CREALP 2007
 */
 
-
-#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma implementation "dlg_operation.h"
-#endif
-
-// For compilers that support precompilation
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
-
-// Include private header
 #include "dlg_operation.h"
-
-#include <wx/intl.h>
-
-// Euro sign hack of the year
-#if wxUSE_UNICODE
-    #define __WDR_EURO__ wxT("\u20ac")
-#else
-    #if defined(__WXMAC__)
-        #define __WDR_EURO__ wxT("\xdb")
-    #elif defined(__WXMSW__)
-        #define __WDR_EURO__ wxT("\x80")
-    #else
-        #define __WDR_EURO__ wxT("\xa4")
-    #endif
-#endif
-
-#include <wx/clipbrd.h>
-
-
 
 //----------------------------------------------------------------------------
 // SQLPROCESS_DLG_OP2
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SQLPROCESS_DLG_OP2,wxDialog)
-    EVT_BUTTON( wxID_CANCEL, SQLPROCESS_DLG_OP2::OnCancel)
-    EVT_BUTTON( ID_PROCESS, SQLPROCESS_DLG_OP2::OnProcess)
-    EVT_BUTTON(ID_BTN_SHOWRESULTS, SQLPROCESS_DLG_OP2::OnShowResult)
+EVT_BUTTON( wxID_CANCEL, SQLPROCESS_DLG_OP2::OnCancel)
+EVT_BUTTON( ID_PROCESS, SQLPROCESS_DLG_OP2::OnProcess)
+EVT_BUTTON(ID_BTN_SHOWRESULTS, SQLPROCESS_DLG_OP2::OnShowResult)
+EVT_BUTTON(ID_HISTORY, SQLPROCESS_DLG_OP2::OnHistory)
+EVT_UPDATE_UI(ID_HISTORY, SQLPROCESS_DLG_OP2::OnUpdateUIHistory)
 END_EVENT_TABLE()
 
 
@@ -78,7 +48,6 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 	wxString myTempRequest;
 	
 	wxBeginBusyCursor();
-	
 	// if results, destroy them
 	if (m_DataBase->DataBaseHasResults()==true)
 	{
@@ -92,11 +61,16 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 	int myNumberOfRequest = m_DataBase->DataBaseQueriesNumber(myRequest);
 	wxLogMessage(_("Processing Request... %d Request Found"),myNumberOfRequest);
 	
+    
 	wxString myComment = _("Query error, please check syntax");
 	if (m_DataBase->DataBaseQuery(myRequest)==true)
 	{
-		myComment = _("Query passed OK, no results");
-		
+        // add to history
+        TBVFrame * myParentFrame = (TBVFrame *) GetParent();
+        wxASSERT(myParentFrame);
+        myParentFrame->GetHistory()->Add(myRequest);
+        
+        myComment = _("Query passed OK, no results");
 		if (m_DataBase->DataBaseHasResults()==true)
 		{
 			myComment = _("Query passed OK");
@@ -134,6 +108,31 @@ void SQLPROCESS_DLG_OP2::OnShowResult (wxCommandEvent & event)
 	myDlg->Show(TRUE);
 	
 }
+
+
+
+void SQLPROCESS_DLG_OP2::OnHistory (wxCommandEvent & event){
+    TBVFrame * myParentFrame = (TBVFrame *) GetParent();
+    wxASSERT(myParentFrame);
+    wxString myHistoryValue = wxGetSingleChoice(_("SQL command history"), _("History"), *(myParentFrame->GetHistory()), this, wxDefaultCoord, wxDefaultCoord, false, 500, 500);
+    if (myHistoryValue == wxEmptyString) {
+        return;
+    }
+    ((wxTextCtrl*) FindWindow(ID_TEXTCTRL))->SetValue(myHistoryValue);
+}
+
+
+
+void SQLPROCESS_DLG_OP2::OnUpdateUIHistory (wxUpdateUIEvent & event){
+    TBVFrame * myParentFrame = (TBVFrame *) GetParent();
+    if (myParentFrame && myParentFrame->GetHistory()->GetCount() == 0) {
+        event.Enable(false);
+        return;
+    }
+    event.Enable(true);
+}
+
+
 
 
 void SQLPROCESS_DLG_OP2::OnCancel(wxCommandEvent &event)
