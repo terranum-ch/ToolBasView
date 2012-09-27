@@ -59,7 +59,10 @@ wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit, bool set_sizer )
 	//bSizer1->Add( sbSizer1, 1, wxEXPAND|wxALL, 5 );
     item0->Add(sbSizer1, 0, wxEXPAND|wxALL, 5 );
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
-
+    
+    wxButton *item61 = new wxButton( parent, ID_HISTORY, _("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item61, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    
     wxButton *item6 = new wxButton( parent, ID_PROCESS, _("Execute SQL Code"), wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 

@@ -38,6 +38,7 @@ const int ID_REQUEST_RESULT = 10001;
 const int ID_BTN_SHOWRESULTS = 10002;
 const int ID_LINE = 10003;
 const int ID_PROCESS = 10004;
+const int ID_HISTORY = 10012;
 wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 const int ID_ABOUT_TEXT = 10005;

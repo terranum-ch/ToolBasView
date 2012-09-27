@@ -7,41 +7,17 @@
 #ifndef __DLG_OPERATION_H__
 #define __DLG_OPERATION_H__
 
-#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-    #pragma interface "dlg_operation.h"
-#endif
-
-// For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-
-
-// Include wxWidgets' headers
-
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-
-#include <wx/image.h>
-#include <wx/statline.h>
-#include <wx/spinbutt.h>
-#include <wx/spinctrl.h>
-#include <wx/splitter.h>
-#include <wx/listctrl.h>
-#include <wx/treectrl.h>
-#include <wx/notebook.h>
-#include <wx/grid.h>
-#include <wx/toolbar.h>
+#include <wx/clipbrd.h>
 
 
 #include "dialogs.h"
 #include "gridoperation.h"
 #include "database.h" 
-#include <wx/filename.h> // for verification purpose
-
-#include <wx/hyperlink.h>
-
-
+#include "toolbaseframe.h"
 
 
 //----------------------------------------------------------------------------
@@ -57,6 +33,8 @@ private:
     void OnProcess( wxCommandEvent &event );
     void OnCancel( wxCommandEvent &event );
 	void OnShowResult (wxCommandEvent & event);
+    void OnHistory (wxCommandEvent & event);
+    void OnUpdateUIHistory (wxUpdateUIEvent & event);
     
     DECLARE_EVENT_TABLE();
     
