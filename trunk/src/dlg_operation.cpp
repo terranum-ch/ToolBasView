@@ -48,10 +48,11 @@ BEGIN_EVENT_TABLE(SQLPROCESS_DLG_OP2,wxDialog)
 END_EVENT_TABLE()
 
 
-SQLPROCESS_DLG_OP2::SQLPROCESS_DLG_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
+SQLPROCESS_DLG_OP2::SQLPROCESS_DLG_OP2( wxWindow *parent, DataBase * database, wxWindowID id, const wxString &title,
     const wxPoint &position, const wxSize& size, long style ) :
     wxDialog( parent, id, title, position, size, style )
 {
+    m_DataBase = database;
     // WDR: dialog function SQLPROCESS for SQLPROCESS_DLG_OP2
     SQLPROCESS( this, TRUE ); 
 	m_hasRequest = FALSE;
@@ -65,11 +66,6 @@ SQLPROCESS_DLG_OP2::~SQLPROCESS_DLG_OP2()
 bool SQLPROCESS_DLG_OP2::GetSuccess()
 {
 	return m_hasRequest;
-}
-
-void SQLPROCESS_DLG_OP2::SetDataBase(DataBase * pDatabase)
-{
-	m_DataBase = pDatabase;
 }
 
 // WDR: handler implementations for SQLPROCESS_DLG_OP2
@@ -123,15 +119,8 @@ void SQLPROCESS_DLG_OP2::OnShowResult (wxCommandEvent & event)
 {
 		
 	// new dialog 
-	SHOWRESULT_OP2 * myDlg = new SHOWRESULT_OP2(this,
-											  -1, _("SQL Results"),
-											  wxDefaultPosition,wxSize(500,500),
-											  wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	
-	
-	// transfert data to the window
-	myDlg->TransferDataToWindow(m_DataBase);
-	
+	SHOWRESULT_OP2 * myDlg = new SHOWRESULT_OP2(this, m_DataBase);
+		
 	// gray the button
 	wxButton * myShowResultButton = (wxButton*)FindWindow(ID_BTN_SHOWRESULTS);
 	wxASSERT(myShowResultButton);
@@ -168,10 +157,12 @@ BEGIN_EVENT_TABLE(SHOWRESULT_OP2,wxDialog)
 	EVT_BUTTON(wxID_COPY, SHOWRESULT_OP2::OnCopyResults)
 END_EVENT_TABLE()
 
-SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
+SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, DataBase * database, wxWindowID id, const wxString &title,
     const wxPoint &position, const wxSize& size, long style ) :
     wxDialog( parent, id, title, position, size, style )
 {
+    m_DB = database;
+    wxASSERT(m_DB);
     SHOWRESULT( this, TRUE );
 }
 
@@ -180,19 +171,20 @@ SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, wxWindowID id, const wxString 
 //	Destroy();
 //}
 
-bool SHOWRESULT_OP2::TransferDataToWindow(DataBase * pmDataBase)
+bool SHOWRESULT_OP2::TransferDataToWindow()
 {    
 	// storing query results
 	wxArrayString myResults;
 	int myResultsNumber = 0;
+    wxASSERT(m_DB);
    
 	//find the grid Ctrl 
 	wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
 	GridOperation * myGridOP = new GridOperation(myGridCtrl);
 	
-	if (pmDataBase->DataBaseGetNextResult(myResults)==false)
+	if (m_DB->DataBaseGetNextResult(myResults)==false)
 	{
-		pmDataBase->DataBaseClearResults();
+		m_DB->DataBaseClearResults();
 		wxLogError(_T("No results, this is an error"));
 		return false;
 	}
@@ -205,12 +197,12 @@ bool SHOWRESULT_OP2::TransferDataToWindow(DataBase * pmDataBase)
 		// add the first line
 		myGridOP->GridOpAddDataRow(myResultsNumber,&myResults);
 		
-		while (pmDataBase->DataBaseGetNextResult(myResults)) 
+		while (m_DB->DataBaseGetNextResult(myResults))
 		{
 			myGridOP->GridOpAddDataRow(myResultsNumber,
 									  &myResults);
 		}
-		pmDataBase->DataBaseClearResults();
+		m_DB->DataBaseClearResults();
 	}
 	
 	else 

@@ -169,25 +169,11 @@ void TBVFrame::OnQuit(wxCloseEvent & event)
 
 void TBVFrame::OnProcessRequest (wxCommandEvent & event)
 {
-			
-		
-		// create and display the SQLPROCESS dialog box.
-		SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this,
-														  -1, _("Process SQL User Request"),
-														  wxDefaultPosition,wxDefaultSize,
-														  wxDEFAULT_DIALOG_STYLE	| wxRESIZE_BORDER | wxDIALOG_EX_METAL);
-		
-		myDlg->SetDataBase(&m_Database);
-		//myDlg->SetExtraStyle(wxDIALOG_EX_METAL);													
-		myDlg->SetMinSize(wxSize(300,200));
-		myDlg->SetSize(wxSize(500,400));
-		myDlg->CentreOnParent();
-		myDlg->Show();
-		if ( myDlg->GetSuccess()) 
-		{
-            _LoadTablesIntoToc();
-		}	
- 	
+    SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this, &m_Database);
+    myDlg->Show();
+    if ( myDlg->GetSuccess()){
+        _LoadTablesIntoToc();
+    }
 }
 
 
@@ -457,7 +443,7 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	if (myFieldArray.Count() > 0)
 	{
 		// debug message...
-		wxLogMessage(_("%d fields readed from the table '%s'"),
+		wxLogMessage(_("%ld fields readed from the table '%s'"),
 					 myFieldArray.Count(),myTempString.c_str());
 		
 		// change the number of cols

@@ -34,8 +34,7 @@ def BuildMacBook():
     print ("Configuring MacBook")
     builddir = "/Users/lucien/DATA/PROGRAMATION/toolbasview/bin"
     try:
-        p = Popen("cmake -G\"Visual Studio 10\" " + GetCmakeListPath() + "-DwxWIDGETS_USING_SVN:BOOL=1  -DwxWIDGETS_PATH_SVN:PATH=D:\\LIB\\wxWIDGETS-SVN -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GDAL_LIB_PATH:PATH=D:\\LIB\\LIB_GDAL  -DSEARCH_GEOS_LIB_PATH:PATH=D:\\LIB\\geos-3.3.4 -DSQLITE_PATH:PATH=D:\\LIB\\LIB_SQLITE -DUSE_MT_LIBRARY:BOOL=1", shell=True, cwd=builddir)
-        p.wait()
+        p = Popen("cmake -GXcode " + GetCmakeListPath() + "  -DCMAKE_OSX_ARCHITECTURES:TEXT=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET:TEXT=10.6 -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GDAL_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS -DSEARCH_GEOS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS", shell=True, cwd=builddir)
     except:
         print("Error creating makefile")
 
