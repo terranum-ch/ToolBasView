@@ -40,29 +40,34 @@ wxSizer *SQLPROCESS( wxWindow *parent, bool call_fit, bool set_sizer )
 {
       wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(600,200), wxTE_MULTILINE );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL| wxALL, 5 );
 
-    wxStaticText *item2 = new wxStaticText( parent, ID_REQUEST_RESULT, _("Result :"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxButton *item3 = new wxButton( parent, ID_BTN_SHOWRESULTS, _("Show results..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Enable( false );
-    item0->Add( item3, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 10 );
-
-    wxStaticLine *item4 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
-    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
+	
+    wxStaticBoxSizer* sbSizer1;
+	sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( parent, wxID_ANY, _("Results") ), wxHORIZONTAL );
+	
+	wxStaticText* m_staticText1;
+	m_staticText1 = new wxStaticText( parent, ID_REQUEST_RESULT, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer1->Add( m_staticText1, 1, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxButton* m_button1;
+	m_button1 = new wxButton( parent, ID_BTN_SHOWRESULTS, _("Show results..."), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer1->Add( m_button1, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+    m_button1->Enable(false);
+	
+	//bSizer1->Add( sbSizer1, 1, wxEXPAND|wxALL, 5 );
+    item0->Add(sbSizer1, 0, wxEXPAND|wxALL, 5 );
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item6 = new wxButton( parent, ID_PROCESS, _("Process Request"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item6, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    wxButton *item6 = new wxButton( parent, ID_PROCESS, _("Execute SQL Code"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item6, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxButton *item7 = new wxButton( parent, wxID_CANCEL, _("Exit"), wxDefaultPosition, wxDefaultSize, 0 );
     item7->SetDefault();
-    item5->Add( item7, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
+    item5->Add( item7, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item5, 0, wxALL| wxALIGN_RIGHT, 5 );
 
     if (set_sizer)
     {

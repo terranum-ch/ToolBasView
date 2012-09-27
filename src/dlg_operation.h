@@ -49,39 +49,28 @@
 //----------------------------------------------------------------------------
 class SQLPROCESS_DLG_OP2 : public wxDialog
 {
+private:
+	DataBase * m_DataBase;
+	bool m_hasRequest;
+    
+    // WDR: handler declarations for SQLPROCESS_DLG_OP2
+    void OnProcess( wxCommandEvent &event );
+    void OnCancel( wxCommandEvent &event );
+	void OnShowResult (wxCommandEvent & event);
+    
+    DECLARE_EVENT_TABLE();
+    
 public:
     // constructors and destructors
-    SQLPROCESS_DLG_OP2( wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint& pos = wxDefaultPosition,const wxSize& size = wxDefaultSize,long style = wxDEFAULT_DIALOG_STYLE );
+    SQLPROCESS_DLG_OP2( wxWindow *parent, DataBase * database, wxWindowID id = wxID_ANY, const wxString &title = _("Run SQL code"), const wxPoint& pos = wxDefaultPosition,const wxSize& size = wxDefaultSize,long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
     virtual ~SQLPROCESS_DLG_OP2();
-	
-	/*!
-    @function 
-    @brief Call this function to transfer the class adress to the dialogbox
-	@param      pointerMySQL a MYSQL pointer to an existing MYSQL database.
-	*/
-	void SetDataBase(DataBase * pDatabase);
 	
 	/*!
     @function 
     @brief Return true if a request was made correctely 
 	*/
 	bool GetSuccess ();
-    
-    
-private:
-	DataBase * m_DataBase;
-	
-	bool m_hasRequest;
-
-    
-private:
-    // WDR: handler declarations for SQLPROCESS_DLG_OP2
-    void OnProcess( wxCommandEvent &event );
-    void OnCancel( wxCommandEvent &event );
-	void OnShowResult (wxCommandEvent & event);
-
-private:
-    DECLARE_EVENT_TABLE()
+        
 };
 
 
@@ -91,15 +80,18 @@ private:
 
 class SHOWRESULT_OP2: public wxDialog
 {
+private:
+    DataBase * m_DB;
+    
 public:
     // constructors and destructors
-    SHOWRESULT_OP2( wxWindow *parent, wxWindowID id, const wxString &title,
+    SHOWRESULT_OP2( wxWindow *parent, DataBase * database, wxWindowID id = wxID_ANY, const wxString &title = _("SQL Results"),
         const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
+        const wxSize& size = wxSize(500,500),
+        long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
    // virtual ~SHOWRESULT_OP2();
     
-	bool TransferDataToWindow(DataBase * pmDataBase);
+	virtual bool TransferDataToWindow();
 
     
 private:
