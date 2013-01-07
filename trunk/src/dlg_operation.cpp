@@ -68,7 +68,12 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
         // add to history
         TBVFrame * myParentFrame = (TBVFrame *) GetParent();
         wxASSERT(myParentFrame);
-        myParentFrame->GetHistory()->Add(myRequest);
+        wxArrayString * myHistory = myParentFrame->GetHistory();
+        if (myHistory != NULL && myHistory->GetCount() != 0) {
+            if (myHistory->Item(0) != myRequest) {
+                myParentFrame->GetHistory()->Insert(myRequest, 0);
+            }
+        }
         
         myComment = _("Query passed OK, no results");
 		if (m_DataBase->DataBaseHasResults()==true)
