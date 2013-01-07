@@ -173,6 +173,12 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
 
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
+    
+    wxStaticText * m_RowColInfoCtrl = new wxStaticText( parent, ID_COLROW_INFO, _T("columns: ----, rows: ----"));
+	bSizer2->Add( m_RowColInfoCtrl, 0, wxALL, 5 );
+	
+	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
+
 	
 	wxButton* m_button1;
 	m_button1 = new wxButton( parent, wxID_COPY, _("Copy Results"));
@@ -182,7 +188,7 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
 	m_button2 = new wxButton( parent, wxID_CANCEL, _("Exit Results"));
 	bSizer2->Add( m_button2, 0, wxALL, 5 );
 	
-	item0->Add( bSizer2, 0, wxALIGN_RIGHT | wxALL, 5 );
+	item0->Add( bSizer2, 0,  wxEXPAND, 5);  //wxALIGN_RIGHT | wxALL, 5 );
 	
 
     if (set_sizer)
@@ -195,15 +201,4 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-/*IMPLEMENT_CLASS (AboutDialog,wxDialog);
-AboutDialog::AboutDialog (wxWindow*,const wxChar* ,  int,int)
-{
-	wxLogMessage (_("Coucuo"));
 
-}
-
-//AboutDialog::~AboutDialog()
-//{
-//	wxLogMessage (_("Coucuo"));
-//	Destroy();
-//}*/

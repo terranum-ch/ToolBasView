@@ -52,16 +52,9 @@ const int ID_TXT_DB_NAME = 10010;
 wxSizer *NEWDBASE( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 const int ID_GRID_PROCESS = 10011;
+const int ID_COLROW_INFO = 10015;
 wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-//class AboutDialog : public wxDialog
-//{
-//	DECLARE_CLASS (AboutDialog)
-//public:
-//  AboutDialog (wxWindow * parent, const wxChar * title, int width, int height);
-  //~AboutDialog();	
-
-//};
 
 
 #endif
