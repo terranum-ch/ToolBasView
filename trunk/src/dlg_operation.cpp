@@ -175,47 +175,48 @@ SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, DataBase * database, wxWindowI
 //	Destroy();
 //}
 
-bool SHOWRESULT_OP2::TransferDataToWindow()
-{    
-	// storing query results
-	wxArrayString myResults;
-	int myResultsNumber = 0;
+bool SHOWRESULT_OP2::TransferDataToWindow(){
     wxASSERT(m_DB);
-   
-	//find the grid Ctrl 
-	wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
+	
+    wxGrid * myGridCtrl = (wxGrid *)FindWindow(ID_GRID_PROCESS);
 	GridOperation * myGridOP = new GridOperation(myGridCtrl);
 	
-	if (m_DB->DataBaseGetNextResult(myResults)==false)
-	{
-		m_DB->DataBaseClearResults();
-		wxLogError(_T("No results, this is an error"));
-		return false;
-	}
-	myResultsNumber = myResults.Count();
-	if (myResultsNumber > 0) 
-	{
-		// changing number of cols
-		myGridOP->GridOpSetNumberOfColumn(myResultsNumber);
-		
-		// add the first line
-		myGridOP->GridOpAddDataRow(myResultsNumber,&myResults);
-		
-		while (m_DB->DataBaseGetNextResult(myResults))
-		{
-			myGridOP->GridOpAddDataRow(myResultsNumber,
-									  &myResults);
-		}
-		m_DB->DataBaseClearResults();
-	}
-	
-	else 
-	{
-		wxLogMessage(_("No results returned by your request"));
-	}
-
-	return true;
+    DataBaseResult myResult;
+    if (m_DB->DataBaseGetResults(&myResult)==false) {
+        wxLogError(_("Getting results failed!"));
+        return false;
+    }
+    
+    if (myResult.HasResults() == false) {
+        wxLogMessage(_("No results returned by your request"));
+        return true;
+    }
+    
+    myGridOP->GridOpSetNumberOfColumn(myResult.GetColCount());
+    wxArrayString myColsName;
+    myResult.GetColName(myColsName);
+    for (unsigned int i = 0; i< myColsName.GetCount(); i++) {
+        myGridOP->GridOpChangeColumnText(myColsName.Item(i), i);
+    }
+    
+    int myColCount = myResult.GetColCount();
+    int iRow = 0;
+    while (myResult.NextRow()) {
+        myGridCtrl->AppendRows(1,false);
+        for (unsigned int i = 0; i < myColCount; i++) {
+            wxString myText;
+            myResult.GetValue(i, myText);
+            myGridCtrl->SetCellValue(iRow, i, myText);
+        }
+        iRow++;
+    }
+    
+    wxStaticText * myTextCtrl = (wxStaticText*) FindWindowById(ID_COLROW_INFO);
+    wxASSERT(myTextCtrl);
+    myTextCtrl->SetLabel(wxString::Format(_T("columns: %d, rows: %ld"),myColCount, myResult.GetRowCount()));
+   	return true;
 }
+
 
 void SHOWRESULT_OP2::OnCancel(wxCommandEvent &event)
 {

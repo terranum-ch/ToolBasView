@@ -65,8 +65,6 @@ public:
 	void GridClear (int iColumn=10,int iRows=10);
 	
     
-    
-    
 private:
 	wxGrid * pGrid;
 };
