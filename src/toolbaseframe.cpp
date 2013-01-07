@@ -29,6 +29,7 @@ EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
 EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
 EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
 EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
+EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
 EVT_IDLE (TBVFrame::OnMenuIdle)
 END_EVENT_TABLE()
 
@@ -383,6 +384,7 @@ void TBVFrame::EnableMenuItem (bool benable)
 	mypMenu->Enable(ID_MENU_DELETE, benable);
     mypMenu->Enable(wxID_SAVEAS,benable);
     mypMenu->Enable(ID_MENU_DB_OPERATION, benable);
+    mypMenu->Enable(ID_MENU_EXPORT_STRUCTURE, benable);
 }
 
 
@@ -486,6 +488,46 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	}
 	
 }
+
+
+void TBVFrame::OnExportStructureToClipboard (wxCommandEvent & event){
+    wxLogMessage(_("Exporting structure to clipboard..."));
+    wxString myQuery = _T("SHOW TABLES");
+    if (m_Database.DataBaseQuery(myQuery)==false) {
+        wxLogError(_("Error loading tables structure to clipboard"));
+        return;
+    }
+    if (m_Database.DataBaseHasResults() == false) {
+        wxLogError(_("Database didn't contain any table!"));
+        return;
+    }
+    
+    wxArrayString myTables;
+    m_Database.DataBaseGetResults(myTables);
+    wxString myClipboardTxt = wxEmptyString;
+    
+    for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+        myQuery = wxString::Format(_T("SHOW CREATE TABLE %s"), myTables.Item(i));
+        if (m_Database.DataBaseQuery(myQuery)==false) {
+            wxLogError(_("Getting table structure for '%s' failed!"), myTables.Item(i));
+            continue;
+        }
+        DataBaseResult myResult;
+        m_Database.DataBaseGetResults(&myResult);
+        myResult.NextRow();
+        wxString myText;
+        myResult.GetValue(1, myText);
+        myClipboardTxt.Append(wxString::Format(_T("-- %s --\n"), myTables.Item(i)));
+        myClipboardTxt.Append(myText);
+        myClipboardTxt.Append(_T("\n\n"));
+    }
+    
+    if (wxTheClipboard->Open()){
+        wxTheClipboard->SetData( new wxTextDataObject(myClipboardTxt) );
+        wxTheClipboard->Close();
+    }
+}
+
 
 
 void TBVFrame::OnNewDataBase (wxCommandEvent & event)

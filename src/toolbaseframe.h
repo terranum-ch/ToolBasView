@@ -20,10 +20,11 @@ const int ID_STATUS = 10003;
 
 
 #include "database.h"
+#include "databaseresult.h"
 #include "gridoperation.h" // for grid operation.
 #include "addspatialdata_dlg.h" // for adding spatial data
 #include "gisdataprovider.h"	// for dealing with spatial data
-#include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
+//#include "ogrsf_frmts.h"			// GDAL - GEOS SUPPORT
 #include "deletetabledata_dlg.h"	// deleting data dialog
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
@@ -48,6 +49,7 @@ private:
 	void EnableMenuItem (bool benable);
 	void OnDoubleClickListe (wxTreeEvent & event);
 	void OnNewDataBase (wxCommandEvent & event);
+    void OnExportStructureToClipboard (wxCommandEvent & event);
     
 	DataBase m_Database;
 	wxTreeCtrl * pTreeCtrl;
