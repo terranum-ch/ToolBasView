@@ -231,15 +231,26 @@ void SHOWRESULT_OP2::OnCopyResults(wxCommandEvent & event){
 	wxASSERT(myGridCtrl);
 	
 	wxString myValues = wxEmptyString;
-	for (int irow = 0; irow < myGridCtrl->GetNumberRows(); irow++){
-		for (int icol = 0; icol < myGridCtrl->GetNumberCols(); icol++) {			
-			myValues.Append(myGridCtrl->GetCellValue(irow, icol));
+    
+    // get header
+	for (int icol = 0; icol < myGridCtrl->GetNumberCols(); icol++) {
+        myValues.Append(myGridCtrl->GetColLabelValue(icol));
+        myValues.Append(_T("\t"));
+    }
+    myValues.RemoveLast();
+    myValues.Append(_T("\n"));
+    
+    // get values
+    for (int irow = 0; irow < myGridCtrl->GetNumberRows(); irow++){
+		for (int icol = 0; icol < myGridCtrl->GetNumberCols(); icol++) {
+            myValues.Append(myGridCtrl->GetCellValue(irow, icol));
 			if (icol < myGridCtrl->GetNumberCols() -1) {
 				myValues.Append(_T("\t"));
 			}
 		}
 		myValues.Append(_T("\n"));
 	}
+    myValues.RemoveLast();
 	
 	if (wxTheClipboard->Open())
     {
