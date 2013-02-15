@@ -33,6 +33,7 @@ void DataBaseResult::Create(MYSQL_RES ** results) {
 	m_RowIndex = wxNOT_FOUND;
 	m_RowLengths.Clear();
 	m_ResultSet = results;
+    m_Field = mysql_fetch_fields(*m_ResultSet);
 }
 
 
@@ -189,6 +190,32 @@ bool DataBaseResult::GetValue(int col, OGRGeometry * * geometry) {
 	
 	return true;
 }
+
+
+bool DataBaseResult::IsNumField(int col){
+    wxASSERT(m_Field);
+    return  IS_NUM(m_Field[col].type);
+}
+
+
+bool DataBaseResult::IsTextField (int col){
+    wxASSERT(m_Field);
+    
+    if (m_Field[col].type == MYSQL_TYPE_VAR_STRING ||
+        m_Field[col].type == MYSQL_TYPE_STRING) {
+        return true;
+    }
+    return false;
+}
+
+
+bool DataBaseResult::IsGeomField (int col){
+    if (m_Field[col].type == MYSQL_TYPE_GEOMETRY) {
+        return true;
+    }
+    return false;
+}
+
 
 
 bool DataBaseResult::NextRow() {

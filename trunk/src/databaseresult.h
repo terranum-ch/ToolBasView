@@ -33,6 +33,7 @@ class DataBaseResult {
 private:
     MYSQL_RES ** m_ResultSet;
 	MYSQL_ROW m_Row;
+    MYSQL_FIELD * m_Field;
 	long m_RowIndex;
     tmArrayULong m_RowLengths;
 	
@@ -54,6 +55,10 @@ public:
     bool GetValue(int col, wxString & value);
     bool GetValue(int col, long & value);
 	bool GetValue(int col, OGRGeometry ** geometry);
+    
+    bool IsNumField(int col);
+    bool IsTextField (int col);
+    bool IsGeomField (int col);
 	
 	
     bool NextRow();

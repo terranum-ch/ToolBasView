@@ -199,7 +199,7 @@ wxMenuBar *MENU()
     item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
 	item1->AppendSeparator();
     item1->Append( wxID_SAVEAS, _("Export as CSV...\tCtrl-Alt-E"), _("Select and Export data as CSV.") );
-    item1->Append(ID_MENU_EXPORT_STRUCTURE, _("Export structure to Clipboard"));
+    item1->Append(ID_MENU_EXPORT_STRUCTURE, _("Dump to Clipboard...\tCtrl+D"));
     item1->AppendSeparator();
     item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
     item0->Append( item1, _("File") );

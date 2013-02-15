@@ -491,7 +491,19 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 
 
 void TBVFrame::OnExportStructureToClipboard (wxCommandEvent & event){
-    wxLogMessage(_("Exporting structure to clipboard..."));
+    wxString myExportChoices [] = {_("Structure"), _("Data")};
+    wxMultiChoiceDialog myDlg(this, _("Choose what to export:"),  _("Dump to clipboard"), 2, &myExportChoices[0]);
+    if(myDlg.ShowModal()== wxID_CANCEL){
+        return;
+    }
+    
+    wxArrayInt myDlgChoice = myDlg.GetSelections();
+    if (myDlgChoice.GetCount() == 0) {
+        wxLogWarning(_("Nothing selected! Nothing exported!"));
+        return;
+    }
+    
+    wxString myClipboardTxt = wxEmptyString;
     wxString myQuery = _T("SHOW TABLES");
     if (m_Database.DataBaseQuery(myQuery)==false) {
         wxLogError(_("Error loading tables structure to clipboard"));
@@ -501,27 +513,93 @@ void TBVFrame::OnExportStructureToClipboard (wxCommandEvent & event){
         wxLogError(_("Database didn't contain any table!"));
         return;
     }
-    
     wxArrayString myTables;
     m_Database.DataBaseGetResults(myTables);
-    wxString myClipboardTxt = wxEmptyString;
     
-    for (unsigned int i = 0; i< myTables.GetCount(); i++) {
-        myQuery = wxString::Format(_T("SHOW CREATE TABLE %s"), myTables.Item(i));
-        if (m_Database.DataBaseQuery(myQuery)==false) {
-            wxLogError(_("Getting table structure for '%s' failed!"), myTables.Item(i));
-            continue;
+    
+    // export structure
+    if (myDlgChoice.Index(0) != wxNOT_FOUND) {
+        myClipboardTxt.Append(_T("-- DATABASE STRUCTURE --\n"));
+        wxLogMessage(_("Exporting structure to clipboard..."));
+        for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+            myQuery = wxString::Format(_T("SHOW CREATE TABLE %s"), myTables.Item(i));
+            if (m_Database.DataBaseQuery(myQuery)==false) {
+                wxLogError(_("Getting table structure for '%s' failed!"), myTables.Item(i));
+                continue;
+            }
+            DataBaseResult myResult;
+            wxString myText = wxEmptyString;
+            m_Database.DataBaseGetResults(&myResult);
+            myResult.NextRow();
+            myResult.GetValue(1, myText);
+            myClipboardTxt.Append(wxString::Format(_T("-- %s --\n"), myTables.Item(i)));
+            myClipboardTxt.Append(myText);
+            myClipboardTxt.Append(_T("\n\n"));
         }
-        DataBaseResult myResult;
-        m_Database.DataBaseGetResults(&myResult);
-        myResult.NextRow();
-        wxString myText;
-        myResult.GetValue(1, myText);
-        myClipboardTxt.Append(wxString::Format(_T("-- %s --\n"), myTables.Item(i)));
-        myClipboardTxt.Append(myText);
-        myClipboardTxt.Append(_T("\n\n"));
     }
     
+    // export data
+    if (myDlgChoice.Index(1) != wxNOT_FOUND) {
+        wxLogMessage(_("Exporting data to clipboard..."));
+        myClipboardTxt.Append(_T("-- DATABASE DATA --\n\n"));
+        for (unsigned int i = 0; i< myTables.GetCount(); i++) {
+            myQuery = wxString::Format(_T("SELECT * FROM %s"), myTables.Item(i));
+            if (m_Database.DataBaseQuery(myQuery)==false) {
+                wxLogError(_("Getting table data for '%s' failed!"), myTables.Item(i));
+                continue;
+            }
+            
+            myClipboardTxt.Append(wxString::Format(_T("-- %s --\n"), myTables.Item(i)));
+            
+            DataBaseResult myResult;
+            m_Database.DataBaseGetResults(&myResult);
+            
+            for (long r = 0; r < myResult.GetRowCount(); r++) {
+                wxString myText = wxEmptyString;
+                myResult.NextRow();
+                myText = wxString::Format(_("INSERT INTO %s VALUES("), myTables.Item(i));
+                for (int c = 0; c < myResult.GetColCount(); c++) {
+                    if (myResult.IsTextField(c)==true) {
+                        wxString myColValue;
+                        myResult.GetValue(c, myColValue);
+                        myText.Append(wxString::Format(_T("\"%s\","), myColValue));
+                    }
+                    
+                    if (myResult.IsNumField(c)==true) {
+                        wxString myColValue;
+                        myResult.GetValue(c, myColValue);
+                        myText.Append(wxString::Format(_T("%s,"), myColValue));
+                    }
+                    
+                    if (myResult.IsGeomField(c)==true) {
+                        //OGRGeometry * myGeom = NULL;
+                        wxString myValue = wxEmptyString;
+                        myResult.GetValue(c, myValue);
+                        /*
+                        char * myExport;
+                        myGeom->exportToWkt(&myExport);
+                        wxString sExport = wxString::FromAscii(myExport);
+                        wxDELETE(myExport);
+                        wxDELETE(myGeom);*/
+                        if (myValue == wxEmptyString) {
+                            myValue = _T("NULL");
+                        }
+                        myText.Append(wxString::Format(_T("%s,"), myValue));
+                    }
+                    
+                }
+                myText.RemoveLast();
+                myText.Append(_T(");\n"));
+                myClipboardTxt.Append(myText);
+            }
+            
+            myClipboardTxt.Append(_T("\n\n"));
+        }
+
+    }
+    
+    
+       
     if (wxTheClipboard->Open()){
         wxTheClipboard->SetData( new wxTextDataObject(myClipboardTxt) );
         wxTheClipboard->Close();
