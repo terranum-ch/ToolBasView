@@ -43,7 +43,7 @@
 
 
 
-DataBase::DataBase()
+DataBase::DataBase(const wxString & errmsgpath)
 {
 	m_IsDatabaseOpened		= false;
 	m_IsLibraryStarted		= false;
@@ -51,7 +51,7 @@ DataBase::DataBase()
 	m_MySQLRes				= NULL;
 	m_DBName				= wxEmptyString;
 	m_DBPath				= wxEmptyString;
-
+    m_ErrMsgPath            = errmsgpath;
 }
 
 
@@ -73,74 +73,71 @@ DataBase::~DataBase()
 bool DataBase::DBLibraryInit (const wxString & datadir){
 	// path validity
 	wxFileName myValidPath (datadir, _T(""));
-	if (myValidPath.IsDirReadable()==false)
-	{
+	if (myValidPath.IsDirReadable()==false){
 		wxLogError(_("Directory : %s doesn't exists or isn't readable"),datadir.c_str());
 		return false;
 	}
-    
+
 	//init library
 	wxString myDatadir = _T("--datadir=") + myValidPath.GetPath(wxPATH_GET_VOLUME,wxPATH_NATIVE);
-    
-#ifndef UNIT_TESTING
-	wxFileName myLogDirName (wxStandardPaths::Get().GetDocumentsDir(),_T("toolbasview_debug_log.txt"));
-	wxString myLogDirString = _T("--log=");
-    myLogDirString.Append(myLogDirName.GetFullPath());
+#ifdef MYSQL_IS_LOGGING
+	wxFileName myLogDirName (wxStandardPaths::Get().GetAppDocumentsDir(),_T("toolbasview_mysql_log.sql"));
+	wxString myLogDirString = _T("--general-log-file=");
+	myLogDirString.Append(myLogDirName.GetFullPath());
 #endif
-    
-    
+    wxString mylanguagedir = wxEmptyString;
+    if (m_ErrMsgPath != wxEmptyString) {
+        mylanguagedir = _T("--lc-messages-dir=") + m_ErrMsgPath;
+    }
+    else
+    {
+        
 #if defined(__WINDOWS__)
-	wxString mylanguagedir = _T("--language=./mysql");
+        mylanguagedir = "--lc-messages-dir=./mysql";
 #elif defined(__WXMAC__)
-	wxString mylanguagedir =	_T("--language=./ToolBasView.app/Contents/mysql");
-#elif defined(__WXGTK20__)
-	wxString mylanguagedir = _T("--language=./mysql");
+        mylanguagedir = "--lc-messages-dir=./ToolBasView.app/Contents/mysql";
+        //#elif defined(__WXGTK20__)
+        //char * mylanguagedir = "--language=./mysql";
 #else
-	wxASSERT_MSG (0, _T("Check compilation option for MySQL"));
-	wxString mylanguagedir = _T("");
+        // Linux standard with MySQL installed with package manager.
+        mylanguagedir = "--skip-grant-tables";
 #endif
-    
-    
+    }
+
 	char const *server_args[] =
 	{
-		"this_program",       /* this string is not used */
+		"this_program",       /* this string is not used*/
 		myDatadir.mb_str(wxConvUTF8),
 		mylanguagedir.mb_str(wxConvUTF8),
-		"--port=3309",
+		//"--port=3309",
 		"--character-set-server=utf8",
-        "--default-storage-engine=MyISAM",
-        "--ignore-builtin-innodb"
-#ifndef UNIT_TESTING
+        //"--default-storage-engine=MyISAM",
+        //"--default_tmp_storage_engine=MyISAM",
+        //"--skip-innodb"
 #if defined (MYSQL_IS_LOGGING)
-		, myLogDirString.mb_str(wxConvUTF8)
+        "--general-log=1"
+        ,myLogDirString.mb_str(wxConvUTF8)
 #endif
-#endif
-		
 	};
+
     
-    
-    char const * server_groups[] =
-	{
+	char const *server_groups[] ={
 		"embedded",
 		"server",
 		"this_program_SERVER",
 		(char *)NULL
 	};
-    
-    
+
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 	int myReturn = mysql_library_init(num_elements, const_cast<char**>(server_args), const_cast<char**>(server_groups));
-    
-	if (myReturn != 0)
-	{
-		wxLogError(DataBaseGetLastError()); 
+	if (myReturn != 0){
+		wxLogError(DataBaseGetLastError());
 		return false;
 	}
-    
+
 	m_MySQL = mysql_init(NULL);
 	mysql_options(m_MySQL, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
 	mysql_options(m_MySQL, MYSQL_SET_CHARSET_NAME, "utf8");
-    wxLogDebug(_T("Initing MySQL library..."));
 	return true;
 }
 
@@ -173,7 +170,7 @@ void DataBase::DBLibraryEnd ()
 
 
 wxString DataBase::DataBaseGetLastError (){
-	return wxString::Format(_("MySQL Error : %s"), wxString::FromAscii(mysql_error(m_MySQL)));
+	return wxString::Format(_("MySQL Error : %s"), wxString(mysql_error(m_MySQL)));
 }
 
 
@@ -277,7 +274,7 @@ wxString DataBase::DataBaseGetSize (int precision, const wxString & failmsg)
     }
 
 
-	wxString myDBStringSize = wxFileName::GetHumanReadableSize(myDBDirSize, failmsg);
+	wxString myDBStringSize = wxFileName::GetHumanReadableSize(myDBDirSize, failmsg, precision);
 	return 	myDBStringSize;
 }
 
@@ -709,21 +706,34 @@ int DataBase::DataBaseQueriesNumber (const wxString & query)
 long DataBase::DataBaseGetLastInsertedID()
 {
 	long myIID = wxNOT_FOUND;
-	if (DBIsDataBaseReady()==false)
+	if (DBIsDataBaseReady()==false){
 		return myIID;
+    }
 
 	myIID = mysql_insert_id(m_MySQL);
-	if (myIID == 0)
+	if (myIID == 0){
 		myIID = wxNOT_FOUND;
+    }
 
 	return myIID;
 }
 
 
 
+long DataBase::DataBaseGetAffectedRows(){
+    long myAffected = wxNOT_FOUND;
+    if (DBIsDataBaseReady() == false) {
+        return myAffected;
+    }
+    
+    myAffected = mysql_affected_rows(m_MySQL);
+    return myAffected;
+}
+
+
+
 bool DataBase::DataBaseStringEscapeQuery (const wxString & query, wxString & results)
 {
-	wxASSERT(m_MySQL);
 	results.Clear();
 
 	if (query.IsEmpty()) {
@@ -734,21 +744,6 @@ bool DataBase::DataBaseStringEscapeQuery (const wxString & query, wxString & res
 	results = query;
 	results.Replace(_T("'"), _T("\\'"));
 	results.Replace(_T("\""), _T("\\\""));
-	return true;
-
-	char * buf = new char[query.Len() * sizeof(wxString) * 2 + sizeof(wxString)];
-
-	unsigned long myInsertedVal = mysql_real_escape_string(m_MySQL, buf, query.mb_str(wxConvUTF8), query.Len());
-
-	if(myInsertedVal == 0){
-		wxLogError(DataBaseGetLastError());
-		delete[] buf;
-		return false;
-	}
-
-	results = wxString::FromUTF8(buf);
-	delete [] buf;
-
 	return true;
 }
 
