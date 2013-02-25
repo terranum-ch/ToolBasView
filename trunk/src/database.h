@@ -46,11 +46,12 @@
 #include <wx/tokenzr.h> // tokenizer of string
 #include <wx/dir.h> // directory operation (size)
 
+WX_DEFINE_ARRAY_LONG(unsigned long, tmArrayULong);
 
 class DataBaseResult;
 
 //WX_DEFINE_ARRAY_(int, ArrayOfInts);
-WX_DEFINE_ARRAY_LONG(unsigned long, tmArrayULong);
+
 
 class DataBase
 	{
@@ -62,6 +63,7 @@ class DataBase
 		MYSQL_RES *	m_MySQLRes;
 		wxString	m_DBName;
 		wxString	m_DBPath;
+        wxString    m_ErrMsgPath;
 		
 		// functions
 		bool DBLibraryInit (const wxString & datadir);
@@ -73,7 +75,7 @@ class DataBase
 		
 	protected:
 	public:
-		DataBase();
+		DataBase(const wxString & errmsgpath = wxEmptyString);
 		~DataBase();
 		
 		// database operations
@@ -96,9 +98,10 @@ class DataBase
 		bool DataBaseQuery (const wxString & query, bool logerror = true); 
 		int DataBaseQueriesNumber (const wxString & query);
 		long DataBaseGetLastInsertedID();
+        long DataBaseGetAffectedRows();
 		
 		// query transformations
-		bool DataBaseStringEscapeQuery (const wxString & query, wxString & results);
+		static bool DataBaseStringEscapeQuery (const wxString & query, wxString & results);
 		
 		// results operations
 		bool DataBaseHasResults();
