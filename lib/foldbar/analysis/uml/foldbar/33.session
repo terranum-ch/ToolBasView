@@ -1,0 +1,12 @@
+window_sizes 1920 1032 476 1438 839 136
+diagrams
+  active  classdiagram_ref 128033 // lsfoldbar
+    1434 819 100 4 0 0
+end
+show_stereotypes
+selected operation_ref 128033 // lsFoldBarCtrl
+open
+  operation_ref 128289 // SetTitle
+  deploymentview_ref 128033 // lsfoldbar
+end
+end

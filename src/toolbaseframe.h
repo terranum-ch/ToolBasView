@@ -17,6 +17,8 @@ const int ID_STATUS = 10003;
 #include <wx/progdlg.h>				// progress dialog.
 #include <wx/wupdlock.h>
 #include <wx/textfile.h>
+#include <wx/treectrl.h>
+#include <wx/grid.h>
 
 
 #include "database.h"
@@ -52,12 +54,16 @@ private:
     void OnExportStructureToClipboard (wxCommandEvent & event);
     
 	DataBase m_Database;
-	wxTreeCtrl * pTreeCtrl;
-	GridOperation * pGridOp;
+	wxTreeCtrl * m_TreeCtrl;
+	GridOperation * m_GridOp;
+    wxGrid * m_GridCtrl;
+    wxTextCtrl* m_QueryCtrl;
+    wxTextCtrl* m_LogTxt;
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
-    
+   
     void _LoadTablesIntoToc();
+    void _CreateControls();
     
     DECLARE_EVENT_TABLE();
     
