@@ -11,6 +11,7 @@
 #include "databaseoperation.h"
 #include "../art/toolbasview_bmp.cpp"
 #include "dlg_operation.h" // for dialogs operations.
+#include "lsfoldbar.h"
 
 
 
@@ -50,18 +51,20 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	CreateStatusBar(2,0,ID_STATUS);
 	
 	// dessin de l'interface
-	wxPanel * top_panel = new wxPanel (this, -1,wxDefaultPosition,wxDefaultSize );
-	INTERFACE(top_panel, FALSE);
+	//wxPanel * top_panel = new wxPanel (this, -1,wxDefaultPosition,wxDefaultSize );
+	//INTERFACE(top_panel, FALSE);
 	
 	// create the menu
 	SetMenuBar(MENU());
-	
+    
+    _CreateControls();
+    	
 	
 	// define as log window
-	wxLog::SetActiveTarget (new wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,this)));
+	//wxLog::SetActiveTarget (new wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,this)));
 	
 	// programm started
-	wxLogMessage(_("Program started"));
+	//wxLogMessage(_("Program started"));
 	
 	// get the client version
 	wxString myVersion = _("Database embedded version : ") +  DataBase::DataBaseGetVersion();
@@ -72,10 +75,10 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	wxLogMessage(_T("All GDAL driver registered..."));
 	
 	// getting the tree ctrl
-	pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,this);
+	//pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,this);
 	
 	// Creating the gridoperation object
-	pGridOp = new GridOperation((wxGrid *) FindWindowById(ID_GRID,this));
+	//pGridOp = new GridOperation((wxGrid *) FindWindowById(ID_GRID,this));
     
     // loading history
     m_HistoryFileName = wxFileName(wxStandardPaths::Get().GetAppDocumentsDir(), _T("toolbasview_history.txt"));
@@ -91,6 +94,131 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
         m_History.Add(str);
     }
 }
+
+
+
+void TBVFrame::_CreateControls(){
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxVERTICAL );
+	
+	wxSplitterWindow* m_splitter1;
+	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE );
+	
+	wxPanel* m_panel1;
+	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+	
+	m_TreeCtrl = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
+	bSizer2->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
+	
+	wxPanel* m_panel5;
+	m_panel5 = new wxPanel( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panel5->SetMinSize( wxSize( -1,50 ) );
+	
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+	
+	wxStaticBitmap* m_bitmap2;
+	m_bitmap2 = new wxStaticBitmap( m_panel5, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer6->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	
+	m_panel5->SetSizer( bSizer6 );
+	m_panel5->Layout();
+	bSizer6->Fit( m_panel5 );
+	bSizer2->Add( m_panel5, 0, wxEXPAND, 5 );
+	
+	
+	m_panel1->SetSizer( bSizer2 );
+	m_panel1->Layout();
+	bSizer2->Fit( m_panel1 );
+	wxPanel* m_panel2;
+	m_panel2 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer3;
+	bSizer3 = new wxBoxSizer( wxVERTICAL );
+	
+	m_GridCtrl = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	
+	// Grid
+	m_GridCtrl->CreateGrid( 5, 5 );
+	m_GridCtrl->EnableEditing( true );
+	m_GridCtrl->EnableGridLines( true );
+	m_GridCtrl->EnableDragGridSize( false );
+	m_GridCtrl->SetMargins( 0, 0 );
+	
+	// Columns
+	m_GridCtrl->EnableDragColMove( false );
+	m_GridCtrl->EnableDragColSize( true );
+	m_GridCtrl->SetColLabelSize( 30 );
+	m_GridCtrl->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	
+	// Rows
+	m_GridCtrl->EnableDragRowSize( true );
+	m_GridCtrl->SetRowLabelSize( 80 );
+	m_GridCtrl->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	
+	// Label Appearance
+	
+	// Cell Defaults
+	m_GridCtrl->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	bSizer3->Add( m_GridCtrl, 1, wxEXPAND, 5 );
+	
+	wxPanel* m_panel6;
+	m_panel6 = new wxPanel( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxVERTICAL );
+	
+	m_QueryCtrl = new wxTextCtrl( m_panel6, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
+	bSizer7->Add( m_QueryCtrl, 1, wxALL|wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer9;
+	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
+	
+	wxButton* m_button3;
+	m_button3 = new wxButton( m_panel6, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer9->Add( m_button3, 0, wxALL, 5 );
+	
+	wxButton* m_button5;
+	m_button5 = new wxButton( m_panel6, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer9->Add( m_button5, 0, wxALL, 5 );
+	
+	wxButton* m_button6;
+	m_button6 = new wxButton( m_panel6, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer9->Add( m_button6, 0, wxALL, 5 );
+	
+	
+	bSizer7->Add( bSizer9, 0, wxEXPAND, 5 );
+	
+	
+	m_panel6->SetSizer( bSizer7 );
+	m_panel6->Layout();
+	bSizer7->Fit( m_panel6 );
+	bSizer3->Add( m_panel6, 1, wxEXPAND, 5 );
+	
+	//m_LogTxt = new wxTextCtrl( m_panel2, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	//bSizer3->Add( m_LogTxt, 1, wxALL|wxEXPAND, 5 );
+    
+    
+    lsFoldBarCtrl * myCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
+    bSizer3->Add(myCtrl, 1, wxALL | wxEXPAND, 0);
+    
+	
+	m_panel2->SetSizer( bSizer3 );
+	m_panel2->Layout();
+	bSizer3->Fit( m_panel2 );
+	m_splitter1->SplitVertically( m_panel1, m_panel2, 0 );
+	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizer1 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+}
+
 
 
 /* Frame destruction */
@@ -393,26 +521,26 @@ void TBVFrame::TreeAddItem (wxString tname, int parent)
 {
 	if (parent == 0) 
 	{
-		pTreeCtrl->AddRoot (tname); 
+		m_TreeCtrl->AddRoot (tname);
 	}
 	else 
-		pTreeCtrl->AppendItem(pTreeCtrl->GetRootItem(),tname);	
+		m_TreeCtrl->AppendItem(m_TreeCtrl->GetRootItem(),tname);
 }
 
 
 void TBVFrame::ClearCtrls ()
 {
-	pTreeCtrl->DeleteAllItems();
+	m_TreeCtrl->DeleteAllItems();
 	
-	pGridOp->GridClear();
+	m_GridOp->GridClear();
 }
 
 
 void TBVFrame::_LoadTablesIntoToc(){
 
-    pGridOp->GridClear();
-    wxWindowUpdateLocker noUpdates(pTreeCtrl);
-    pTreeCtrl->DeleteAllItems();
+    m_GridOp->GridClear();
+    wxWindowUpdateLocker noUpdates(m_TreeCtrl);
+    m_TreeCtrl->DeleteAllItems();
     
     if (m_Database.DataBaseQuery(_T("SHOW TABLES"))==false){
         return;
@@ -429,7 +557,7 @@ void TBVFrame::_LoadTablesIntoToc(){
 	for (unsigned int i=0; i<myStringArray.Count(); i++){
 		TreeAddItem(myStringArray.Item(i),1);
 	}
-    pTreeCtrl->ExpandAll();
+    m_TreeCtrl->ExpandAll();
 }
 
 
@@ -442,7 +570,7 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	
 	wxTreeItemId myItemID = event.GetItem();
 	// get the table name
-	wxString myTempString = pTreeCtrl->GetItemText(myItemID);
+	wxString myTempString = m_TreeCtrl->GetItemText(myItemID);
 	m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
 	m_Database.DataBaseGetResults(myFieldArray);
 	
@@ -454,11 +582,11 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 					 myFieldArray.Count(),myTempString.c_str());
 		
 		// change the number of cols
-		pGridOp->GridOpSetNumberOfColumn(myFieldArray.Count());
+		m_GridOp->GridOpSetNumberOfColumn(myFieldArray.Count());
 		
 		for (i = 0; i<myFieldArray.Count(); i++) 
 		{
-			pGridOp->GridOpChangeColumnText(myFieldArray.Item(i),i,TRUE);
+			m_GridOp->GridOpChangeColumnText(myFieldArray.Item(i),i,TRUE);
 		}
 		
 		// get the data....
@@ -472,7 +600,7 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 			{
 				iArrayCount = myFieldArray.Count();
 				// add a new line
-				pGridOp->GridOpAddDataRow(iArrayCount,
+				m_GridOp->GridOpAddDataRow(iArrayCount,
 										  &myFieldArray);
 			}
 			m_Database.DataBaseClearResults();
