@@ -38,7 +38,29 @@ bool SQLPROCESS_DLG_OP2::GetSuccess()
 	return m_hasRequest;
 }
 
-// WDR: handler implementations for SQLPROCESS_DLG_OP2
+
+void SQLPROCESS_DLG_OP2::_UpdateHistory(const wxString & sentence){
+    // add to history
+    TBVFrame * myParentFrame = (TBVFrame *) GetParent();
+    wxASSERT(myParentFrame);
+    
+    wxArrayString * myHistory = myParentFrame->GetHistory();
+    if (myHistory == NULL) {
+        wxLogError(_("History will not be saved!"));
+        return;
+    }
+    
+    if (myHistory->GetCount() == 0) {
+        myHistory->Insert(sentence, 0);
+        return;
+    }
+    
+    if (myHistory->Item(0) == sentence) {
+        return;
+    }
+    myHistory->Insert(sentence, 0);
+}
+
 
 void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 {
@@ -66,14 +88,7 @@ void SQLPROCESS_DLG_OP2::OnProcess( wxCommandEvent &event )
 	if (m_DataBase->DataBaseQuery(myRequest)==true)
 	{
         // add to history
-        TBVFrame * myParentFrame = (TBVFrame *) GetParent();
-        wxASSERT(myParentFrame);
-        wxArrayString * myHistory = myParentFrame->GetHistory();
-        if (myHistory != NULL && myHistory->GetCount() != 0) {
-            if (myHistory->Item(0) != myRequest) {
-                myParentFrame->GetHistory()->Insert(myRequest, 0);
-            }
-        }
+        _UpdateHistory(myRequest);
         
         myComment = _("Query passed OK, no results");
 		if (m_DataBase->DataBaseHasResults()==true)

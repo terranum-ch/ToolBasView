@@ -36,6 +36,8 @@ private:
     void OnHistory (wxCommandEvent & event);
     void OnUpdateUIHistory (wxUpdateUIEvent & event);
     
+    void _UpdateHistory(const wxString & sentence);
+    
     DECLARE_EVENT_TABLE();
     
 public:
