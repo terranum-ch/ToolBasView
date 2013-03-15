@@ -13,4 +13,11 @@ extern void uninitialize_images(void);
 extern wxBitmap *_img_mysql;
 extern wxBitmap *_img_toolbasview;
 
+extern wxBitmap *_img_database_export;
+extern wxBitmap *_img_database_new;
+extern wxBitmap *_img_database_open;
+extern wxBitmap *_img_database_process;
+extern wxBitmap *_img_database_small;
+extern wxBitmap *_img_table_sml;
+
 #endif /* _TOOLBASVIEW_BITMAP_H_ */

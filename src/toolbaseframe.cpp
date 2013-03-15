@@ -5,7 +5,6 @@
 */
 
 #include "toolbaseframe.h"
-#include "interface.h"
 #include "lsversion_dlg.h"
 #include "exportcsv_dlg.h"
 #include "databaseoperation.h"
@@ -19,10 +18,10 @@
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
 EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
 EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
-EVT_MENU (ID_OPEN_DB,TBVFrame::OnOpenDatabase)
+EVT_MENU (wxID_OPEN,TBVFrame::OnOpenDatabase)
 EVT_CLOSE(TBVFrame::OnQuit)
 EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
-EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnProcessRequest)
+EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnShowProcessRequest)
 EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
 EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
 EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
@@ -31,7 +30,16 @@ EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
 EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
 EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
 EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
-EVT_IDLE (TBVFrame::OnMenuIdle)
+//EVT_IDLE (TBVFrame::OnMenuIdle)
+
+EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_DELETE, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_SPATIAL_SEARCH, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
+
 END_EVENT_TABLE()
 
 
@@ -49,6 +57,7 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	CreateStatusBar(2,0,ID_STATUS);
     _CreateControls();
     _CreateMenu();
+    _CreateToolBar();
 	
 	// define as log window
 	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogTxt));
@@ -137,34 +146,34 @@ void TBVFrame::_CreateControls(){
 	bSizer3->Add( m_GridCtrl, 2, wxEXPAND, 5 );
     
     // FOLDING BAR QUERY
-    lsFoldBarCtrl * myQueryFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
-    wxSizerItem * myQuerySizerItem = bSizer3->Add(myQueryFoldCtrl, 1, wxALL | wxEXPAND, 0);
- 	m_QueryCtrl = new wxTextCtrl( myQueryFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
+    m_QueryFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
+    wxSizerItem * myQuerySizerItem = bSizer3->Add(m_QueryFoldCtrl, 1, wxALL | wxEXPAND, 0);
+ 	m_QueryCtrl = new wxTextCtrl( m_QueryFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
 
 	wxBoxSizer* bSizer9;
 	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxButton* m_button3;
-	m_button3 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button3 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button3, 0, wxALL, 5 );
 	
 	wxButton* m_button5;
-	m_button5 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button5 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button5, 0, wxALL, 5 );
 	
 	wxButton* m_button6;
-	m_button6 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button6 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button6, 0, wxALL, 5 );
 	    
-    myQueryFoldCtrl->GetClientSizer()->Add(m_QueryCtrl, 1, wxEXPAND | wxALL, 5);
-    myQueryFoldCtrl->GetClientSizer()->Add(bSizer9);
+    m_QueryFoldCtrl->GetClientSizer()->Add(m_QueryCtrl, 1, wxEXPAND | wxALL, 5);
+    m_QueryFoldCtrl->GetClientSizer()->Add(bSizer9);
     
     
-    myQueryFoldCtrl->SetSizerItem(myQuerySizerItem);
-    myQueryFoldCtrl->SetTitle(_("Query"));
-    myQueryFoldCtrl->HideBar();
+    m_QueryFoldCtrl->SetSizerItem(myQuerySizerItem);
+    m_QueryFoldCtrl->SetTitle(_("Query"));
+    m_QueryFoldCtrl->HideBar();
 
-    // FOLDING LOG CONTROL 
+    // FOLDING LOG CONTROL
     lsFoldBarCtrl * myFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
     wxSizerItem * mySizerItem = bSizer3->Add(myFoldCtrl, 1, wxALL | wxEXPAND, 0);
     
@@ -193,7 +202,7 @@ void TBVFrame::_CreateMenu(){
     
     wxMenu* item1 = new wxMenu;
 	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
-    item1->Append( ID_OPEN_DB, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
+    item1->Append( wxID_OPEN, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
     item1->AppendSeparator();
     item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
 	item1->AppendSeparator();
@@ -204,7 +213,7 @@ void TBVFrame::_CreateMenu(){
     myMenuBar->Append( item1, _("File") );
     
     wxMenu* item2 = new wxMenu;
-    item2->Append( ID_PROCESS_MENU, _("Process SQL Request...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
+    item2->Append( ID_PROCESS_MENU, _("Show Process Query...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
     item2->Append( ID_MENU_SPATIAL_ADD, _("Add spatial data into the database...\tCtrl-S"), _("Allow user to load spatial data into a database table (SHP)") );
 	item2->Append( ID_MENU_SPATIAL_SEARCH, _("Search spatial data...\tCtrl-F"), _("Search spatial data used for benchmark") );
 	item2->AppendSeparator();
@@ -218,6 +227,23 @@ void TBVFrame::_CreateMenu(){
     myMenuBar->Append( item3, _("Help") );
 	
     SetMenuBar(myMenuBar);
+}
+
+
+void TBVFrame::_CreateToolBar(){
+    wxToolBar* m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL, wxID_ANY );
+    wxString myText = _("New database");
+	m_toolBar1->AddTool( ID_NEW_DBASE, myText, *_img_database_new, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+    myText = _("Open database");
+    m_toolBar1->AddTool( wxID_OPEN, myText, *_img_database_open, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+    
+    //m_toolBar1->AddSeparator();
+    
+    myText = _("Process query");
+    m_toolBar1->AddTool( ID_PROCESS_MENU, myText, *_img_database_process, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+    myText = _("Export...");
+    m_toolBar1->AddTool( wxID_SAVEAS, myText, *_img_database_export, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+	m_toolBar1->Realize();
 }
 
 
@@ -301,13 +327,20 @@ void TBVFrame::OnQuit(wxCloseEvent & event)
 }
 
 
-void TBVFrame::OnProcessRequest (wxCommandEvent & event)
-{
+void TBVFrame::OnShowProcessRequest (wxCommandEvent & event){
+    if (m_QueryFoldCtrl->IsBarShown() == true){
+     m_QueryFoldCtrl->HideBar();
+    }
+    else{
+       m_QueryFoldCtrl->ShowBar();
+    }
+    
+    /*
     SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this, &m_Database);
     myDlg->Show();
     if ( myDlg->GetSuccess()){
         _LoadTablesIntoToc();
-    }
+    }*/
 }
 
 
@@ -498,7 +531,6 @@ void TBVFrame::OnMenuIdle (wxIdleEvent & event)
 		bStarted = true;
 	
 	EnableMenuItem(bStarted);
-
 }
 
 
@@ -791,4 +823,22 @@ void TBVFrame::OnAboutDlg(wxCommandEvent & event)
 wxArrayString * TBVFrame::GetHistory(){
     return & m_History;
 }
+
+
+
+void TBVFrame::OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event){
+    if (m_Database.DataBaseGetName() != wxEmptyString) {
+        event.Enable(true);
+        return;
+    }
+    event.Enable(false);
+}
+
+
+
+
+
+
+
+
 

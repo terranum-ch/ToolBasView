@@ -30,7 +30,21 @@ const int ID_STATUS = 10003;
 #include "deletetabledata_dlg.h"	// deleting data dialog
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
+class lsFoldBarCtrl;
 
+
+const int ID_FILE_MENU = wxID_HIGHEST + 1;
+const int ID_MENU = wxID_HIGHEST + 3;
+const int ID_OP_MENU = wxID_HIGHEST + 4;
+const int ID_PROCESS_MENU = wxID_HIGHEST + 5;
+const int ID_NEW_DBASE = wxID_HIGHEST + 6;
+const int ID_MENU_STATISTICS = wxID_HIGHEST + 7;
+const int ID_MENU_SPATIAL_ADD = wxID_HIGHEST + 8;
+const int ID_MENU_DELETE = wxID_HIGHEST + 9;
+const int ID_MENU_SPATIAL_SEARCH = wxID_HIGHEST + 10;
+const int ID_MENU_DB_OPERATION = wxID_HIGHEST + 11;
+const int ID_MENU_EXPORT_STRUCTURE = wxID_HIGHEST + 12;
+const int ID_LISTTABLE = wxID_HIGHEST + 13;
 
 
 class TBVFrame: public wxFrame
@@ -38,7 +52,7 @@ class TBVFrame: public wxFrame
 private:
 	void OnQuit(wxCloseEvent & event);
 	void OnOpenDatabase(wxCommandEvent & event);
-	void OnProcessRequest (wxCommandEvent & event);
+	void OnShowProcessRequest (wxCommandEvent & event);
 	void OnDisplayStatistics (wxCommandEvent & event);
 	void OnAboutDlg (wxCommandEvent & event);
 	void OnMenuExit (wxCommandEvent & event);
@@ -52,6 +66,7 @@ private:
 	void OnDoubleClickListe (wxTreeEvent & event);
 	void OnNewDataBase (wxCommandEvent & event);
     void OnExportStructureToClipboard (wxCommandEvent & event);
+    void OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event);
     
 	DataBase m_Database;
 	wxTreeCtrl * m_TreeCtrl;
@@ -62,10 +77,12 @@ private:
     wxStaticText* m_VersionTxtCtrl;
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
+    lsFoldBarCtrl * m_QueryFoldCtrl;
    
     void _LoadTablesIntoToc();
     void _CreateControls();
     void _CreateMenu();
+    void _CreateToolBar();
     
     DECLARE_EVENT_TABLE();
     
