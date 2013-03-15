@@ -58,6 +58,11 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
     _CreateControls();
     _CreateMenu();
     _CreateToolBar();
+    
+    m_ImgList= new wxImageList(16,16);
+    m_ImgList->Add(*_img_database_small);
+    m_ImgList->Add(*_img_table_sml);
+    m_TreeCtrl->SetImageList(m_ImgList);
 	
 	// define as log window
 	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogTxt));
@@ -99,7 +104,7 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 	
-	m_TreeCtrl = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxSize( 100,-1 ), wxTR_DEFAULT_STYLE );
+	m_TreeCtrl = new wxTreeCtrl( m_panel1, ID_LISTTABLE, wxDefaultPosition, wxSize( 100,-1 ), wxTR_DEFAULT_STYLE );
 	bSizer2->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
     
     wxStaticLine* m_staticline1;
@@ -264,6 +269,8 @@ TBVFrame::~TBVFrame()
     }
     myHistoryFile.Write();
     uninitialize_images();
+    
+    wxDELETE(m_ImgList);
 }
 
 
@@ -275,12 +282,8 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	
 	// clear all the controls.
 	ClearCtrls();
-	
-	
-	
 	wxFileName myDirPath (dir, _T(""));
-	if (myDirPath.IsOk()==false)
-	{
+	if (myDirPath.IsOk()==false)	{
 		wxLogError(_T("Incorrect path"));
 		return;
 	}
@@ -288,14 +291,11 @@ void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
 	wxArrayString myDirsString = myDirPath.GetDirs();
 	myDirPath.RemoveLastDir();
 	
-	if(m_Database.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),
-							   myDirsString.Item(myDirsString.GetCount()-1))==false){
+	if(m_Database.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),myDirsString.Item(myDirsString.GetCount()-1))==false){
 		return;
     }
 	
-	wxLogMessage(_("Path : %s, Name : %s"),
-				 m_Database.DataBaseGetPath().c_str(),
-				 m_Database.DataBaseGetName().c_str());
+	wxLogMessage(_("Path : %s, Name : %s"), m_Database.DataBaseGetPath().c_str(), m_Database.DataBaseGetName().c_str());
 	_LoadTablesIntoToc();
 		
 	// get the database size
@@ -334,13 +334,6 @@ void TBVFrame::OnShowProcessRequest (wxCommandEvent & event){
     else{
        m_QueryFoldCtrl->ShowBar();
     }
-    
-    /*
-    SQLPROCESS_DLG_OP2 * myDlg = new SQLPROCESS_DLG_OP2(this, &m_Database);
-    myDlg->Show();
-    if ( myDlg->GetSuccess()){
-        _LoadTablesIntoToc();
-    }*/
 }
 
 
@@ -549,27 +542,25 @@ void TBVFrame::EnableMenuItem (bool benable)
 
 
 
-void TBVFrame::TreeAddItem (wxString tname, int parent)
-{
-	if (parent == 0) 
-	{
-		m_TreeCtrl->AddRoot (tname);
+void TBVFrame::TreeAddItem (wxString tname, int parent){
+	if (parent == 0) {
+		m_TreeCtrl->AddRoot (tname, 0);
 	}
-	else 
-		m_TreeCtrl->AppendItem(m_TreeCtrl->GetRootItem(),tname);
+	else {
+		m_TreeCtrl->AppendItem(m_TreeCtrl->GetRootItem(),tname, 1);
+    }
 }
 
 
-void TBVFrame::ClearCtrls ()
-{
+
+void TBVFrame::ClearCtrls (){
 	m_TreeCtrl->DeleteAllItems();
-	
 	m_GridOp->GridClear();
 }
 
 
-void TBVFrame::_LoadTablesIntoToc(){
 
+void TBVFrame::_LoadTablesIntoToc(){
     m_GridOp->GridClear();
     wxWindowUpdateLocker noUpdates(m_TreeCtrl);
     m_TreeCtrl->DeleteAllItems();
