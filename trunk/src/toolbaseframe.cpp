@@ -62,9 +62,10 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
 	// define as log window
 	//wxLog::SetActiveTarget (new wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,this)));
-	
+	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogTxt));
+    
 	// programm started
-	//wxLogMessage(_("Program started"));
+	wxLogMessage(_("Program started"));
 	
 	// get the client version
 	wxString myVersion = _("Database embedded version : ") +  DataBase::DataBaseGetVersion();
@@ -197,13 +198,17 @@ void TBVFrame::_CreateControls(){
 	m_panel6->Layout();
 	bSizer7->Fit( m_panel6 );
 	bSizer3->Add( m_panel6, 1, wxEXPAND, 5 );
-	
-	//m_LogTxt = new wxTextCtrl( m_panel2, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	//bSizer3->Add( m_LogTxt, 1, wxALL|wxEXPAND, 5 );
+	   
     
+    // FOLDING CONTROL 
+    lsFoldBarCtrl * myFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
+    wxSizerItem * mySizerItem = bSizer3->Add(myFoldCtrl, 1, wxALL | wxEXPAND, 0);
     
-    lsFoldBarCtrl * myCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
-    bSizer3->Add(myCtrl, 1, wxALL | wxEXPAND, 0);
+    m_LogTxt = new wxTextCtrl( myFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    myFoldCtrl->GetClientSizer()->Add(m_LogTxt, 1, wxEXPAND | wxALL, 5);
+    myFoldCtrl->SetSizerItem(mySizerItem);
+    myFoldCtrl->SetTitle(_("Log"));
+    myFoldCtrl->HideBar();
     
 	
 	m_panel2->SetSizer( bSizer3 );
@@ -211,7 +216,6 @@ void TBVFrame::_CreateControls(){
 	bSizer3->Fit( m_panel2 );
 	m_splitter1->SplitVertically( m_panel1, m_panel2, 0 );
 	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
-	
 	
 	this->SetSizer( bSizer1 );
 	this->Layout();
