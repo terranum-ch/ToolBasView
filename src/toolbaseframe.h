@@ -19,6 +19,7 @@ const int ID_STATUS = 10003;
 #include <wx/textfile.h>
 #include <wx/treectrl.h>
 #include <wx/grid.h>
+#include <wx/imaglist.h>
 
 
 #include "database.h"
@@ -78,6 +79,7 @@ private:
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
     lsFoldBarCtrl * m_QueryFoldCtrl;
+    wxImageList * m_ImgList;
    
     void _LoadTablesIntoToc();
     void _CreateControls();
