@@ -75,14 +75,16 @@ lsFoldBarCtrl::~lsFoldBarCtrl() {
 
 
 void lsFoldBarCtrl::OnButtonClick(wxCommandEvent & event){
-    if (GetSizer()->IsShown(m_ClientSizer)== true) {
+    if (IsBarShown()== true) {
         HideBar();
         return;
     }
     ShowBar();
 }
 
-
+bool lsFoldBarCtrl::IsBarShown(){
+    return GetSizer()->IsShown(m_ClientSizer);
+}
 
 void lsFoldBarCtrl::SetTitle(const wxString & title) {
     m_TitleText->SetLabel(title);

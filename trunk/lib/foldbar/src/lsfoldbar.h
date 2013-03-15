@@ -47,6 +47,7 @@ public:
     
     void ShowBar();
     void HideBar();
+    bool IsBarShown();
     
 };
 
