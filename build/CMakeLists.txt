@@ -37,7 +37,7 @@ INCLUDE ("cmake/findGISLib.cmake")
 INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
 # FOLDBAR
-INCLUDE("../plugins/foldbar/build/use_foldbar.cmake")
+INCLUDE("../lib//foldbar/build/use_foldbar.cmake")
 
 
 

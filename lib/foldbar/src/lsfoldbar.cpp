@@ -15,8 +15,12 @@
  ***************************************************************************/
 
 #include "lsfoldbar.h"
+#include "foldbar_bmp.h"
 
 lsFoldBarCtrl::lsFoldBarCtrl(wxWindow * parent, wxWindowID id) : wxControl(parent, id) {
+    m_ParentSizerItem = NULL;
+    foldbar_initialize_images();
+    
     wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
@@ -26,14 +30,14 @@ lsFoldBarCtrl::lsFoldBarCtrl(wxWindow * parent, wxWindowID id) : wxControl(paren
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_TitleText = new wxStaticText( m_TitleBarPanel, wxID_ANY, _("Title"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_TitleText = new wxStaticText( m_TitleBarPanel, wxID_ANY, _T("Title"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_TitleText->Wrap( -1 );
 	bSizer2->Add( m_TitleText, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	
 	bSizer2->Add( 0, 0, 1, wxEXPAND, 5 );
 	
-	m_TitleButtonCtrl = new wxBitmapButton( m_TitleBarPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_TitleButtonCtrl = new wxBitmapButton( m_TitleBarPanel, wxID_ANY, *_img_plus, wxDefaultPosition, wxSize(20,20), wxBU_AUTODRAW | wxBU_EXACTFIT | wxBU_NOTEXT );
 	bSizer2->Add( m_TitleButtonCtrl, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	
@@ -43,36 +47,61 @@ lsFoldBarCtrl::lsFoldBarCtrl(wxWindow * parent, wxWindowID id) : wxControl(paren
 	bSizer1->Add( m_TitleBarPanel, 0, wxEXPAND, 5 );
 	
 	m_ClientSizer = new wxBoxSizer( wxVERTICAL );
-	
-	/*wxTextCtrl* m_textCtrl1;
-	m_textCtrl1 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	m_ClientSizer->Add( m_textCtrl1, 1, wxEXPAND, 5 );*/
-	
-	
 	bSizer1->Add( m_ClientSizer, 1, wxEXPAND, 0 );
 	
 	this->SetSizer( bSizer1 );
 	this->Layout();
 	bSizer1->Fit( this );
+    
+    // connect event
+    this->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &lsFoldBarCtrl::OnButtonClick, this, wxID_ANY);
 }
 
 
 
 lsFoldBarCtrl::~lsFoldBarCtrl() {
+    // disconnect event
+    this->Unbind(wxEVT_COMMAND_BUTTON_CLICKED, &lsFoldBarCtrl::OnButtonClick, this, wxID_ANY);
+    foldbar_clean_images();
+}
+
+
+
+void lsFoldBarCtrl::OnButtonClick(wxCommandEvent & event){
+    if (GetSizer()->IsShown(m_ClientSizer)== true) {
+        HideBar();
+        return;
+    }
+    ShowBar();
 }
 
 
 
 void lsFoldBarCtrl::SetTitle(const wxString & title) {
+    m_TitleText->SetLabel(title);
 }
 
 
 
 void lsFoldBarCtrl::ShowBar() {
+    if (m_ParentSizerItem != NULL) {
+        m_ParentSizerItem->SetProportion(1);
+    }
+    m_TitleButtonCtrl->SetBitmap(*_img_minus);
+    this->GetSizer()->Show(m_ClientSizer);
+    this->Layout();
+    GetParent()->PostSizeEvent();
 }
 
 
 
 void lsFoldBarCtrl::HideBar() {
+    if (m_ParentSizerItem != NULL) {
+        m_ParentSizerItem->SetProportion(0);
+    }
+    m_TitleButtonCtrl->SetBitmap(*_img_plus);
+    this->GetSizer()->Hide(m_ClientSizer);
+    this->Layout();
+    GetParent()->PostSizeEvent();
 }
 

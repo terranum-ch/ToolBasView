@@ -25,10 +25,13 @@
 class lsFoldBarCtrl : public wxControl {
 private:
     wxSizer * m_ClientSizer;
+    wxSizerItem * m_ParentSizerItem;
     
     wxPanel* m_TitleBarPanel;
     wxStaticText* m_TitleText;
     wxBitmapButton* m_TitleButtonCtrl;
+    
+    void OnButtonClick(wxCommandEvent & event);
     
     
 public:
@@ -36,6 +39,7 @@ public:
     virtual ~lsFoldBarCtrl();
     
     void SetTitle(const wxString & title);
+    void SetSizerItem (wxSizerItem * sizeritem){m_ParentSizerItem = sizeritem;}
 
     inline wxSizer * GetClientSizer();
     
