@@ -36,9 +36,7 @@ END_EVENT_TABLE()
 
 
 /* Frame initialisation */
-TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize size)
-			: wxFrame(frame, -1, title,pos,size)
-{
+TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize size): wxFrame(frame, -1, title,pos,size){
     wxInitAllImageHandlers();
     initialize_images();
     
@@ -49,37 +47,17 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 	
     // adding status bar
 	CreateStatusBar(2,0,ID_STATUS);
-	
-	// dessin de l'interface
-	//wxPanel * top_panel = new wxPanel (this, -1,wxDefaultPosition,wxDefaultSize );
-	//INTERFACE(top_panel, FALSE);
-	
-	// create the menu
-	SetMenuBar(MENU());
-    
     _CreateControls();
-    	
+    _CreateMenu();
 	
 	// define as log window
-	//wxLog::SetActiveTarget (new wxLogTextCtrl ((wxTextCtrl *) FindWindowById(ID_LOG,this)));
 	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogTxt));
-    
-	// programm started
 	wxLogMessage(_("Program started"));
-	
-	// get the client version
-	wxString myVersion = _("Database embedded version : ") +  DataBase::DataBaseGetVersion();
-	SetStatusText(myVersion ,1);
 	
 	// loading GDAL 
 	OGRRegisterAll();
 	wxLogMessage(_T("All GDAL driver registered..."));
-	
-	// getting the tree ctrl
-	//pTreeCtrl = (wxTreeCtrl *) FindWindowById(ID_LISTTABLE,this);
-	
-	// Creating the gridoperation object
-	//pGridOp = new GridOperation((wxGrid *) FindWindowById(ID_GRID,this));
+	m_GridOp = new GridOperation(m_GridCtrl);
     
     // loading history
     m_HistoryFileName = wxFileName(wxStandardPaths::Get().GetAppDocumentsDir(), _T("toolbasview_history.txt"));
@@ -107,31 +85,25 @@ void TBVFrame::_CreateControls(){
 	wxSplitterWindow* m_splitter1;
 	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE );
 	
-	wxPanel* m_panel1;
+    wxPanel* m_panel1;
 	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 	
-	m_TreeCtrl = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
+	m_TreeCtrl = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxSize( 100,-1 ), wxTR_DEFAULT_STYLE );
 	bSizer2->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
+    
+    wxStaticLine* m_staticline1;
+	m_staticline1 = new wxStaticLine( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer2->Add( m_staticline1, 0, wxEXPAND, 5 );
 	
-	wxPanel* m_panel5;
-	m_panel5 = new wxPanel( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_panel5->SetMinSize( wxSize( -1,50 ) );
+	wxGenericStaticBitmap* m_bitmap2 = new wxGenericStaticBitmap( m_panel1, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
-	wxBoxSizer* bSizer6;
-	bSizer6 = new wxBoxSizer( wxVERTICAL );
-	
-	wxStaticBitmap* m_bitmap2;
-	m_bitmap2 = new wxStaticBitmap( m_panel5, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer6->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
-	
-	
-	m_panel5->SetSizer( bSizer6 );
-	m_panel5->Layout();
-	bSizer6->Fit( m_panel5 );
-	bSizer2->Add( m_panel5, 0, wxEXPAND, 5 );
-	
+    m_VersionTxtCtrl = new wxStaticText( m_panel1, wxID_ANY, _("Version: ") + DataBase::DataBaseGetVersion(), wxDefaultPosition, wxDefaultSize, 0 );
+	m_VersionTxtCtrl->SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
+    m_VersionTxtCtrl->Wrap( -1 );
+	bSizer2->Add( m_VersionTxtCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
 	m_panel1->SetSizer( bSizer2 );
 	m_panel1->Layout();
@@ -142,9 +114,8 @@ void TBVFrame::_CreateControls(){
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 	
 	m_GridCtrl = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	
 	// Grid
-	m_GridCtrl->CreateGrid( 5, 5 );
+	m_GridCtrl->CreateGrid( 15, 4 );
 	m_GridCtrl->EnableEditing( true );
 	m_GridCtrl->EnableGridLines( true );
 	m_GridCtrl->EnableDragGridSize( false );
@@ -160,47 +131,40 @@ void TBVFrame::_CreateControls(){
 	m_GridCtrl->EnableDragRowSize( true );
 	m_GridCtrl->SetRowLabelSize( 80 );
 	m_GridCtrl->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	
-	// Label Appearance
-	
+		
 	// Cell Defaults
 	m_GridCtrl->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	bSizer3->Add( m_GridCtrl, 1, wxEXPAND, 5 );
-	
-	wxPanel* m_panel6;
-	m_panel6 = new wxPanel( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer7;
-	bSizer7 = new wxBoxSizer( wxVERTICAL );
-	
-	m_QueryCtrl = new wxTextCtrl( m_panel6, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
-	bSizer7->Add( m_QueryCtrl, 1, wxALL|wxEXPAND, 5 );
-	
+	bSizer3->Add( m_GridCtrl, 2, wxEXPAND, 5 );
+    
+    // FOLDING BAR QUERY
+    lsFoldBarCtrl * myQueryFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
+    wxSizerItem * myQuerySizerItem = bSizer3->Add(myQueryFoldCtrl, 1, wxALL | wxEXPAND, 0);
+ 	m_QueryCtrl = new wxTextCtrl( myQueryFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
+
 	wxBoxSizer* bSizer9;
 	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxButton* m_button3;
-	m_button3 = new wxButton( m_panel6, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button3 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button3, 0, wxALL, 5 );
 	
 	wxButton* m_button5;
-	m_button5 = new wxButton( m_panel6, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button5 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button5, 0, wxALL, 5 );
 	
 	wxButton* m_button6;
-	m_button6 = new wxButton( m_panel6, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button6 = new wxButton( myQueryFoldCtrl, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer9->Add( m_button6, 0, wxALL, 5 );
-	
-	
-	bSizer7->Add( bSizer9, 0, wxEXPAND, 5 );
-	
-	
-	m_panel6->SetSizer( bSizer7 );
-	m_panel6->Layout();
-	bSizer7->Fit( m_panel6 );
-	bSizer3->Add( m_panel6, 1, wxEXPAND, 5 );
-	   
+	    
+    myQueryFoldCtrl->GetClientSizer()->Add(m_QueryCtrl, 1, wxEXPAND | wxALL, 5);
+    myQueryFoldCtrl->GetClientSizer()->Add(bSizer9);
     
-    // FOLDING CONTROL 
+    
+    myQueryFoldCtrl->SetSizerItem(myQuerySizerItem);
+    myQueryFoldCtrl->SetTitle(_("Query"));
+    myQueryFoldCtrl->HideBar();
+
+    // FOLDING LOG CONTROL 
     lsFoldBarCtrl * myFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
     wxSizerItem * mySizerItem = bSizer3->Add(myFoldCtrl, 1, wxALL | wxEXPAND, 0);
     
@@ -208,21 +172,53 @@ void TBVFrame::_CreateControls(){
     myFoldCtrl->GetClientSizer()->Add(m_LogTxt, 1, wxEXPAND | wxALL, 5);
     myFoldCtrl->SetSizerItem(mySizerItem);
     myFoldCtrl->SetTitle(_("Log"));
+    //myFoldCtrl->SetBackgroundColour(*wxBLACK);
     myFoldCtrl->HideBar();
     
-	
 	m_panel2->SetSizer( bSizer3 );
 	m_panel2->Layout();
 	bSizer3->Fit( m_panel2 );
-	m_splitter1->SplitVertically( m_panel1, m_panel2, 0 );
+	m_splitter1->SplitVertically( m_panel1, m_panel2, 200 );
 	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer1 );
 	this->Layout();
-	
 	this->Centre( wxBOTH );
 }
 
+
+
+void TBVFrame::_CreateMenu(){
+    wxMenuBar *myMenuBar = new wxMenuBar;
+    
+    wxMenu* item1 = new wxMenu;
+	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
+    item1->Append( ID_OPEN_DB, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
+    item1->AppendSeparator();
+    item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
+	item1->AppendSeparator();
+    item1->Append( wxID_SAVEAS, _("Export as CSV...\tCtrl-Alt-E"), _("Select and Export data as CSV.") );
+    item1->Append(ID_MENU_EXPORT_STRUCTURE, _("Dump to Clipboard...\tCtrl+D"));
+    item1->AppendSeparator();
+    item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
+    myMenuBar->Append( item1, _("File") );
+    
+    wxMenu* item2 = new wxMenu;
+    item2->Append( ID_PROCESS_MENU, _("Process SQL Request...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
+    item2->Append( ID_MENU_SPATIAL_ADD, _("Add spatial data into the database...\tCtrl-S"), _("Allow user to load spatial data into a database table (SHP)") );
+	item2->Append( ID_MENU_SPATIAL_SEARCH, _("Search spatial data...\tCtrl-F"), _("Search spatial data used for benchmark") );
+	item2->AppendSeparator();
+	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"),_("Dialog for deleting data from the database") );
+    item2->Append(ID_MENU_DB_OPERATION, _("Database operations"), _("Perform maintenance Database operations"));
+    
+    myMenuBar->Append( item2, _("Operations") );
+    
+	wxMenu* item3 = new wxMenu;
+    item3->Append( wxID_ABOUT, _("About..."), _("Show the about dialog") );
+    myMenuBar->Append( item3, _("Help") );
+	
+    SetMenuBar(myMenuBar);
+}
 
 
 /* Frame destruction */

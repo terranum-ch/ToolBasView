@@ -59,11 +59,13 @@ private:
     wxGrid * m_GridCtrl;
     wxTextCtrl* m_QueryCtrl;
     wxTextCtrl* m_LogTxt;
+    wxStaticText* m_VersionTxtCtrl;
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
    
     void _LoadTablesIntoToc();
     void _CreateControls();
+    void _CreateMenu();
     
     DECLARE_EVENT_TABLE();
     

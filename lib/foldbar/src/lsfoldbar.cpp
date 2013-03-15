@@ -24,14 +24,15 @@ lsFoldBarCtrl::lsFoldBarCtrl(wxWindow * parent, wxWindowID id) : wxControl(paren
     wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
-	m_TitleBarPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_TitleBarPanel->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_APPWORKSPACE ) );
+	m_TitleBarPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	m_TitleBarPanel->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE ));
 	
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
 	
 	m_TitleText = new wxStaticText( m_TitleBarPanel, wxID_ANY, _T("Title"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_TitleText->Wrap( -1 );
+    //m_TitleText->SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
 	bSizer2->Add( m_TitleText, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	
@@ -46,6 +47,12 @@ lsFoldBarCtrl::lsFoldBarCtrl(wxWindow * parent, wxWindowID id) : wxControl(paren
 	bSizer2->Fit( m_TitleBarPanel );
 	bSizer1->Add( m_TitleBarPanel, 0, wxEXPAND, 5 );
 	
+    
+   wxStaticLine* m_staticline1;
+	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer1->Add( m_staticline1, 0, wxEXPAND, 5 );
+
+    
 	m_ClientSizer = new wxBoxSizer( wxVERTICAL );
 	bSizer1->Add( m_ClientSizer, 1, wxEXPAND, 0 );
 	
@@ -79,6 +86,18 @@ void lsFoldBarCtrl::OnButtonClick(wxCommandEvent & event){
 
 void lsFoldBarCtrl::SetTitle(const wxString & title) {
     m_TitleText->SetLabel(title);
+}
+
+
+void lsFoldBarCtrl::SetTitleBackground (const wxColour & colour){
+    if (colour == *wxBLACK) {
+        m_TitleText->SetForegroundColour(*wxWHITE);
+    }
+    else{
+        m_TitleText->SetForegroundColour(*wxBLACK);
+    }
+    
+    m_TitleBarPanel->SetBackgroundColour(colour);
 }
 
 

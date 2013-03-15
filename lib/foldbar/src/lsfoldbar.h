@@ -20,6 +20,7 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+#include <wx/statline.h>
 
 
 class lsFoldBarCtrl : public wxControl {
@@ -39,6 +40,7 @@ public:
     virtual ~lsFoldBarCtrl();
     
     void SetTitle(const wxString & title);
+    void SetTitleBackground (const wxColour & colour);
     void SetSizerItem (wxSizerItem * sizeritem){m_ParentSizerItem = sizeritem;}
 
     inline wxSizer * GetClientSizer();

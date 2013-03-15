@@ -19,7 +19,7 @@ toolbaseapp.cpp
 
 bool TBVApp::OnInit()
 {
-	TBVFrame * frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(620,520));
+	TBVFrame * frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(800,600));
 	frame->Centre();
 	frame->Show();
 	return true;
