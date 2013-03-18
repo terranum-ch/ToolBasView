@@ -621,6 +621,8 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
 	m_Database.DataBaseGetResults(myFieldArray);
 	
+    long myNumberRow = 0;
+    long myNumberCol = myFieldArray.Count();
 	// check for field numbers (may be not a table)
 	if (myFieldArray.Count() > 0)
 	{
@@ -645,7 +647,8 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 			
 			while (m_Database.DataBaseGetNextResult(myFieldArray)) 
 			{
-				iArrayCount = myFieldArray.Count();
+				myNumberRow++;
+                iArrayCount = myFieldArray.Count();
 				// add a new line
 				m_GridOp->GridOpAddDataRow(iArrayCount,
 										  &myFieldArray);
@@ -661,7 +664,7 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 		
 		
 	}
-	
+	GetStatusBar()->SetStatusText(wxString::Format(_("%ld columns, %ld rows"), myNumberCol, myNumberRow),1);
 }
 
 
