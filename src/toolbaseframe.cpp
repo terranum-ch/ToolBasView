@@ -10,7 +10,6 @@
 #include "databaseoperation.h"
 #include "../art/toolbasview_bmp.cpp"
 #include "dlg_operation.h" // for dialogs operations.
-#include "lsfoldbar.h"
 
 
 
@@ -147,7 +146,7 @@ void TBVFrame::_CreateControls(){
 	m_TreeCtrl = new wxTreeCtrl( m_tocpanel, ID_LISTTABLE, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
 	bSizer4->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
 	
-	wxGenericStaticBitmap* m_bitmap2 = new wxGenericStaticBitmap( m_tocpanel, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
+	wxStaticBitmap* m_bitmap2 = new wxStaticBitmap( m_tocpanel, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer4->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
     
     m_mgr.GetPane(_T("toc")).MinSize(-1, m_bitmap2->GetSize().GetWidth());
@@ -256,7 +255,13 @@ void TBVFrame::_CreateMenu(){
 
 
 void TBVFrame::_CreateToolBar(){
-    wxToolBar* m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL, wxID_ANY );
+	long style = wxTB_FLAT | wxTB_HORIZONTAL;
+#ifndef __WXMSW__
+	style += wxTB_TEXT;
+#endif
+
+    wxToolBar* m_toolBar1 = this->CreateToolBar( style, wxID_ANY );
+	m_toolBar1->SetToolBitmapSize(wxSize(32,32));
     wxString myText = _("New database");
 	m_toolBar1->AddTool( ID_NEW_DBASE, myText, *_img_database_new, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Open database");
