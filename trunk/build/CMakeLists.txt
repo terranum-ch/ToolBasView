@@ -36,9 +36,6 @@ INCLUDE ("cmake/findGISLib.cmake")
 # LSVERSION
 INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
-# FOLDBAR
-INCLUDE("../lib//foldbar/build/use_foldbar.cmake")
-
 
 
 # SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
