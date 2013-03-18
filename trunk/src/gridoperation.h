@@ -62,7 +62,7 @@ public:
     @param     iColumn number of defaults cols (default is 10)
     @param     iRow number of defaults rows (default is 10)
 	*/
-	void GridClear (int iColumn=10,int iRows=10);
+	void GridClear (int iColumn=5,int iRows=50);
 	
     
 private:

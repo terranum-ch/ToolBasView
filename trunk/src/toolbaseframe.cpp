@@ -30,7 +30,6 @@ EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
 EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
 EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
 EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
-//EVT_IDLE (TBVFrame::OnMenuIdle)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
@@ -39,7 +38,6 @@ EVT_UPDATE_UI(ID_MENU_SPATIAL_SEARCH, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
-
 END_EVENT_TABLE()
 
 
@@ -59,13 +57,14 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
     _CreateMenu();
     _CreateToolBar();
     
+    
     m_ImgList= new wxImageList(16,16);
     m_ImgList->Add(*_img_database_small);
     m_ImgList->Add(*_img_table_sml);
     m_TreeCtrl->SetImageList(m_ImgList);
 	
 	// define as log window
-	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogTxt));
+	wxLog::SetActiveTarget (new wxLogTextCtrl (m_LogCtrl));
 	wxLogMessage(_("Program started"));
 	
 	// loading GDAL 
@@ -91,50 +90,30 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
 
 
 void TBVFrame::_CreateControls(){
-    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer1;
-	bSizer1 = new wxBoxSizer( wxVERTICAL );
-	
-	wxSplitterWindow* m_splitter1;
-	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_LIVE_UPDATE );
-	
-    wxPanel* m_panel1;
-	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer2;
-	bSizer2 = new wxBoxSizer( wxVERTICAL );
-	
-	m_TreeCtrl = new wxTreeCtrl( m_panel1, ID_LISTTABLE, wxDefaultPosition, wxSize( 100,-1 ), wxTR_DEFAULT_STYLE );
-	bSizer2->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
+    wxPanel* m_mainpanel;
+    wxPanel* m_tocpanel;
+    wxPanel* m_logpanel;
     
-    wxStaticLine* m_staticline1;
-	m_staticline1 = new wxStaticLine( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	bSizer2->Add( m_staticline1, 0, wxEXPAND, 5 );
+    
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	m_mgr.SetManagedWindow(this);
+	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 	
-	wxGenericStaticBitmap* m_bitmap2 = new wxGenericStaticBitmap( m_panel1, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	m_mainpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_mgr.AddPane( m_mainpanel, wxAuiPaneInfo() .Name( wxT("main") ).Left() .CaptionVisible( false ).CloseButton( false ).PinButton( false ).Movable( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).BottomDockable( false ).TopDockable( false ).LeftDockable( false ).RightDockable( false ).Floatable( false ).CentrePane() );
 	
-    m_VersionTxtCtrl = new wxStaticText( m_panel1, wxID_ANY, _("Version: ") + DataBase::DataBaseGetVersion(), wxDefaultPosition, wxDefaultSize, 0 );
-	m_VersionTxtCtrl->SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
-    m_VersionTxtCtrl->Wrap( -1 );
-	bSizer2->Add( m_VersionTxtCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxVERTICAL );
 	
-	m_panel1->SetSizer( bSizer2 );
-	m_panel1->Layout();
-	bSizer2->Fit( m_panel1 );
-	wxPanel* m_panel2;
-	m_panel2 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer3;
-	bSizer3 = new wxBoxSizer( wxVERTICAL );
+	m_GridCtrl = new wxGrid( m_mainpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 	
-	m_GridCtrl = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 	// Grid
-	m_GridCtrl->CreateGrid( 15, 4 );
+	m_GridCtrl->CreateGrid( 50, 5);
 	m_GridCtrl->EnableEditing( true );
 	m_GridCtrl->EnableGridLines( true );
 	m_GridCtrl->EnableDragGridSize( false );
 	m_GridCtrl->SetMargins( 0, 0 );
-	
+    
 	// Columns
 	m_GridCtrl->EnableDragColMove( false );
 	m_GridCtrl->EnableDragColSize( true );
@@ -145,59 +124,100 @@ void TBVFrame::_CreateControls(){
 	m_GridCtrl->EnableDragRowSize( true );
 	m_GridCtrl->SetRowLabelSize( 80 );
 	m_GridCtrl->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-		
+	
+	// Label Appearance
+	
 	// Cell Defaults
 	m_GridCtrl->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	bSizer3->Add( m_GridCtrl, 2, wxEXPAND, 5 );
-    
-    // FOLDING BAR QUERY
-    m_QueryFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
-    wxSizerItem * myQuerySizerItem = bSizer3->Add(m_QueryFoldCtrl, 1, wxALL | wxEXPAND, 0);
- 	m_QueryCtrl = new wxTextCtrl( m_QueryFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_WORDWRAP );
+	bSizer5->Add( m_GridCtrl, 1, wxEXPAND, 5 );
+	
+        
+	
+	m_mainpanel->SetSizer( bSizer5 );
+	m_mainpanel->Layout();
+	bSizer5->Fit( m_mainpanel );
 
-	wxBoxSizer* bSizer9;
-	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
-	
-	wxButton* m_button3;
-	m_button3 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("Run"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer9->Add( m_button3, 0, wxALL, 5 );
-	
-	wxButton* m_button5;
-	m_button5 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("Show Results"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer9->Add( m_button5, 0, wxALL, 5 );
-	
-	wxButton* m_button6;
-	m_button6 = new wxButton( m_QueryFoldCtrl, wxID_ANY, wxT("History..."), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer9->Add( m_button6, 0, wxALL, 5 );
-	    
-    m_QueryFoldCtrl->GetClientSizer()->Add(m_QueryCtrl, 1, wxEXPAND | wxALL, 5);
-    m_QueryFoldCtrl->GetClientSizer()->Add(bSizer9);
     
-    
-    m_QueryFoldCtrl->SetSizerItem(myQuerySizerItem);
-    m_QueryFoldCtrl->SetTitle(_("Query"));
-    m_QueryFoldCtrl->HideBar();
-
-    // FOLDING LOG CONTROL
-    lsFoldBarCtrl * myFoldCtrl = new lsFoldBarCtrl(m_panel2, wxID_ANY);
-    wxSizerItem * mySizerItem = bSizer3->Add(myFoldCtrl, 1, wxALL | wxEXPAND, 0);
-    
-    m_LogTxt = new wxTextCtrl( myFoldCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    myFoldCtrl->GetClientSizer()->Add(m_LogTxt, 1, wxEXPAND | wxALL, 5);
-    myFoldCtrl->SetSizerItem(mySizerItem);
-    myFoldCtrl->SetTitle(_("Log"));
-    //myFoldCtrl->SetBackgroundColour(*wxBLACK);
-    myFoldCtrl->HideBar();
-    
-	m_panel2->SetSizer( bSizer3 );
-	m_panel2->Layout();
-	bSizer3->Fit( m_panel2 );
-	m_splitter1->SplitVertically( m_panel1, m_panel2, 200 );
-	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
+	m_tocpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_mgr.AddPane( m_tocpanel, wxAuiPaneInfo() .Name( wxT("toc") ).Left() .Caption( wxT("Table of content") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).BottomDockable( false ).TopDockable( false ).Floatable( false ).BestSize( wxSize( 100,-1 ) ).MinSize( wxSize( 100,-1 ) ).Layer( 1 ) );
 	
-	this->SetSizer( bSizer1 );
-	this->Layout();
+	wxBoxSizer* bSizer4;
+	bSizer4 = new wxBoxSizer( wxVERTICAL );
+	
+	m_TreeCtrl = new wxTreeCtrl( m_tocpanel, ID_LISTTABLE, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
+	bSizer4->Add( m_TreeCtrl, 1, wxEXPAND, 5 );
+	
+	wxGenericStaticBitmap* m_bitmap2 = new wxGenericStaticBitmap( m_tocpanel, wxID_ANY, *_img_mysql , wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer4->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+    
+    m_mgr.GetPane(_T("toc")).MinSize(-1, m_bitmap2->GetSize().GetWidth());
+    
+	
+	m_VersionTxtCtrl = new wxStaticText( m_tocpanel, wxID_ANY, _("Version: ") + DataBase::DataBaseGetVersion(), wxDefaultPosition, wxDefaultSize, 0 );
+	m_VersionTxtCtrl->Wrap( -1 );
+	bSizer4->Add( m_VersionTxtCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	
+	m_tocpanel->SetSizer( bSizer4 );
+	m_tocpanel->Layout();
+	bSizer4->Fit( m_tocpanel );
+	m_querypanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_mgr.AddPane( m_querypanel, wxAuiPaneInfo() .Name( wxT("query") ).Bottom() .Caption( wxT("Query") ).CloseButton( false ).MaximizeButton(true).PinButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).LeftDockable( false ).RightDockable( false ).Floatable( false ).Row( 1 ).Position( 0 ).BestSize( wxSize( -1,0 ) ).Layer( 0 ) );
+	
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+	
+	m_QueryTxtCtrl = new wxTextCtrl( m_querypanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer6->Add( m_QueryTxtCtrl, 1, wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_QueryRunCtrl = new wxButton( m_querypanel, wxID_ANY, _("Run"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_QueryRunCtrl, 0, wxALL, 5 );
+	
+	m_QueryShowCtrl = new wxButton( m_querypanel, wxID_ANY, _("Show Results..."), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_QueryShowCtrl, 0, wxALL, 5 );
+	
+	
+	bSizer7->Add( 0, 0, 1, wxEXPAND, 5 );
+	
+	m_QueryHistoryCtrl = new wxButton( m_querypanel, wxID_ANY, _("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_QueryHistoryCtrl, 0, wxALL, 5 );
+	
+	
+	bSizer6->Add( bSizer7, 0, wxEXPAND, 5 );
+	
+	
+	m_querypanel->SetSizer( bSizer6 );
+	m_querypanel->Layout();
+	bSizer6->Fit( m_querypanel );
+	m_logpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_mgr.AddPane( m_logpanel, wxAuiPaneInfo() .Name( wxT("log") ).Bottom() .Caption( wxT("Log") ).CloseButton( false ).PinButton( false ).MaximizeButton(true).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).LeftDockable( false ).RightDockable( false ).Floatable( false ).Row( 0 ).BestSize( wxSize( -1,0 ) ) );
+	
+	wxBoxSizer* bSizer8;
+	bSizer8 = new wxBoxSizer( wxVERTICAL );
+	
+	m_LogCtrl = new wxTextCtrl( m_logpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer8->Add( m_LogCtrl, 1, wxEXPAND, 5 );
+	
+	
+	m_logpanel->SetSizer( bSizer8 );
+	m_logpanel->Layout();
+	bSizer8->Fit( m_logpanel );
+    
+	m_mgr.Update();
 	this->Centre( wxBOTH );
+    
+    this->Bind(wxEVT_AUI_PANE_MAXIMIZE, &TBVFrame::OnAuiButtonPressed, this, wxID_ANY);
+    
+    
+    // update cols width
+    int myWidth = m_GridCtrl->GetClientSize().GetWidth() - 80;
+    int myColWidth = wxRound(myWidth / m_GridCtrl->GetNumberCols());
+    for (unsigned int i = 0; i< m_GridCtrl->GetNumberCols(); i++) {
+        m_GridCtrl->SetColumnWidth(i, myColWidth);
+    }
 }
 
 
@@ -255,6 +275,9 @@ void TBVFrame::_CreateToolBar(){
 /* Frame destruction */
 TBVFrame::~TBVFrame()
 {
+    this->Unbind(wxEVT_AUI_PANE_MAXIMIZE, &TBVFrame::OnAuiButtonPressed, this, wxID_ANY);
+    m_mgr.UnInit();
+    
     // write history (limit to 1000 records)
     wxASSERT(m_HistoryFileName.Exists());
     wxTextFile myHistoryFile (m_HistoryFileName.GetFullPath());
@@ -328,12 +351,8 @@ void TBVFrame::OnQuit(wxCloseEvent & event)
 
 
 void TBVFrame::OnShowProcessRequest (wxCommandEvent & event){
-    if (m_QueryFoldCtrl->IsBarShown() == true){
-     m_QueryFoldCtrl->HideBar();
-    }
-    else{
-       m_QueryFoldCtrl->ShowBar();
-    }
+    m_mgr.GetPane(_T("query")).Maximize();
+    m_mgr.Update();
 }
 
 
@@ -808,6 +827,21 @@ void TBVFrame::OnAboutDlg(wxCommandEvent & event)
 	lsVersionDlg myDlg(this, wxID_ANY, _("About"));
     myDlg.SetBitmapLogo(*_img_toolbasview);
     myDlg.ShowModal();
+}
+
+
+
+void TBVFrame::OnAuiButtonPressed (wxAuiManagerEvent& evt){
+    if (evt.GetPane()->IsMaximized() == false) {
+        evt.GetPane()->Maximize();
+        m_mgr.Update();
+        
+    }
+    else{       
+        evt.GetPane()->Restore();
+        m_mgr.Update();
+    }
+    evt.Veto();
 }
 
 

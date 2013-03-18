@@ -20,6 +20,8 @@ const int ID_STATUS = 10003;
 #include <wx/treectrl.h>
 #include <wx/grid.h>
 #include <wx/imaglist.h>
+#include <wx/aui/aui.h>
+
 
 
 #include "database.h"
@@ -69,17 +71,31 @@ private:
     void OnExportStructureToClipboard (wxCommandEvent & event);
     void OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event);
     
+    void OnAuiButtonPressed (wxAuiManagerEvent& evt);
+
+    
 	DataBase m_Database;
 	wxTreeCtrl * m_TreeCtrl;
 	GridOperation * m_GridOp;
     wxGrid * m_GridCtrl;
-    wxTextCtrl* m_QueryCtrl;
-    wxTextCtrl* m_LogTxt;
-    wxStaticText* m_VersionTxtCtrl;
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
-    lsFoldBarCtrl * m_QueryFoldCtrl;
+    
     wxImageList * m_ImgList;
+    wxAuiManager m_mgr;
+    wxStaticText* m_VersionTxtCtrl;
+    wxTextCtrl* m_QueryTxtCtrl;
+    wxButton* m_QueryRunCtrl;
+    wxButton* m_QueryShowCtrl;
+    wxButton* m_QueryHistoryCtrl;
+    wxTextCtrl* m_LogCtrl;
+    wxPanel* m_querypanel;
+    
+    wxString m_LogPerspective;
+    wxString m_QueryPerspective;
+
+
+
    
     void _LoadTablesIntoToc();
     void _CreateControls();

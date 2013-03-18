@@ -85,7 +85,8 @@ void GridOperation::GridOpAddDataRow(int iColumn, wxArrayString * myArray)
 
 void GridOperation::GridClear (int iColumn,int iRows)
 {
-	pGrid->BeginBatch();
+	int myColumnWidth = pGrid->GetColumnWidth(0);
+    pGrid->BeginBatch();
 	if (pGrid->GetNumberCols() > 0)
 		pGrid->DeleteCols(0,pGrid->GetCols());
 	if (pGrid->GetNumberRows() > 0)
@@ -93,6 +94,11 @@ void GridOperation::GridClear (int iColumn,int iRows)
 	
 	pGrid->AppendCols(iColumn);
 	pGrid->AppendRows(iRows);
+    
+    for (unsigned int i = 0; i< pGrid->GetNumberCols(); i++) {
+        pGrid->SetColumnWidth(i, myColumnWidth);
+    }
+    
 	pGrid->EndBatch();
 }
 
