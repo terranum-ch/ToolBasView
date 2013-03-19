@@ -168,12 +168,15 @@ void SQLPROCESS_DLG_OP2::OnCancel(wxCommandEvent &event)
 
 
 
+
+
 //----------------------------------------------------------------------------
 // SHOWRESULT_OP2
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(SHOWRESULT_OP2,wxDialog)
-    EVT_BUTTON( wxID_CANCEL, SHOWRESULT_OP2::OnCancel )
-	EVT_BUTTON(wxID_COPY, SHOWRESULT_OP2::OnCopyResults)
+EVT_BUTTON( wxID_CANCEL, SHOWRESULT_OP2::OnCancel )
+EVT_BUTTON(wxID_COPY, SHOWRESULT_OP2::OnCopyResults)
+EVT_CLOSE(SHOWRESULT_OP2::OnCloseDialog)
 END_EVENT_TABLE()
 
 SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, DataBase * database, wxWindowID id, const wxString &title,
@@ -185,10 +188,6 @@ SHOWRESULT_OP2::SHOWRESULT_OP2( wxWindow *parent, DataBase * database, wxWindowI
     SHOWRESULT( this, TRUE );
 }
 
-//SHOWRESULT_OP2::~SHOWRESULT_OP2()
-//{
-//	Destroy();
-//}
 
 bool SHOWRESULT_OP2::TransferDataToWindow(){
     wxASSERT(m_DB);
@@ -233,9 +232,13 @@ bool SHOWRESULT_OP2::TransferDataToWindow(){
 }
 
 
-void SHOWRESULT_OP2::OnCancel(wxCommandEvent &event)
-{
-    event.Skip();
+void SHOWRESULT_OP2::OnCancel(wxCommandEvent &event){
+    Close();
+}
+
+
+void SHOWRESULT_OP2::OnCloseDialog (wxCloseEvent & event){
+    Destroy();
 }
 
 

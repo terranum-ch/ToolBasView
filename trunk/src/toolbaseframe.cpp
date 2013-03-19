@@ -37,6 +37,16 @@ EVT_UPDATE_UI(ID_MENU_SPATIAL_SEARCH, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
+
+
+EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
+EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
+EVT_BUTTON(ID_BTN_SHOW_RESULTS, TBVFrame::OnBtnShowResults)
+
+EVT_UPDATE_UI(ID_BTN_RUN, TBVFrame::OnUpdateUIBtnRun)
+EVT_UPDATE_UI(ID_BTN_SHOW_RESULTS, TBVFrame::OnUpdateUIBtnShowResults)
+EVT_UPDATE_UI(ID_BTN_HISTORY, TBVFrame::OnUpdateUIBtnHistory)
+
 END_EVENT_TABLE()
 
 
@@ -172,16 +182,16 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer7;
 	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_QueryRunCtrl = new wxButton( m_querypanel, wxID_ANY, _("Run"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_QueryRunCtrl = new wxButton( m_querypanel, ID_BTN_RUN, _("Run"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer7->Add( m_QueryRunCtrl, 0, wxALL, 5 );
 	
-	m_QueryShowCtrl = new wxButton( m_querypanel, wxID_ANY, _("Show Results..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_QueryShowCtrl = new wxButton( m_querypanel, ID_BTN_SHOW_RESULTS, _("Show Results..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer7->Add( m_QueryShowCtrl, 0, wxALL, 5 );
 	
 	
 	bSizer7->Add( 0, 0, 1, wxEXPAND, 5 );
 	
-	m_QueryHistoryCtrl = new wxButton( m_querypanel, wxID_ANY, _("History..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_QueryHistoryCtrl = new wxButton( m_querypanel, ID_BTN_HISTORY, _("History..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer7->Add( m_QueryHistoryCtrl, 0, wxALL, 5 );
 	
 	
@@ -843,7 +853,6 @@ void TBVFrame::OnAuiButtonPressed (wxAuiManagerEvent& evt){
     if (evt.GetPane()->IsMaximized() == false) {
         evt.GetPane()->Maximize();
         m_mgr.Update();
-        
     }
     else{       
         evt.GetPane()->Restore();
@@ -851,6 +860,103 @@ void TBVFrame::OnAuiButtonPressed (wxAuiManagerEvent& evt){
     }
     evt.Veto();
 }
+
+
+
+void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
+    if (m_Database.DataBaseGetName() != wxEmptyString) {
+        event.Enable(true);
+        return;
+    }
+    event.Enable(false);
+}
+
+
+
+void TBVFrame::OnUpdateUIBtnShowResults (wxUpdateUIEvent & event){
+    event.Enable(m_Database.DataBaseHasResults());
+}
+
+
+
+void TBVFrame::OnUpdateUIBtnHistory (wxUpdateUIEvent & event){
+    if (GetHistory() != NULL && GetHistory()->GetCount() > 0) {
+        event.Enable(true);
+        return;
+    }
+    event.Enable(false);
+}
+
+
+void TBVFrame::_UpdateHistory (const wxString & sentence){
+    wxArrayString * myHistory = GetHistory();
+    if (myHistory == NULL) {
+        wxLogError(_("History will not be saved!"));
+        return;
+    }
+    
+    if (myHistory->GetCount() == 0) {
+        myHistory->Insert(sentence, 0);
+        return;
+    }
+    
+    if (myHistory->Item(0) == sentence) {
+        return;
+    }
+    myHistory->Insert(sentence, 0);
+}
+
+
+
+void TBVFrame::OnBtnRun (wxCommandEvent & event){
+	wxArrayString myRequestArray; // contain multiple request if needed
+	wxArrayInt myErrorsArray;
+	wxString myTempRequest;
+	
+	wxBusyCursor myBusyCursor;
+	// if results, destroy them
+	if (m_Database.DataBaseHasResults()==true){
+		m_Database.DataBaseClearResults();
+		wxLogWarning(_("Results of last query where automatically cleared"));
+	}
+	
+	// get the text to process.
+    wxString myRequest = m_QueryTxtCtrl->GetValue();
+	int myNumberOfRequest = m_Database.DataBaseQueriesNumber(myRequest);
+	wxLogMessage(_("Processing Request... %d Request Found"), myNumberOfRequest);
+	
+	wxString myComment = _("Query error, please check syntax");
+	if (m_Database.DataBaseQuery(myRequest)==true){
+        // add to history
+        _UpdateHistory(myRequest);
+        
+        myComment = _("Query passed OK, no results");
+		if (m_Database.DataBaseHasResults()==true){
+			myComment = _("Query passed OK");
+		}
+	}
+    
+	// display results
+    SetStatusText(myComment, 1);
+}
+
+
+void TBVFrame::OnBtnShowResults (wxCommandEvent & event){
+	SHOWRESULT_OP2 * myDlg = new  SHOWRESULT_OP2(this, &m_Database);
+	myDlg->SetMinSize(wxSize(300,300));
+	myDlg->SetSize(wxSize(500,400));
+	myDlg->Show();
+}
+
+
+void TBVFrame::OnBtnHistory (wxCommandEvent & event){
+    wxString myHistoryValue = wxGetSingleChoice(_("SQL command history"), _("History"), *(GetHistory()), this, wxDefaultCoord, wxDefaultCoord, false, 500, 500);
+    if (myHistoryValue == wxEmptyString) {
+        return;
+    }
+    m_QueryTxtCtrl->SetValue(myHistoryValue);
+}
+
 
 
 wxArrayString * TBVFrame::GetHistory(){

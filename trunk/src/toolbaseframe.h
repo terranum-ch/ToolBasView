@@ -48,6 +48,9 @@ const int ID_MENU_SPATIAL_SEARCH = wxID_HIGHEST + 10;
 const int ID_MENU_DB_OPERATION = wxID_HIGHEST + 11;
 const int ID_MENU_EXPORT_STRUCTURE = wxID_HIGHEST + 12;
 const int ID_LISTTABLE = wxID_HIGHEST + 13;
+const int ID_BTN_RUN = wxID_HIGHEST + 14;
+const int ID_BTN_SHOW_RESULTS = wxID_HIGHEST + 15;
+const int ID_BTN_HISTORY = wxID_HIGHEST + 16;
 
 
 class TBVFrame: public wxFrame
@@ -70,9 +73,19 @@ private:
 	void OnNewDataBase (wxCommandEvent & event);
     void OnExportStructureToClipboard (wxCommandEvent & event);
     void OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event);
-    
     void OnAuiButtonPressed (wxAuiManagerEvent& evt);
-
+    
+    void OnBtnRun (wxCommandEvent & event);
+    void OnBtnShowResults (wxCommandEvent & event);
+    void OnBtnHistory (wxCommandEvent & event);
+    
+    
+    void OnUpdateUIBtnRun (wxUpdateUIEvent & event);
+    void OnUpdateUIBtnShowResults (wxUpdateUIEvent & event);
+    void OnUpdateUIBtnHistory (wxUpdateUIEvent & event);
+    
+    void _UpdateHistory (const wxString & sentence);
+    
     
 	DataBase m_Database;
 	wxTreeCtrl * m_TreeCtrl;
