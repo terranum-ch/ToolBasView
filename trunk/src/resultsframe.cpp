@@ -15,6 +15,9 @@
  ***************************************************************************/
 #include "resultsframe.h"
 #include "results_bmp.h"
+#include "database.h"
+#include "databaseresult.h"
+#include "gridoperation.h"
 
 
 BEGIN_EVENT_TABLE( Results_DLG, wxFrame )
@@ -30,11 +33,18 @@ END_EVENT_TABLE()
 
 
 
-Results_DLG::Results_DLG( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) :
+Results_DLG::Results_DLG( wxWindow* parent, DataBase * database, const wxString & query, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) :
 wxFrame( parent, id, title, pos, size, style ){
+    m_DB = database;
+    m_ResultDisplayed = false;
+    wxASSERT(m_DB);
     results_initialize_images();
     _CreateControls();
     _SetRandomPosition();
+    
+    m_QueryCtrl->SetValue(query);
+    
+    _DisplayResults();
 }
 
 
@@ -53,17 +63,46 @@ void Results_DLG::OnCloseResults( wxCloseEvent& event ) {
 
 
 void Results_DLG::OnMenuCopy( wxCommandEvent& event ) {
-    event.Skip();
+	wxString myValues = wxEmptyString;
+    
+    // get header
+	for (int icol = 0; icol < m_GridCtrl->GetNumberCols(); icol++) {
+        myValues.Append(m_GridCtrl->GetColLabelValue(icol));
+        myValues.Append(_T("\t"));
+    }
+    myValues.RemoveLast();
+    myValues.Append(_T("\n"));
+    
+    // get values
+    for (int irow = 0; irow < m_GridCtrl->GetNumberRows(); irow++){
+		for (int icol = 0; icol < m_GridCtrl->GetNumberCols(); icol++) {
+            myValues.Append(m_GridCtrl->GetCellValue(irow, icol));
+			if (icol < m_GridCtrl->GetNumberCols() -1) {
+				myValues.Append(_T("\t"));
+			}
+		}
+		myValues.Append(_T("\n"));
+	}
+    myValues.RemoveLast();
+	
+	if (wxTheClipboard->Open())
+    {
+        // This data objects are held by the clipboard,
+        // so do not delete them in the app.
+        wxTheClipboard->SetData(new wxTextDataObject(myValues));
+        wxTheClipboard->Close();
+    }
 }
 
 
 void Results_DLG::OnMenuExport( wxCommandEvent& event ) {
-    event.Skip();
+    wxLogError(_("Not implemented!"));
 }
 
 
 void Results_DLG::OnMenuAutosize( wxCommandEvent& event ) {
-    event.Skip();
+    wxBusyCursor myCursor;
+    m_GridCtrl->AutoSizeColumns(false);
 }
 
 
@@ -73,16 +112,57 @@ void Results_DLG::OnMenuClose( wxCommandEvent& event ) {
 
 
 void Results_DLG::OnUpdateUICopy( wxUpdateUIEvent& event ) {
+    event.Enable(m_ResultDisplayed);
 }
 
 
 void Results_DLG::OnUpdateUIAutosize( wxUpdateUIEvent& event ) {
+    event.Enable(m_ResultDisplayed);
 }
 
 
 void Results_DLG::OnUpdateUIExport( wxUpdateUIEvent& event ) {
+    event.Enable(m_ResultDisplayed);
 }
 
+
+
+void Results_DLG::_DisplayResults(){
+    DataBaseResult myResult;
+    if (m_DB->DataBaseGetResults(&myResult)==false) {
+        wxLogError(_("Getting results failed!"));
+        return;
+    }
+    
+    if (myResult.HasResults() == false) {
+        wxLogMessage(_("No results returned by your request"));
+        return;
+    }
+    
+    GridOperation * myGridOP = new GridOperation(m_GridCtrl);
+    myGridOP->GridOpSetNumberOfColumn(myResult.GetColCount());
+    wxArrayString myColsName;
+    myResult.GetColName(myColsName);
+    for (unsigned int i = 0; i< myColsName.GetCount(); i++) {
+        myGridOP->GridOpChangeColumnText(myColsName.Item(i), i);
+    }
+    
+    int myColCount = myResult.GetColCount();
+    int iRow = 0;
+    while (myResult.NextRow()) {
+        m_GridCtrl->AppendRows(1,false);
+        for (unsigned int i = 0; i < myColCount; i++) {
+            wxString myText;
+            myResult.GetValue(i, myText);
+            m_GridCtrl->SetCellValue(iRow, i, myText);
+        }
+        iRow++;
+    }
+    
+    SetStatusText(wxString::Format(_T("columns: %d, rows: %ld"),myColCount, myResult.GetRowCount()));
+    m_ResultDisplayed = true;
+    wxDELETE(myGridOP);
+}
 
 
 
@@ -136,7 +216,7 @@ void Results_DLG::_CreateControls(){
 		
 	
 	m_panel4 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_mgr.AddPane( m_panel4, wxAuiPaneInfo() .Name( wxT("query") ).Bottom() .Caption( _("Query") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).LeftDockable( false ).RightDockable( false ).Floatable( false ).BestSize( wxSize( -1,40 ) ) );
+	m_mgr.AddPane( m_panel4, wxAuiPaneInfo() .Name( wxT("query") ).Bottom() .Caption( _("Original query") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).LeftDockable( false ).RightDockable( false ).Floatable( false ).BestSize( wxSize( -1,40 ) ) );
 	
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxVERTICAL );
@@ -151,11 +231,8 @@ void Results_DLG::_CreateControls(){
 	
 	m_mgr.Update();
 	//this->Centre( wxBOTH );
-    
-    
-    
-    
-    
+
+    // TOOLBAR
 	m_toolBar1 = this->CreateToolBar( wxTB_FLAT|wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
 	m_toolBar1->SetToolBitmapSize( wxSize( 32,32 ) );
     
@@ -176,6 +253,7 @@ void Results_DLG::_CreateControls(){
 	m_statusBar1 = this->CreateStatusBar( 1, wxST_SIZEGRIP, wxID_ANY );
 	
 }
+
 
 
 void Results_DLG::_SetRandomPosition(){
