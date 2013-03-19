@@ -14,13 +14,18 @@ MESSAGE("Project Name is : ${CMAKE_PROJECT_NAME}")
 # SEARCH FILES --------------------------------
 #search all source files
 FILE (GLOB SRC_FILES ../src/*.cpp)
+FILE (GLOB_RECURSE ART_FILES_C ../art/*.cpp)
+SET(SRC_FILES ${SRC_FILES} ${ART_FILES_C})
 SOURCE_GROUP (source FILES ${SRC_FILES})
 
 # search all headers files
 FILE (GLOB HEAD_FILES "../src/*.h")
+FILE (GLOB_RECURSE ART_FILES_H ../art/*.h)
+SET(HEAD_FILES ${HEAD_FILES} ${ART_FILES_H})
 SOURCE_GROUP (header FILES ${HEAD_FILES})
 
-#MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE}) 
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../src/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../art/")
 
 # INCLUDE LIBRARIES NEEDED ----------------------
 # WXWIDGETS
@@ -36,8 +41,6 @@ INCLUDE ("cmake/findGISLib.cmake")
 # LSVERSION
 INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
-
-
 # SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
 IF( APPLE )
 	SET (APP_ICON "toolbasview.icns")
@@ -47,17 +50,13 @@ IF( APPLE )
 	#MACOSX_BUNDLE_GUI_IDENTIFIER
 	#MACOSX_BUNDLE_LONG_VERSION_STRING
 	SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROGNAME}")
-	SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.1")
-	SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.1")
-	SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2011")
-	
+	SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.2")
+	SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.2")
+	SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2013")
 	# Need to copy the icon file
 	set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
 ENDIF (APPLE)
-
-
-
  
 # ADD ALSO HEADERS NOT REALY NEEDED JUST FOR VS
 # COMPILING
@@ -69,20 +68,10 @@ ELSE (WIN32)
 	ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
 ENDIF (WIN32)
 
-
 # LINK LSVERSION PLUGIN
 IF(USE_VERSION)
 	TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${LSVERSION_NAME})
 ENDIF(USE_VERSION)
-
-# LINK FOLDBAR PLUGIN
-IF(USE_FOLDBAR)
-	TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${FOLDBAR_NAME})
-ENDIF(USE_FOLDBAR)
-
-
-#SVN NUMBERING
-#INCLUDE ("cmake/use_svnnumber.cmake")
 
 # copy libs to bundle if we are under mac...
 # check is done internally.

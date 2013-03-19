@@ -8,8 +8,8 @@
 #include "lsversion_dlg.h"
 #include "exportcsv_dlg.h"
 #include "databaseoperation.h"
-#include "../art/toolbasview_bmp.cpp"
 #include "dlg_operation.h" // for dialogs operations.
+#include "resultsframe.h"
 
 
 
@@ -874,7 +874,7 @@ void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
 
 
 void TBVFrame::OnUpdateUIBtnShowResults (wxUpdateUIEvent & event){
-    event.Enable(m_Database.DataBaseHasResults());
+    //event.Enable(m_Database.DataBaseHasResults());
 }
 
 
@@ -942,10 +942,15 @@ void TBVFrame::OnBtnRun (wxCommandEvent & event){
 
 
 void TBVFrame::OnBtnShowResults (wxCommandEvent & event){
-	SHOWRESULT_OP2 * myDlg = new  SHOWRESULT_OP2(this, &m_Database);
+	/*SHOWRESULT_OP2 * myDlg = new  SHOWRESULT_OP2(this, &m_Database);
 	myDlg->SetMinSize(wxSize(300,300));
 	myDlg->SetSize(wxSize(500,400));
 	myDlg->Show();
+    
+     */
+    
+    Results_DLG * myDlg = new Results_DLG(this);
+    myDlg->Show();
 }
 
 
