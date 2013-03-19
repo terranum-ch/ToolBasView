@@ -24,21 +24,23 @@
 #include <wx/aui/aui.h>
 #include <wx/artprov.h>
 #include <wx/display.h>
+#include <wx/clipbrd.h>
 
 const int ID_EXPORT_EXCEL = wxID_HIGHEST + 17;
 const int ID_AUTOSIZE_COLUMN = wxID_HIGHEST + 18;
 
-
+class DataBase;
 class Results_DLG : public wxFrame{
 private:
     wxGrid* m_GridCtrl;
     wxTextCtrl* m_QueryCtrl;
     wxAuiManager m_mgr;
-    
-
-    
+    DataBase * m_DB;
+    bool m_ResultDisplayed;
+   
     void _CreateControls();
     void _SetRandomPosition();
+    void _DisplayResults();
 	
     // events
     void OnCloseResults( wxCloseEvent& event );
@@ -53,12 +55,11 @@ private:
 
     
 public:
-    Results_DLG( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString,
+    Results_DLG( wxWindow* parent, DataBase * database, const wxString & query, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString,
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxSize( 600,480 ),
                 long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
     ~Results_DLG();
-	
 };
 
 

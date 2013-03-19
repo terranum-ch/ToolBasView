@@ -874,7 +874,7 @@ void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
 
 
 void TBVFrame::OnUpdateUIBtnShowResults (wxUpdateUIEvent & event){
-    //event.Enable(m_Database.DataBaseHasResults());
+    event.Enable(m_Database.DataBaseHasResults());
 }
 
 
@@ -942,14 +942,7 @@ void TBVFrame::OnBtnRun (wxCommandEvent & event){
 
 
 void TBVFrame::OnBtnShowResults (wxCommandEvent & event){
-	/*SHOWRESULT_OP2 * myDlg = new  SHOWRESULT_OP2(this, &m_Database);
-	myDlg->SetMinSize(wxSize(300,300));
-	myDlg->SetSize(wxSize(500,400));
-	myDlg->Show();
-    
-     */
-    
-    Results_DLG * myDlg = new Results_DLG(this);
+    Results_DLG * myDlg = new Results_DLG(this, &m_Database, m_QueryTxtCtrl->GetValue());
     myDlg->Show();
 }
 
