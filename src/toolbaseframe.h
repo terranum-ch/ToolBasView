@@ -51,6 +51,7 @@ const int ID_LISTTABLE = wxID_HIGHEST + 13;
 const int ID_BTN_RUN = wxID_HIGHEST + 14;
 const int ID_BTN_SHOW_RESULTS = wxID_HIGHEST + 15;
 const int ID_BTN_HISTORY = wxID_HIGHEST + 16;
+const int ID_MENU_AUTOSIZE_COLUMNS = wxID_HIGHEST + 19;
 
 
 class TBVFrame: public wxFrame
@@ -67,25 +68,28 @@ private:
 	void OnSpatialDataSearch (wxCommandEvent & event);
     void OnExportData (wxCommandEvent & event);
     void OnDatabaseOperation (wxCommandEvent & event);
-	void OnMenuIdle (wxIdleEvent & event);
-	void EnableMenuItem (bool benable);
 	void OnDoubleClickListe (wxTreeEvent & event);
 	void OnNewDataBase (wxCommandEvent & event);
     void OnExportStructureToClipboard (wxCommandEvent & event);
     void OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event);
     void OnAuiButtonPressed (wxAuiManagerEvent& evt);
+    void OnColumnSize (wxCommandEvent & event);
     
     void OnBtnRun (wxCommandEvent & event);
     void OnBtnShowResults (wxCommandEvent & event);
     void OnBtnHistory (wxCommandEvent & event);
     
-    
     void OnUpdateUIBtnRun (wxUpdateUIEvent & event);
     void OnUpdateUIBtnShowResults (wxUpdateUIEvent & event);
     void OnUpdateUIBtnHistory (wxUpdateUIEvent & event);
+    void OnUpdateUIAutosize (wxUpdateUIEvent & event);
     
+    void _LoadTablesIntoToc();
+    void _CreateControls();
+    void _CreateMenu();
+    void _CreateToolBar();
     void _UpdateHistory (const wxString & sentence);
-    
+
     
 	DataBase m_Database;
 	wxTreeCtrl * m_TreeCtrl;
@@ -103,17 +107,7 @@ private:
     wxButton* m_QueryHistoryCtrl;
     wxTextCtrl* m_LogCtrl;
     wxPanel* m_querypanel;
-    
-    wxString m_LogPerspective;
-    wxString m_QueryPerspective;
-
-
-
-   
-    void _LoadTablesIntoToc();
-    void _CreateControls();
-    void _CreateMenu();
-    void _CreateToolBar();
+  
     
     DECLARE_EVENT_TABLE();
     
