@@ -232,8 +232,13 @@ void Results_DLG::_CreateControls(){
 	m_mgr.Update();
 	//this->Centre( wxBOTH );
 
+	long style = wxTB_FLAT | wxTB_HORIZONTAL;
+#ifndef __WXMSW__
+	style += wxTB_TEXT;
+#endif
+
     // TOOLBAR
-	m_toolBar1 = this->CreateToolBar( wxTB_FLAT|wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
+	m_toolBar1 = this->CreateToolBar(style, wxID_ANY );
 	m_toolBar1->SetToolBitmapSize( wxSize( 32,32 ) );
     
     wxString myText = _("Copy");
