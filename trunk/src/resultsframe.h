@@ -55,7 +55,7 @@ private:
 
     
 public:
-    Results_DLG( wxWindow* parent, DataBase * database, const wxString & query, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString,
+    Results_DLG( wxWindow* parent, DataBase * database, const wxString & query, wxWindowID id = wxID_ANY, const wxString& title = _("Results"),
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxSize( 600,480 ),
                 long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );

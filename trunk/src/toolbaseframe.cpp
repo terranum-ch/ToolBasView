@@ -10,6 +10,8 @@
 #include "databaseoperation.h"
 #include "dlg_operation.h" // for dialogs operations.
 #include "resultsframe.h"
+#include "toolbasview_bmp.h"
+#include "results_bmp.h"
 
 
 
@@ -29,6 +31,7 @@ EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
 EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
 EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
 EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
+EVT_MENU(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnColumnSize)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
@@ -37,7 +40,7 @@ EVT_UPDATE_UI(ID_MENU_SPATIAL_SEARCH, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
-
+EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
@@ -54,6 +57,7 @@ END_EVENT_TABLE()
 TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize size): wxFrame(frame, -1, title,pos,size){
     wxInitAllImageHandlers();
     initialize_images();
+    results_initialize_images();
     
     // Loading icon
 	wxIcon myIcon;
@@ -253,6 +257,9 @@ void TBVFrame::_CreateMenu(){
 	item2->AppendSeparator();
 	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"),_("Dialog for deleting data from the database") );
     item2->Append(ID_MENU_DB_OPERATION, _("Database operations"), _("Perform maintenance Database operations"));
+    item2->AppendSeparator();
+    item2->Append(ID_MENU_AUTOSIZE_COLUMNS, _("Autosize columns"), _("Autosize columns"));
+    
     
     myMenuBar->Append( item2, _("Operations") );
     
@@ -281,6 +288,8 @@ void TBVFrame::_CreateToolBar(){
     
     myText = _("Process query");
     m_toolBar1->AddTool( ID_PROCESS_MENU, myText, *_img_database_process, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+    myText = _("Autosize columns");
+    m_toolBar1->AddTool( ID_MENU_AUTOSIZE_COLUMNS, myText, *_img_results_autosize, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Export...");
     m_toolBar1->AddTool( wxID_SAVEAS, myText, *_img_database_export, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
 	m_toolBar1->Realize();
@@ -307,6 +316,7 @@ TBVFrame::~TBVFrame()
     }
     myHistoryFile.Write();
     uninitialize_images();
+    results_clean_images();
     
     wxDELETE(m_ImgList);
 }
@@ -368,6 +378,8 @@ void TBVFrame::OnQuit(wxCloseEvent & event)
 void TBVFrame::OnShowProcessRequest (wxCommandEvent & event){
     m_mgr.GetPane(_T("query")).Maximize();
     m_mgr.Update();
+    m_QueryTxtCtrl->SelectAll();
+    m_QueryTxtCtrl->SetFocus();
 }
 
 
@@ -545,33 +557,6 @@ void TBVFrame::OnDatabaseOperation (wxCommandEvent & event){
 
 
     
-}
-
-
-
-void TBVFrame::OnMenuIdle (wxIdleEvent & event)
-{
-	// function called during idle event for 
-	// hiding menu
-	bool bStarted = false;
-	if (m_Database.DataBaseGetName() != wxEmptyString)
-		bStarted = true;
-	
-	EnableMenuItem(bStarted);
-}
-
-
-void TBVFrame::EnableMenuItem (bool benable)
-{
-	wxMenuBar * mypMenu = GetMenuBar();
-	mypMenu->Enable(ID_MENU_STATISTICS, benable);
-	mypMenu->Enable(ID_PROCESS_MENU, benable);
-	mypMenu->Enable(ID_MENU_SPATIAL_ADD, benable);
-	mypMenu->Enable(ID_MENU_SPATIAL_SEARCH, benable);
-	mypMenu->Enable(ID_MENU_DELETE, benable);
-    mypMenu->Enable(wxID_SAVEAS,benable);
-    mypMenu->Enable(ID_MENU_DB_OPERATION, benable);
-    mypMenu->Enable(ID_MENU_EXPORT_STRUCTURE, benable);
 }
 
 
@@ -863,6 +848,13 @@ void TBVFrame::OnAuiButtonPressed (wxAuiManagerEvent& evt){
 
 
 
+void TBVFrame::OnColumnSize (wxCommandEvent & event){
+    wxBusyCursor myCursor;
+    m_GridCtrl->AutoSizeColumns();
+}
+
+
+
 void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
     if (m_Database.DataBaseGetName() != wxEmptyString) {
         event.Enable(true);
@@ -886,6 +878,24 @@ void TBVFrame::OnUpdateUIBtnHistory (wxUpdateUIEvent & event){
     }
     event.Enable(false);
 }
+
+
+void TBVFrame::OnUpdateUIAutosize (wxUpdateUIEvent & event){
+    if (m_GridCtrl->GetNumberRows() == 0) {
+        event.Enable(false);
+        return;
+    }
+    
+    // check first row
+    for (unsigned int i = 0; i< m_GridCtrl->GetNumberCols(); i++) {
+        if (m_GridCtrl->GetCellValue(0, i) != wxEmptyString) {
+            event.Enable(true);
+            return;
+        }
+    }
+    event.Enable(false);
+}
+
 
 
 void TBVFrame::_UpdateHistory (const wxString & sentence){
