@@ -28,6 +28,7 @@
 
 const int ID_EXPORT_EXCEL = wxID_HIGHEST + 17;
 const int ID_AUTOSIZE_COLUMN = wxID_HIGHEST + 18;
+const int ID_AUTOSIZE_ROW = wxID_HIGHEST + 20;
 
 class DataBase;
 class Results_DLG : public wxFrame{
@@ -47,6 +48,7 @@ private:
     void OnMenuCopy( wxCommandEvent& event );
     void OnMenuExport( wxCommandEvent& event );
     void OnMenuAutosize( wxCommandEvent& event ) ;
+    void OnMenuAutosizeVertical ( wxCommandEvent& event ) ;
     void OnMenuClose( wxCommandEvent& event );
     void OnUpdateUICopy( wxUpdateUIEvent& event ) ;
     void OnUpdateUIAutosize( wxUpdateUIEvent& event ) ;

@@ -13,6 +13,7 @@ try:
 except :
   from tkinter import *
 from subprocess import *
+from ttk import *
 
 def GetCmakeDirName():
   pathname = os.path.dirname(sys.argv[0])        
@@ -38,7 +39,6 @@ def updateSVN():
     print("Error getting version for {}".format(GetCmakeDirName()))
 
 
-
 def BuildMacPro():
   print ("Configuring Mac Pro (UNIL)")
   builddir = "/Users/lucien/Documents/PRJ/TOOLBASVIEW/bin"
@@ -52,6 +52,7 @@ def BuildMacPro():
 def BuildMacBook():
   print ("Configuring MacBook")
   builddir = "/Users/lucien/DATA/PROGRAMATION/toolbasview/bin"
+
   try:
     p = Popen("cmake -GXcode " + GetCmakeDirName() + "  -DCMAKE_OSX_ARCHITECTURES:TEXT=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET:TEXT=10.6 -DCMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DwxWIDGETS_USING_SVN:BOOL=1 -DwxWIDGETS_PATH_SVN:STRING=/Users/lucien/DATA/PROGRAMATION/_LIB/64/wxWidgets-svn -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS -DMYSQL_IS_LOGGING:BOOL=1", shell=True, cwd=builddir)
   except:
@@ -67,6 +68,43 @@ def BuildWindows7():
   except:
     print("Error creating makefile")
 
+def RunBuildMac():
+  builddir =  myPath = os.path.normpath(os.path.join(GetCmakeDirName(), "..", "..",  "bin"))
+  print (builddir)
+  
+  try:
+    p = Popen("xcodebuild -configuration Debug", shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print ("Error building in", builddir)
+    return
+
+  try:
+    p = Popen("xcodebuild -configuration Debug", shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print ("Error building in", builddir)
+    return
+
+def RunBuildWindows(solutionname):
+  builddir =  myPath = os.path.normpath(os.path.join(GetCmakeDirName(), "..", "..",  "bin"))
+  print (builddir)
+  mycommand = "msbuild {}.sln /p:Configuration={}" 
+  
+  try:
+    p = Popen(mycommand.format(solutionname, "Debug"), shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print ("Error building in", builddir)
+    return
+
+  try:
+    p = Popen(mycommand.format(solutionname, "RelWithDebugInfo"), shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print ("Error building in", builddir)
+    return  
+
 
 if __name__ == '__main__':
   root = Tk()
@@ -79,6 +117,9 @@ if __name__ == '__main__':
   button3 = Button(myContainer1, text=("Update subversion"), command=updateSVN)
   button3.pack()
 
+  orient1 = Separator(myContainer1, orient='horizontal')
+  orient1.pack(fill = BOTH, expand = True, pady=5, padx=5)
+
   button2 = Button(myContainer1, text="Configure MacBook", command=BuildMacBook)
   button2.pack()
 
@@ -87,7 +128,18 @@ if __name__ == '__main__':
 
   button3 = Button(myContainer1, text= "Configure Windows 7", command=BuildWindows7)
   button3.pack()
+ 
+  orient = Separator(myContainer1, orient='horizontal')
+  orient.pack(fill = BOTH, expand = True, pady=5, padx=5)
+  
+  button4 = Button(myContainer1, text= "Build Mac (bin)", command=RunBuildMac)
+  button4.pack()
 
+  solutionname = label.cget("text")
+  button5 = Button(myContainer1, text= "Build Windows (bin)", command=lambda:RunBuildWindows(solutionname))
+  button5.pack()
+
+  
   root.mainloop()
 
 
