@@ -99,7 +99,7 @@ def RunBuildWindows(solutionname):
     return
 
   try:
-    p = Popen(mycommand.format(solutionname, "RelWithDebugInfo"), shell=True, cwd=builddir)
+    p = Popen(mycommand.format(solutionname, "RelWithDebInfo"), shell=True, cwd=builddir)
     p.wait()
   except:
     print ("Error building in", builddir)
