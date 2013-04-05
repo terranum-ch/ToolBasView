@@ -1,10 +1,10 @@
-# CMAKE BUILD FILE FOR TOOLBASVIEW (LINUX AND WINDOWS)
+# CMAKE BUILD FILE FOR TOOLBASVIEW 
 # (c) Copyright 2011 Lucien Schreiber. All Rights Reserved. 
 
 cmake_minimum_required(VERSION 2.6)
 ## POLICY FOR WINDOWS ONLY ???
 if(COMMAND cmake_policy)
-    cmake_policy(SET CMP0003 NEW)
+  cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
 SET (PROGNAME ToolBasView)
@@ -43,34 +43,39 @@ INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
 # SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
 IF( APPLE )
-	SET (APP_ICON "toolbasview.icns")
-	#bundle variables for compilation under Mac OS
-	SET(MACOSX_BUNDLE_INFO_STRING "ToolMap database Viewer")
-	SET(MACOSX_BUNDLE_ICON_FILE ${APP_ICON})
-	#MACOSX_BUNDLE_GUI_IDENTIFIER
-	#MACOSX_BUNDLE_LONG_VERSION_STRING
-	SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROGNAME}")
-	SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.2")
-	SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.2")
-	SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2013")
-	# Need to copy the icon file
-	set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-	set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
+  #SET (APP_ICON "toolbasview.icns")
+  #bundle variables for compilation under Mac OS
+  #SET(MACOSX_BUNDLE_INFO_STRING "ToolMap database Viewer")
+  #SET(MACOSX_BUNDLE_ICON_FILE ${APP_ICON})
+  #MACOSX_BUNDLE_GUI_IDENTIFIER
+  #MACOSX_BUNDLE_LONG_VERSION_STRING
+  #SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROGNAME}")
+  #SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.2")
+  #SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.2")
+  #SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2013")
+  # Need to copy the icon file
+  set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
 ENDIF (APPLE)
- 
+
 # ADD ALSO HEADERS NOT REALY NEEDED JUST FOR VS
 # COMPILING
 IF (WIN32)
-	SOURCE_GROUP (resource FILES ../src/ToolBasView.rc)
-	ADD_EXECUTABLE (${PROGNAME} WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
-	TARGET_LINK_LIBRARIES (${PROGNAME} ${WXWINDOWS_LIBS})
+  SOURCE_GROUP (resource FILES ../src/ToolBasView.rc)
+  ADD_EXECUTABLE (${PROGNAME} WIN32 ${SRC_FILES} ${HEAD_FILES} ../src/ToolBasView.rc)
+  TARGET_LINK_LIBRARIES (${PROGNAME} ${WXWINDOWS_LIBS})
 ELSE (WIN32)
-	ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
+  ADD_EXECUTABLE (${PROGNAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
 ENDIF (WIN32)
+
+IF (APPLE)
+  # Copy plist to ToolMap (should be after add executable!
+  set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/custominfo.plist)
+ENDIF(APPLE)
 
 # LINK LSVERSION PLUGIN
 IF(USE_VERSION)
-	TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${LSVERSION_NAME})
+  TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${LSVERSION_NAME})
 ENDIF(USE_VERSION)
 
 # copy libs to bundle if we are under mac...
@@ -86,7 +91,7 @@ INCLUDE ("cmake/installMacLibTiff.cmake")
 # SHOULD WE USE THE MT VERSION FOR DEFAULT 
 # COMPATIBILITY WITH < WINXP
 IF (WIN32)
-	INCLUDE ("cmake/Use_visualstudioMT.cmake")
+  INCLUDE ("cmake/Use_visualstudioMT.cmake")
 ENDIF (WIN32)
 
 #SOULD WE ADD THE GDIPLUS.dll INTO project
@@ -104,5 +109,5 @@ INCLUDE ("cmake/useMySQLEmbedded.cmake")
 # UNIT TEST PROGRAM
 SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${PROGNAME}")
 IF (USE_UNITTEST)
-	ADD_SUBDIRECTORY("../test/build" ${PROJECT_BINARY_DIR})
+  ADD_SUBDIRECTORY("../test/build" ${PROJECT_BINARY_DIR})
 ENDIF (USE_UNITTEST)
