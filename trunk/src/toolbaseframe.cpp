@@ -180,7 +180,7 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxVERTICAL );
 	
-	m_QueryTxtCtrl = new wxTextCtrl( m_querypanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_QueryTxtCtrl = new wxTextCtrl( m_querypanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_PROCESS_TAB );
 	bSizer6->Add( m_QueryTxtCtrl, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer7;
