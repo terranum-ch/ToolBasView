@@ -211,7 +211,7 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer8;
 	bSizer8 = new wxBoxSizer( wxVERTICAL );
 	
-	m_LogCtrl = new wxTextCtrl( m_logpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_LogCtrl = new wxTextCtrl( m_logpanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
 	bSizer8->Add( m_LogCtrl, 1, wxEXPAND, 5 );
 	
 	
