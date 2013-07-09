@@ -769,7 +769,7 @@ OGRGeometry * GISDBProvider::GISSearchLines (OGRLayer * layer, OGRGeometry * poi
 		iterateGeometry = GISCreateDataBaseGeometry(row, row_length, 1);
 		if (iterateGeometry != NULL)
 		{
-			if(pointbuffer->Intersect(iterateGeometry))
+			if(pointbuffer->Intersects(iterateGeometry))
 			{
 				// get the FID
 				iFID = atoi(row[0]);

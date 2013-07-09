@@ -1,7 +1,7 @@
 format 75
 "toolbasview"
-  revision 4
-  modified_by 3 "lucien"
+  revision 5
+  modified_by 33 "lucien"
 
 
   
@@ -252,7 +252,6 @@ ${inlines}
 	
 	
       end
-
     end
 
     class 143619 "DatabaseOp_DLG"
@@ -444,6 +443,142 @@ ${inlines}
 	idl_name_spec "get_${name}"
 	get_of_attribute attribute_ref 141827 // m_Optimize
       end
+    end
+
+    classdiagram 128033 "QueryListTree"
+      draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+      size A3-Landscape
+    end
+
+    class 128033 "QueryListTree"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128033 // <generalisation>
+	relation 128033 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 128033 // <generalisation>
+	  b parent class_ref 128161 // wxTreeCtrl
+      end
+
+      operation 128033 "QueryListTree"
+	public explicit_return_type ""
+	nparams 5
+	  param in name "parent" explicit_type "wxWindow"
+	  param in name "id" explicit_type "wxWindowID"
+	    defaultvalue "wxID_ANY"
+	  param in name "pos" explicit_type "wxPoint"
+	    defaultvalue "wxDefaultPosition"
+	  param in name "size" explicit_type "wxSize"
+	    defaultvalue "wxDefaultSize"
+	  param in name "style" explicit_type "long"
+	    defaultvalue "wxTR_DEFAULT_STYLE"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}, ${t1} ${p1}, const ${t2} & ${p2}, const ${t3} & ${p3}, ${t4} ${p4}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${t0} * ${p0}, ${t1} ${p1}, const ${t2} & ${p2}, const ${t3} & ${p3}, ${t4} ${p4}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128161 "~QueryListTree"
+	cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128289 "OnAddCategory"
+	private explicit_return_type "void"
+	nparams 1
+	  param out name "event" explicit_type "wxTreeEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128417 "Save"
+	public explicit_return_type "bool"
+	nparams 1
+	  param in name "filename" explicit_type "wxFileName"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128545 "Load"
+	public explicit_return_type "bool"
+	nparams 1
+	  param in name "filename" explicit_type "wxFileName"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128673 "OnContextualMenu"
+	private explicit_return_type "void"
+	nparams 1
+	  param in name "event" explicit_type "wxCommandEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+    end
+
+    class 128161 "wxTreeCtrl"
+      visibility package 
+      cpp_external cpp_decl "${name}
+#include <${name}.h>
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
     end
   end
 

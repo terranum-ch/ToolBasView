@@ -20,4 +20,7 @@ extern wxBitmap *_img_database_process;
 extern wxBitmap *_img_database_small;
 extern wxBitmap *_img_table_sml;
 
+extern wxBitmap *_img_query_category;
+extern wxBitmap *_img_query_item;
+
 #endif /* _TOOLBASVIEW_BITMAP_H_ */

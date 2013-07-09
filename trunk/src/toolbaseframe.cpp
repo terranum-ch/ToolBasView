@@ -152,7 +152,7 @@ void TBVFrame::_CreateControls(){
 
     
 	m_tocpanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_mgr.AddPane( m_tocpanel, wxAuiPaneInfo() .Name( wxT("toc") ).Left() .Caption( wxT("Table of content") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).BottomDockable( false ).TopDockable( false ).Floatable( false ).BestSize( wxSize( 100,-1 ) ).MinSize( wxSize( 100,-1 ) ).Layer( 1 ) );
+	m_mgr.AddPane( m_tocpanel, wxAuiPaneInfo() .Name( wxT("toc") ).Left() .Caption( wxT("Table of content") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxSize( -1,-1 ) ).DockFixed( false ).BottomDockable( false ).TopDockable( false ).Floatable( false ).BestSize( wxSize( 200,-1 ) ).MinSize( wxSize( 100,-1 ) ).Layer( 1 ) );
 	
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxVERTICAL );
@@ -164,7 +164,6 @@ void TBVFrame::_CreateControls(){
 	bSizer4->Add( m_bitmap2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
     
     m_mgr.GetPane(_T("toc")).MinSize(-1, m_bitmap2->GetSize().GetWidth());
-    
 	
 	m_VersionTxtCtrl = new wxStaticText( m_tocpanel, wxID_ANY, _("Version: ") + DataBase::DataBaseGetVersion(), wxDefaultPosition, wxDefaultSize, 0 );
 	m_VersionTxtCtrl->Wrap( -1 );
@@ -218,6 +217,20 @@ void TBVFrame::_CreateControls(){
 	m_logpanel->SetSizer( bSizer8 );
 	m_logpanel->Layout();
 	bSizer8->Fit( m_logpanel );
+    
+    m_QueryListPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_mgr.AddPane( m_QueryListPanel, wxAuiPaneInfo() .Name( wxT("querylist") ).Right() .Caption( wxT("Query List") ).CloseButton( false ).Dock().Resizable().FloatingSize( wxDefaultSize ).DockFixed( false ).BottomDockable( false ).TopDockable( false ).BestSize( wxSize( 200,-1 ) ) );
+	
+	wxBoxSizer* bSizer61;
+	bSizer61 = new wxBoxSizer( wxVERTICAL );
+	
+	m_QueryListTreeCtrl = new wxTreeCtrl( m_QueryListPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
+	bSizer61->Add( m_QueryListTreeCtrl, 1, wxEXPAND, 5 );
+	
+	
+	m_QueryListPanel->SetSizer( bSizer61 );
+	m_QueryListPanel->Layout();
+	bSizer61->Fit( m_QueryListPanel );
     
 	m_mgr.Update();
 	this->Centre( wxBOTH );
