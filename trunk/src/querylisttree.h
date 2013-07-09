@@ -31,8 +31,11 @@ const int ID_QUERY_TREE_CATEGORY_DEL = wxWindow::NewControlId();
 class QueryListTreeData : public wxTreeItemData {
 public:
     enum {DATA_CATEGORY = 0, DATA_QUERY = 1 } m_ItemType;
+    wxString m_Query;
+    
     QueryListTreeData(){
         m_ItemType = DATA_CATEGORY;
+        m_Query = wxEmptyString;
     }
 };
 
@@ -44,6 +47,8 @@ class QueryListTree : public wxTreeCtrl {
 
     bool Save(const wxFileName & filename);
     bool Load(const wxFileName & filename);
+    
+    void AddQuery(const wxString & name, const wxString & sql);
 
 
   private:

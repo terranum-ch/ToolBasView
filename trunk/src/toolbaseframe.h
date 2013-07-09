@@ -21,6 +21,7 @@ const int ID_STATUS = 10003;
 #include <wx/grid.h>
 #include <wx/imaglist.h>
 #include <wx/aui/aui.h>
+#include <wx/treectrl.h>
 
 
 
@@ -54,6 +55,8 @@ const int ID_BTN_SHOW_RESULTS = wxID_HIGHEST + 15;
 const int ID_BTN_HISTORY = wxID_HIGHEST + 16;
 const int ID_MENU_AUTOSIZE_COLUMNS = wxID_HIGHEST + 19;
 const int ID_MENU_SHOW_LOG = wxWindow::NewControlId();
+const int ID_BTN_ADD_TO_LIST = wxWindow::NewControlId();
+const int ID_QUERY_LIST_TREE = wxWindow::NewControlId();
 
 
 class TBVFrame: public wxFrame
@@ -81,11 +84,15 @@ private:
     void OnBtnRun (wxCommandEvent & event);
     void OnBtnShowResults (wxCommandEvent & event);
     void OnBtnHistory (wxCommandEvent & event);
+    void OnAddToList (wxCommandEvent & event);
+    
+    void OnTreeItemDoubleClick (wxTreeEvent & event);
     
     void OnUpdateUIBtnRun (wxUpdateUIEvent & event);
     void OnUpdateUIBtnShowResults (wxUpdateUIEvent & event);
     void OnUpdateUIBtnHistory (wxUpdateUIEvent & event);
     void OnUpdateUIAutosize (wxUpdateUIEvent & event);
+    void OnUpdateUIAddToList (wxUpdateUIEvent & event);
     
     void _LoadTablesIntoToc();
     void _CreateControls();
@@ -112,6 +119,8 @@ private:
     wxPanel* m_querypanel;
     wxPanel* m_QueryListPanel;
     QueryListTree* m_QueryListTreeCtrl;
+    wxButton* m_AddToListBtnCtrl;
+
   
     
     DECLARE_EVENT_TABLE();
