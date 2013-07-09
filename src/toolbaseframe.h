@@ -107,6 +107,8 @@ private:
     wxButton* m_QueryHistoryCtrl;
     wxTextCtrl* m_LogCtrl;
     wxPanel* m_querypanel;
+    wxPanel* m_QueryListPanel;
+    wxTreeCtrl* m_QueryListTreeCtrl;
   
     
     DECLARE_EVENT_TABLE();
