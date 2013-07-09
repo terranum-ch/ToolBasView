@@ -104,6 +104,10 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
     for (wxString str = myHistoryFile.GetFirstLine(); !myHistoryFile.Eof(); str = myHistoryFile.GetNextLine() ){
         m_History.Add(str);
     }
+    
+    // loading querylist
+    m_QueryListFileName = wxFileName(wxStandardPaths::Get().GetAppDocumentsDir(), _("toolbasview_querylist.txt"));
+    m_QueryListTreeCtrl->Load(m_QueryListFileName);
 }
 
 
@@ -323,6 +327,10 @@ void TBVFrame::_CreateToolBar(){
 /* Frame destruction */
 TBVFrame::~TBVFrame()
 {
+    // save query list
+    m_QueryListTreeCtrl->Save (m_QueryListFileName);
+
+    
     this->Unbind(wxEVT_AUI_PANE_MAXIMIZE, &TBVFrame::OnAuiButtonPressed, this, wxID_ANY);
     m_mgr.UnInit();
     
@@ -343,6 +351,7 @@ TBVFrame::~TBVFrame()
     results_clean_images();
     
     wxDELETE(m_ImgList);
+    
 }
 
 

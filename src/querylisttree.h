@@ -23,6 +23,7 @@
 #include <wx/treectrl.h>
 #include <wx/filename.h>
 #include <wx/imaglist.h>
+#include <wx/file.h>
 
 const int ID_QUERY_TREE_CATEGORY_ADD = wxWindow::NewControlId();
 const int ID_QUERY_TREE_CATEGORY_DEL = wxWindow::NewControlId();
@@ -64,6 +65,7 @@ class QueryListTree : public wxTreeCtrl {
     
     void _CopyTreeItems(wxTreeItemId origin, wxTreeItemId destination, bool isRoot = true);
     void _MoveLayer (wxTreeItemId origin, wxTreeItemId destination);
+    void _RecursiveWrite (wxTreeItemId origin, wxFile * file);
     
     wxTreeItemId m_DragItemID;
     wxTreeItemId m_RootNode;

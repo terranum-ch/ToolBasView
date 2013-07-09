@@ -50,13 +50,60 @@ QueryListTree::~QueryListTree() {
 
 
 bool QueryListTree::Save(const wxFileName & filename) {
-    return false;
+    wxFile myFile;
+    if (filename.Exists() == false) {
+        myFile.Create(filename.GetFullPath());
+    }
+    myFile.Open(filename.GetFullPath(), wxFile::write);
+    if (myFile.IsOpened() == false) {
+        return false;
+    }
+    
+    _RecursiveWrite(m_RootNode, &myFile);
+    return true;
+}
+
+
+
+void QueryListTree::_RecursiveWrite (wxTreeItemId origin, wxFile * file){
+    wxASSERT(file);
+    wxTreeItemIdValue cookie;
+    wxTreeItemId myItem = GetFirstChild( origin, cookie );
+    
+	while( myItem.IsOk() ){
+        QueryListTreeData * myDataOrigin = static_cast<QueryListTreeData*>(GetItemData(myItem));
+        wxString myParentName = GetItemText(origin);
+        if (origin == m_RootNode) {
+            myParentName = "";
+        }
+        
+        wxString myName = GetItemText(myItem);
+        int myType = myDataOrigin->m_ItemType;
+        wxString myQuery = myDataOrigin->m_Query;
+        
+        file->Write(wxString::Format(_T("%s\t%s\t%d\t%s\n"), myParentName, myName, myType, myQuery));
+		if( ItemHasChildren( myItem ) ){
+            _RecursiveWrite(myItem, file);
+		}
+		myItem = GetNextChild( origin, cookie);
+	}
 }
 
 
 
 bool QueryListTree::Load(const wxFileName & filename) {
+    wxFile myFile;
+    if (filename.Exists() == false) {
+        myFile.Create(filename.GetFullPath());
+    }
+    myFile.Open(filename.GetFullPath(), wxFile::write);
+    if (myFile.IsOpened() == false) {
+        return false;
+    }
+    
+    // TODO: Load file here
     return false;
+    
 }
 
 
