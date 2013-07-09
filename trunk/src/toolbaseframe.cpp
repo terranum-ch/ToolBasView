@@ -12,6 +12,7 @@
 #include "resultsframe.h"
 #include "toolbasview_bmp.h"
 #include "results_bmp.h"
+#include "querylisttree.h"
 
 
 
@@ -20,6 +21,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
 EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
 EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
 EVT_MENU (wxID_OPEN,TBVFrame::OnOpenDatabase)
+EVT_MENU (ID_MENU_SHOW_LOG, TBVFrame::OnShowLogPanel)
 EVT_CLOSE(TBVFrame::OnQuit)
 EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
 EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnShowProcessRequest)
@@ -224,7 +226,7 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer61;
 	bSizer61 = new wxBoxSizer( wxVERTICAL );
 	
-	m_QueryListTreeCtrl = new wxTreeCtrl( m_QueryListPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
+	m_QueryListTreeCtrl = new QueryListTree( m_QueryListPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
 	bSizer61->Add( m_QueryListTreeCtrl, 1, wxEXPAND, 5 );
 	
 	
@@ -265,6 +267,8 @@ void TBVFrame::_CreateMenu(){
     
     wxMenu* item2 = new wxMenu;
     item2->Append( ID_PROCESS_MENU, _("Show Process Query...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
+    item2->Append(ID_MENU_SHOW_LOG, _("Show Log panel\tCtrl+L"), _("Show the log panel"));
+    item2->AppendSeparator();
     item2->Append( ID_MENU_SPATIAL_ADD, _("Add spatial data into the database...\tCtrl-S"), _("Allow user to load spatial data into a database table (SHP)") );
 	item2->Append( ID_MENU_SPATIAL_SEARCH, _("Search spatial data...\tCtrl-F"), _("Search spatial data used for benchmark") );
 	item2->AppendSeparator();
@@ -393,6 +397,11 @@ void TBVFrame::OnShowProcessRequest (wxCommandEvent & event){
     m_mgr.Update();
     m_QueryTxtCtrl->SelectAll();
     m_QueryTxtCtrl->SetFocus();
+}
+
+void TBVFrame::OnShowLogPanel (wxCommandEvent & event){
+    m_mgr.GetPane(_T("log")).Maximize();
+    m_mgr.Update();
 }
 
 
