@@ -92,6 +92,21 @@ void QueryListTree::OnCategoryDel(wxCommandEvent & event) {
 
 
 
+void QueryListTree::AddQuery(const wxString & name, const wxString & sql) {
+    wxTreeItemId mySelectedId = GetSelection();
+    if (mySelectedId.IsOk() == false) {
+        mySelectedId = m_RootNode;
+    }
+    
+    QueryListTreeData * myData = new QueryListTreeData();
+    myData->m_ItemType = QueryListTreeData::DATA_QUERY;
+    myData->m_Query = sql;
+    
+    AppendItem(mySelectedId, name, QueryListTreeData::DATA_QUERY, -1, myData);
+}
+
+
+
 void QueryListTree::OnDragStart(wxTreeEvent & event){
     m_DragItemID = wxTreeItemId();
 	wxASSERT(m_DragItemID.IsOk() == false);

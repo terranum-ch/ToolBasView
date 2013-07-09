@@ -43,10 +43,14 @@ EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
+EVT_UPDATE_UI(ID_BTN_ADD_TO_LIST, TBVFrame::OnUpdateUIAddToList)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
 EVT_BUTTON(ID_BTN_SHOW_RESULTS, TBVFrame::OnBtnShowResults)
+EVT_BUTTON(ID_BTN_ADD_TO_LIST, TBVFrame::OnAddToList)
+
+EVT_TREE_ITEM_ACTIVATED(ID_QUERY_LIST_TREE, TBVFrame::OnTreeItemDoubleClick)
 
 EVT_UPDATE_UI(ID_BTN_RUN, TBVFrame::OnUpdateUIBtnRun)
 EVT_UPDATE_UI(ID_BTN_SHOW_RESULTS, TBVFrame::OnUpdateUIBtnShowResults)
@@ -196,6 +200,9 @@ void TBVFrame::_CreateControls(){
 	
 	bSizer7->Add( 0, 0, 1, wxEXPAND, 5 );
 	
+    m_AddToListBtnCtrl = new wxButton( m_querypanel, ID_BTN_ADD_TO_LIST, _("Add to List..."), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer7->Add( m_AddToListBtnCtrl, 0, wxALL, 5 );
+    
 	m_QueryHistoryCtrl = new wxButton( m_querypanel, ID_BTN_HISTORY, _("History..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer7->Add( m_QueryHistoryCtrl, 0, wxALL, 5 );
 	
@@ -226,7 +233,7 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer61;
 	bSizer61 = new wxBoxSizer( wxVERTICAL );
 	
-	m_QueryListTreeCtrl = new QueryListTree( m_QueryListPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
+	m_QueryListTreeCtrl = new QueryListTree( m_QueryListPanel, ID_QUERY_LIST_TREE, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
 	bSizer61->Add( m_QueryListTreeCtrl, 1, wxEXPAND, 5 );
 	
 	
@@ -919,6 +926,11 @@ void TBVFrame::OnUpdateUIAutosize (wxUpdateUIEvent & event){
 }
 
 
+void TBVFrame::OnUpdateUIAddToList (wxUpdateUIEvent & event){
+    event.Enable(!m_QueryTxtCtrl->GetValue().IsEmpty());
+}
+
+
 
 void TBVFrame::_UpdateHistory (const wxString & sentence){
     wxArrayString * myHistory = GetHistory();
@@ -987,6 +999,32 @@ void TBVFrame::OnBtnHistory (wxCommandEvent & event){
     m_QueryTxtCtrl->SetValue(myHistoryValue);
 }
 
+
+
+void TBVFrame::OnAddToList (wxCommandEvent & event){
+    wxString myQueryName = wxGetTextFromUser(_("Query Name"));
+    if (myQueryName == wxEmptyString) {
+        return;
+    }
+    
+    m_QueryListTreeCtrl->AddQuery(myQueryName, m_QueryTxtCtrl->GetValue());
+}
+
+
+
+void TBVFrame::OnTreeItemDoubleClick (wxTreeEvent & event){
+    wxTreeItemId myId = event.GetItem();
+    if (myId.IsOk() == false) {
+        return;
+    }
+    
+    QueryListTreeData * myData = static_cast<QueryListTreeData*>(m_QueryListTreeCtrl->GetItemData(myId));
+    if (myData == NULL || myData->m_ItemType != QueryListTreeData::DATA_QUERY) {
+        return;
+    }
+    
+    m_QueryTxtCtrl->SetValue(myData->m_Query);
+}
 
 
 wxArrayString * TBVFrame::GetHistory(){
