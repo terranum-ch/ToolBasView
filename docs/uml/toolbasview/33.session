@@ -1,13 +1,14 @@
-window_sizes 1440 852 337 1097 659 136
+window_sizes 1920 1152 337 1577 959 136
 diagrams
   classdiagram_ref 128003 // toolbasview
     805 475 61 17 0 0
   active  classdiagram_ref 128033 // QueryListTree
-    1093 639 100 17 0 0
+    1573 939 100 17 0 0
 end
 show_stereotypes
-selected operation_ref 128673 // OnContextualMenu
+selected artifact_ref 128033 // querylisttree
 open
-  class_ref 128033 // QueryListTree
+  operation_ref 128289 // OnAddCategory
+  deploymentview_ref 134531 // toolbasview
 end
 end

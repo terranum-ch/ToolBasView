@@ -34,6 +34,7 @@ const int ID_STATUS = 10003;
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
 class lsFoldBarCtrl;
+class QueryListTree;
 
 
 const int ID_FILE_MENU = wxID_HIGHEST + 1;
@@ -52,6 +53,7 @@ const int ID_BTN_RUN = wxID_HIGHEST + 14;
 const int ID_BTN_SHOW_RESULTS = wxID_HIGHEST + 15;
 const int ID_BTN_HISTORY = wxID_HIGHEST + 16;
 const int ID_MENU_AUTOSIZE_COLUMNS = wxID_HIGHEST + 19;
+const int ID_MENU_SHOW_LOG = wxWindow::NewControlId();
 
 
 class TBVFrame: public wxFrame
@@ -60,6 +62,7 @@ private:
 	void OnQuit(wxCloseEvent & event);
 	void OnOpenDatabase(wxCommandEvent & event);
 	void OnShowProcessRequest (wxCommandEvent & event);
+    void OnShowLogPanel (wxCommandEvent & event);
 	void OnDisplayStatistics (wxCommandEvent & event);
 	void OnAboutDlg (wxCommandEvent & event);
 	void OnMenuExit (wxCommandEvent & event);
@@ -108,7 +111,7 @@ private:
     wxTextCtrl* m_LogCtrl;
     wxPanel* m_querypanel;
     wxPanel* m_QueryListPanel;
-    wxTreeCtrl* m_QueryListTreeCtrl;
+    QueryListTree* m_QueryListTreeCtrl;
   
     
     DECLARE_EVENT_TABLE();

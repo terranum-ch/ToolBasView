@@ -1,6 +1,6 @@
 format 75
 "toolbasview"
-  revision 5
+  revision 6
   modified_by 33 "lucien"
 
 
@@ -507,21 +507,6 @@ ${inlines}
 	
       end
 
-      operation 128289 "OnAddCategory"
-	private explicit_return_type "void"
-	nparams 1
-	  param out name "event" explicit_type "wxTreeEvent"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
-"
-	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
-  ${body}}
-"
-	
-	
-	
-	
-      end
-
       operation 128417 "Save"
 	public explicit_return_type "bool"
 	nparams 1
@@ -555,10 +540,40 @@ ${inlines}
       operation 128673 "OnContextualMenu"
 	private explicit_return_type "void"
 	nparams 1
-	  param in name "event" explicit_type "wxCommandEvent"
-	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+	  param out name "event" explicit_type "wxContextMenuEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
 "
-	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 128289 "OnAddCategory"
+	private explicit_return_type "void"
+	nparams 1
+	  param out name "event" explicit_type "wxCommandEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+      end
+
+      operation 135201 "OnRemoveCategory"
+	private explicit_return_type "void"
+	nparams 1
+	  param out name "event" explicit_type "wxCommandEvent"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
   ${body}}
 "
 	
@@ -769,6 +784,64 @@ ${members}
 ${namespace_end}"
       associated_classes
 	class_ref 143619 // DatabaseOp_DLG
+      end
+    end
+
+    artifact 128033 "querylisttree"
+      stereotype "source"
+      cpp_h "/***************************************************************************
+ ${name}
+ -------------------
+ copyright            : (C) 2013 Lucien Schreiber 
+ email                : lucien.schreiber at gmail dot com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+#ifndef _${NAMESPACE}${NAME}_H_
+#define _${NAMESPACE}${NAME}_H_
+
+#include \"wx/wxprec.h\"
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "/***************************************************************************
+ ${name}
+ -------------------
+ copyright            : (C) 2013 Lucien Schreiber 
+ email                : lucien.schreiber at gmail dot com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 128033 // QueryListTree
       end
     end
   end
