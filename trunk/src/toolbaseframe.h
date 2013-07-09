@@ -107,6 +107,7 @@ private:
     wxGrid * m_GridCtrl;
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
+    wxFileName m_QueryListFileName;
     
     wxImageList * m_ImgList;
     wxAuiManager m_mgr;
