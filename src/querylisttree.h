@@ -24,6 +24,10 @@
 #include <wx/filename.h>
 #include <wx/imaglist.h>
 #include <wx/file.h>
+#include <wx/txtstrm.h>
+#include <wx/wfstream.h>
+#include <wx/tokenzr.h>
+
 
 const int ID_QUERY_TREE_CATEGORY_ADD = wxWindow::NewControlId();
 const int ID_QUERY_TREE_CATEGORY_DEL = wxWindow::NewControlId();

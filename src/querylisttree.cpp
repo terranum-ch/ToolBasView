@@ -24,9 +24,10 @@ wxTreeCtrl(parent, id, pos, size, style){
     images->Add(*_img_query_item);
     AssignImageList(images);
     
-    m_RootNode = AddRoot(_T("List"));
     QueryListTreeData * myData = new QueryListTreeData();
-    AppendItem(m_RootNode, _("Salut"), IMAGE_CATEGORY, -1,  myData);
+    m_RootNode = AddRoot(_T("List"));
+    //QueryListTreeData * myData = new QueryListTreeData();
+    //AppendItem(m_RootNode, _("Salut"), IMAGE_CATEGORY, -1,  myData);
     
     this->Bind(wxEVT_CONTEXT_MENU, &QueryListTree::OnContextualMenu, this);
     this->Bind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnCategoryAdd, this, ID_QUERY_TREE_CATEGORY_ADD);
@@ -80,8 +81,9 @@ void QueryListTree::_RecursiveWrite (wxTreeItemId origin, wxFile * file){
         wxString myName = GetItemText(myItem);
         int myType = myDataOrigin->m_ItemType;
         wxString myQuery = myDataOrigin->m_Query;
+        bool bExpended = IsExpanded(myItem);
         
-        file->Write(wxString::Format(_T("%s\t%s\t%d\t%s\n"), myParentName, myName, myType, myQuery));
+        file->Write(wxString::Format(_T("%s\t%s\t%d\t%d\t%s\n"), myParentName, myName, myType, bExpended, myQuery));
 		if( ItemHasChildren( myItem ) ){
             _RecursiveWrite(myItem, file);
 		}
@@ -92,18 +94,68 @@ void QueryListTree::_RecursiveWrite (wxTreeItemId origin, wxFile * file){
 
 
 bool QueryListTree::Load(const wxFileName & filename) {
-    wxFile myFile;
     if (filename.Exists() == false) {
-        myFile.Create(filename.GetFullPath());
-    }
-    myFile.Open(filename.GetFullPath(), wxFile::write);
-    if (myFile.IsOpened() == false) {
         return false;
     }
     
-    // TODO: Load file here
-    return false;
+    wxFileInputStream myInputStream (filename.GetFullPath());
+    wxTextInputStream myTxtStream ( myInputStream );
+    wxString myLine;
+    wxTreeItemId myAddedItem;
+    wxASSERT(myAddedItem.IsOk() == false);
     
+    while ((myLine = myTxtStream.ReadLine()) != wxEmptyString) {
+        // process line : parent name, name, type, isexpanded, query
+        wxStringTokenizer myTokenizer (myLine, _T("\t"), wxTOKEN_RET_EMPTY_ALL);
+        if (myTokenizer.CountTokens() != 5) {
+            wxLogWarning(_("Incorrect data found while loading query list! skipping"));
+            continue;
+        }
+        
+        wxString myParentName = myTokenizer.GetNextToken();
+        wxString myName = myTokenizer.GetNextToken();
+        long myType = 0;
+        myTokenizer.GetNextToken().ToLong(&myType);
+        long myExpended = 0;
+        myTokenizer.GetNextToken().ToLong(&myExpended);
+        wxString myQuery = myTokenizer.GetNextToken();
+        
+        wxTreeItemId myParent;
+        if (myParentName == wxEmptyString) {
+            myParent = m_RootNode;
+        }
+        else {
+            QueryListTreeData * myData = static_cast<QueryListTreeData*>(GetItemData(myAddedItem));
+            wxASSERT(myData);
+            if ( GetItemText(myAddedItem) == myParentName && myData->m_ItemType == QueryListTreeData::DATA_CATEGORY ) {
+                myParent = myAddedItem;
+            }
+            else {
+                while ( (myParent = GetItemParent(myAddedItem)) .IsOk() ) {
+                    QueryListTreeData * myData = static_cast<QueryListTreeData*>(GetItemData(myParent));
+                    wxASSERT(myData);
+                    if ( GetItemText(myParent) == myParentName && myData->m_ItemType == QueryListTreeData::DATA_CATEGORY ) {
+                        break;
+                    }
+                }
+            }
+        }
+        if (myParent.IsOk() == false) {
+            wxLogWarning(_("Parent not found for: '%s', using Root"), myName);
+            myParent = m_RootNode;
+        }
+        
+        QueryListTreeData * myData = new QueryListTreeData();
+        if (myType == QueryListTreeData::DATA_QUERY) {
+            myData->m_ItemType = QueryListTreeData::DATA_QUERY;
+            myData->m_Query = myQuery;
+        }
+        myAddedItem = AppendItem(myParent, myName, myData->m_ItemType, -1, myData);
+        if (myExpended == 1 && myData->m_ItemType == QueryListTreeData::DATA_CATEGORY) {
+            Expand(myAddedItem);
+        }
+    }
+    return true;
 }
 
 
