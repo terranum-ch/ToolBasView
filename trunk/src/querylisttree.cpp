@@ -244,11 +244,18 @@ void QueryListTree::AddQuery(const wxString & name, const wxString & sql) {
         mySelectedId = m_RootNode;
     }
     
+    wxTreeItemId myAddId = mySelectedId;
+    QueryListTreeData * mySelectedData = static_cast<QueryListTreeData*>(GetItemData(mySelectedId));
+    wxASSERT(mySelectedData);
+    if (mySelectedData->m_ItemType == QueryListTreeData::DATA_QUERY) {
+        myAddId = GetItemParent(mySelectedId);
+    }
+    
     QueryListTreeData * myData = new QueryListTreeData();
     myData->m_ItemType = QueryListTreeData::DATA_QUERY;
     myData->m_Query = sql;
     
-    AppendItem(mySelectedId, name, QueryListTreeData::DATA_QUERY, -1, myData);
+    AppendItem(myAddId, name, QueryListTreeData::DATA_QUERY, -1, myData);
 }
 
 
