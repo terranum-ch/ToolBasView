@@ -24,15 +24,16 @@ wxTreeCtrl(parent, id, pos, size, style){
     images->Add(*_img_query_item);
     AssignImageList(images);
     
-    QueryListTreeData * myData = new QueryListTreeData();
     m_RootNode = AddRoot(_T("List"));
-    //QueryListTreeData * myData = new QueryListTreeData();
-    //AppendItem(m_RootNode, _("Salut"), IMAGE_CATEGORY, -1,  myData);
     
     this->Bind(wxEVT_CONTEXT_MENU, &QueryListTree::OnContextualMenu, this);
     this->Bind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnCategoryAdd, this, ID_QUERY_TREE_CATEGORY_ADD);
     this->Bind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnCategoryDel, this, ID_QUERY_TREE_CATEGORY_DEL);
+    this->Bind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnQueryDel, this, ID_QUERY_TREE_QUERY_DEL);
+
     this->Bind(wxEVT_UPDATE_UI, &QueryListTree::OnUpdateUICategoryDel, this, ID_QUERY_TREE_CATEGORY_DEL);
+    this->Bind(wxEVT_UPDATE_UI, &QueryListTree::OnUpdateUIQueryDel, this, ID_QUERY_TREE_QUERY_DEL);
+
     this->Bind(wxEVT_TREE_BEGIN_DRAG, &QueryListTree::OnDragStart, this);
     this->Bind(wxEVT_TREE_END_DRAG, &QueryListTree::OnDragStop, this);
 }
@@ -43,7 +44,11 @@ QueryListTree::~QueryListTree() {
     this->Unbind(wxEVT_CONTEXT_MENU, &QueryListTree::OnContextualMenu, this);
     this->Unbind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnCategoryAdd, this, ID_QUERY_TREE_CATEGORY_ADD);
     this->Unbind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnCategoryDel, this, ID_QUERY_TREE_CATEGORY_DEL);
+    this->Unbind(wxEVT_COMMAND_MENU_SELECTED, &QueryListTree::OnQueryDel, this, ID_QUERY_TREE_QUERY_DEL);
+
     this->Unbind(wxEVT_UPDATE_UI, &QueryListTree::OnUpdateUICategoryDel, this, ID_QUERY_TREE_CATEGORY_DEL);
+    this->Unbind(wxEVT_UPDATE_UI, &QueryListTree::OnUpdateUIQueryDel, this, ID_QUERY_TREE_QUERY_DEL);
+
     this->Unbind(wxEVT_TREE_BEGIN_DRAG, &QueryListTree::OnDragStart, this);
     this->Unbind(wxEVT_TREE_END_DRAG, &QueryListTree::OnDragStop, this);
 }
@@ -163,14 +168,46 @@ void QueryListTree::OnContextualMenu(wxContextMenuEvent & event) {
     wxLogError(_("Coucou"));
     wxMenu myPopupMenu;
     myPopupMenu.Append(ID_QUERY_TREE_CATEGORY_ADD, _("Add category..."), wxEmptyString, false);
-    myPopupMenu.Append(ID_QUERY_TREE_CATEGORY_DEL, _("Remove category..."), wxEmptyString, false);
+    myPopupMenu.Append(ID_QUERY_TREE_CATEGORY_DEL, _("Remove category"), wxEmptyString, false);
+    myPopupMenu.AppendSeparator();
+    myPopupMenu.Append(ID_QUERY_TREE_QUERY_DEL, _("Remove query"), wxEmptyString, false);
     PopupMenu(&myPopupMenu);
 }
 
 
 void QueryListTree::OnUpdateUICategoryDel (wxUpdateUIEvent & event){
-    event.Enable(GetSelection().IsOk());
+    if (GetSelection().IsOk() == false) {
+        event.Enable(false);
+        return;
+    }
+    
+    QueryListTreeData * myData = static_cast<QueryListTreeData*>(GetItemData(GetSelection()));
+    if (myData == NULL || myData->m_ItemType != QueryListTreeData::DATA_CATEGORY) {
+        event.Enable(false);
+        return;
+    }
+    
+    event.Enable(true);
 }
+
+
+
+void QueryListTree::OnUpdateUIQueryDel (wxUpdateUIEvent & event ){
+    if (GetSelection().IsOk() == false) {
+        event.Enable(false);
+        return;
+    }
+    
+    QueryListTreeData * myData = static_cast<QueryListTreeData*>(GetItemData(GetSelection()));
+    if (myData == NULL || myData->m_ItemType != QueryListTreeData::DATA_QUERY) {
+        event.Enable(false);
+        return;
+    }
+    
+    event.Enable(true);
+}
+
+
 
 
 void QueryListTree::OnCategoryAdd(wxCommandEvent & event) {
@@ -186,7 +223,17 @@ void QueryListTree::OnCategoryAdd(wxCommandEvent & event) {
 
 
 void QueryListTree::OnCategoryDel(wxCommandEvent & event) {
-    
+    wxTreeItemId mySelectedId = GetSelection();
+    wxASSERT(mySelectedId.IsOk());
+    if (HasChildren(mySelectedId) == true) {
+        DeleteChildren(mySelectedId);
+    }
+    Delete(mySelectedId);
+}
+
+
+void QueryListTree::OnQueryDel(wxCommandEvent & event){
+    Delete(GetSelection());
 }
 
 
