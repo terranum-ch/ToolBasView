@@ -31,7 +31,7 @@
 
 const int ID_QUERY_TREE_CATEGORY_ADD = wxWindow::NewControlId();
 const int ID_QUERY_TREE_CATEGORY_DEL = wxWindow::NewControlId();
-
+const int ID_QUERY_TREE_QUERY_DEL = wxWindow::NewControlId();
 
 class QueryListTreeData : public wxTreeItemData {
 public:
@@ -60,7 +60,9 @@ class QueryListTree : public wxTreeCtrl {
     void OnContextualMenu(wxContextMenuEvent & event);
     void OnCategoryAdd(wxCommandEvent & event);
     void OnCategoryDel(wxCommandEvent & event);
+    void OnQueryDel(wxCommandEvent & event);
     void OnUpdateUICategoryDel (wxUpdateUIEvent & event);
+    void OnUpdateUIQueryDel (wxUpdateUIEvent & event );
     
     void OnDragStart(wxTreeEvent & event);
     void OnDragStop(wxTreeEvent & event);
