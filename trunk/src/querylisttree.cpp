@@ -24,6 +24,7 @@ wxTreeCtrl(parent, id, pos, size, style){
     images->Add(*_img_query_item);
     AssignImageList(images);
     
+	//QueryListTreeData * myData = new QueryListTreeData();
     m_RootNode = AddRoot(_T("List"));
     
     this->Bind(wxEVT_CONTEXT_MENU, &QueryListTree::OnContextualMenu, this);
@@ -78,9 +79,9 @@ void QueryListTree::_RecursiveWrite (wxTreeItemId origin, wxFile * file){
     
 	while( myItem.IsOk() ){
         QueryListTreeData * myDataOrigin = static_cast<QueryListTreeData*>(GetItemData(myItem));
-        wxString myParentName = GetItemText(origin);
-        if (origin == m_RootNode) {
-            myParentName = "";
+        wxString myParentName = ""; 
+        if (origin != m_RootNode) {
+            myParentName = GetItemText(origin);
         }
         
         wxString myName = GetItemText(myItem);
@@ -242,6 +243,11 @@ void QueryListTree::AddQuery(const wxString & name, const wxString & sql) {
     wxTreeItemId mySelectedId = GetSelection();
     if (mySelectedId.IsOk() == false) {
         mySelectedId = m_RootNode;
+		QueryListTreeData * myData = new QueryListTreeData();
+		myData->m_ItemType = QueryListTreeData::DATA_QUERY;
+		myData->m_Query = sql;
+		AppendItem(m_RootNode, name, QueryListTreeData::DATA_QUERY, -1, myData);
+		return;
     }
     
     wxTreeItemId myAddId = mySelectedId;
