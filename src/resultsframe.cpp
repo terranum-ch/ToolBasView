@@ -18,6 +18,7 @@
 #include "database.h"
 #include "databaseresult.h"
 #include "gridoperation.h"
+#include "Excel.h"
 
 
 BEGIN_EVENT_TABLE( Results_DLG, wxFrame )
@@ -97,9 +98,38 @@ void Results_DLG::OnMenuCopy( wxCommandEvent& event ) {
 }
 
 
+
 void Results_DLG::OnMenuExport( wxCommandEvent& event ) {
-    wxLogError(_("Not implemented!"));
+    wxFileDialog saveDlg (this, _("Save XLS file"), "", "", "XLS files (*.xls)|*.xls", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+    if (saveDlg.ShowModal() == wxID_CANCEL) {
+        return;
+    }
+    
+    Excel myExcel;
+    wxFileName mySaveFileName (saveDlg.GetPath());
+    if(myExcel.Open((const char *) mySaveFileName.GetFullPath().mb_str(wxConvUTF8))==false){
+        wxLogError(_("Unable to open: '%s'"), mySaveFileName.GetFullName());
+        return;
+    }
+    
+    myExcel.Begin();
+    // get header
+	for (int icol = 0; icol < m_GridCtrl->GetNumberCols(); icol++) {
+        myExcel.Write(0, icol, m_GridCtrl->GetColLabelValue(icol).mb_str(wxConvUTF8));
+    }
+    
+    
+    // get values
+    for (int irow = 0; irow < m_GridCtrl->GetNumberRows(); irow++){
+		for (int icol = 0; icol < m_GridCtrl->GetNumberCols(); icol++) {
+            myExcel.Write(irow + 1, icol, m_GridCtrl->GetCellValue(irow, icol).mb_str(wxConvUTF8));
+        }
+	}
+
+    myExcel.End();
+    wxLogMessage(_("Exporting data to '%s' OK!"), mySaveFileName.GetFullName());
 }
+
 
 
 void Results_DLG::OnMenuAutosize( wxCommandEvent& event ) {
