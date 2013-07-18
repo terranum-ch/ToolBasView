@@ -25,6 +25,7 @@
 #include <wx/artprov.h>
 #include <wx/display.h>
 #include <wx/clipbrd.h>
+#include <wx/filename.h>
 
 const int ID_EXPORT_EXCEL = wxID_HIGHEST + 17;
 const int ID_AUTOSIZE_COLUMN = wxID_HIGHEST + 18;
