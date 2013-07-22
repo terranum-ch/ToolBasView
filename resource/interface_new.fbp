@@ -40,7 +40,7 @@
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
             <property name="minimum_size"></property>
-            <property name="name">MyDialog1</property>
+            <property name="name">NewDatabase_DLG</property>
             <property name="pos"></property>
             <property name="size"></property>
             <property name="style">wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</property>
@@ -163,7 +163,7 @@
                                         <property name="pane_border">1</property>
                                         <property name="pane_position"></property>
                                         <property name="pane_size"></property>
-                                        <property name="permission">protected</property>
+                                        <property name="permission">none</property>
                                         <property name="pin_button">1</property>
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
@@ -256,10 +256,10 @@
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
                                         <property name="tooltip"></property>
-                                        <property name="validator_data_type"></property>
-                                        <property name="validator_style">wxFILTER_NONE</property>
-                                        <property name="validator_type">wxDefaultValidator</property>
-                                        <property name="validator_variable"></property>
+                                        <property name="validator_data_type">wxString</property>
+                                        <property name="validator_style"></property>
+                                        <property name="validator_type">wxGenericValidator</property>
+                                        <property name="validator_variable">m_Path</property>
                                         <property name="value"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_name"></property>
@@ -334,7 +334,7 @@
                                         <property name="pane_border">1</property>
                                         <property name="pane_position"></property>
                                         <property name="pane_size"></property>
-                                        <property name="permission">protected</property>
+                                        <property name="permission">none</property>
                                         <property name="pin_button">1</property>
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
@@ -427,10 +427,10 @@
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
                                         <property name="tooltip"></property>
-                                        <property name="validator_data_type"></property>
-                                        <property name="validator_style">wxFILTER_NONE</property>
-                                        <property name="validator_type">wxDefaultValidator</property>
-                                        <property name="validator_variable"></property>
+                                        <property name="validator_data_type">wxString</property>
+                                        <property name="validator_style">wxFILTER_ALPHANUMERIC|wxFILTER_NONE</property>
+                                        <property name="validator_type">wxTextValidator</property>
+                                        <property name="validator_variable">m_Name</property>
                                         <property name="value"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_name"></property>
@@ -535,10 +535,10 @@
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
                                 <property name="tooltip"></property>
-                                <property name="validator_data_type"></property>
-                                <property name="validator_style">wxFILTER_NONE</property>
-                                <property name="validator_type">wxDefaultValidator</property>
-                                <property name="validator_variable"></property>
+                                <property name="validator_data_type">bool</property>
+                                <property name="validator_style"></property>
+                                <property name="validator_type">wxGenericValidator</property>
+                                <property name="validator_variable">m_UseSQLFile</property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style"></property>
@@ -622,10 +622,10 @@
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
                                 <property name="tooltip"></property>
-                                <property name="validator_data_type"></property>
-                                <property name="validator_style">wxFILTER_NONE</property>
-                                <property name="validator_type">wxDefaultValidator</property>
-                                <property name="validator_variable"></property>
+                                <property name="validator_data_type">wxString</property>
+                                <property name="validator_style"></property>
+                                <property name="validator_type">wxGenericValidator</property>
+                                <property name="validator_variable">m_SQLFileName</property>
                                 <property name="value"></property>
                                 <property name="wildcard">*.sql</property>
                                 <property name="window_extra_style"></property>
@@ -654,7 +654,7 @@
                                 <event name="OnRightUp"></event>
                                 <event name="OnSetFocus"></event>
                                 <event name="OnSize"></event>
-                                <event name="OnUpdateUI"></event>
+                                <event name="OnUpdateUI">OnUpdateUIOk</event>
                             </object>
                         </object>
                     </object>
@@ -673,8 +673,8 @@
                         <property name="Save">0</property>
                         <property name="Yes">0</property>
                         <property name="minimum_size"></property>
-                        <property name="name">m_sdbSizer1</property>
-                        <property name="permission">protected</property>
+                        <property name="name">m_BtnCtrl</property>
+                        <property name="permission">none</property>
                         <event name="OnApplyButtonClick"></event>
                         <event name="OnCancelButtonClick"></event>
                         <event name="OnContextHelpButtonClick"></event>
