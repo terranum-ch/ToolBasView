@@ -34,6 +34,7 @@ EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
 EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
 EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
 EVT_MENU(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnColumnSize)
+EVT_MENU(ID_MENU_PROCESS_SQL_FILE, TBVFrame::OnProcessSQLFile)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
@@ -44,6 +45,7 @@ EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
 EVT_UPDATE_UI(ID_BTN_ADD_TO_LIST, TBVFrame::OnUpdateUIAddToList)
+EVT_UPDATE_UI(ID_MENU_PROCESS_SQL_FILE, TBVFrame::OnUpdateUIDatabaseOpen)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
@@ -282,6 +284,7 @@ void TBVFrame::_CreateMenu(){
     item2->AppendSeparator();
     item2->Append( ID_MENU_SPATIAL_ADD, _("Add spatial data into the database...\tCtrl-S"), _("Allow user to load spatial data into a database table (SHP)") );
 	item2->Append( ID_MENU_SPATIAL_SEARCH, _("Search spatial data...\tCtrl-F"), _("Search spatial data used for benchmark") );
+    item2->Append(ID_MENU_PROCESS_SQL_FILE, _("Process SQL file...\tCtrl+Alt+P"), wxEmptyString);
 	item2->AppendSeparator();
 	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"),_("Dialog for deleting data from the database") );
     item2->Append(ID_MENU_DB_OPERATION, _("Database operations"), _("Perform maintenance Database operations"));
@@ -891,6 +894,48 @@ void TBVFrame::OnColumnSize (wxCommandEvent & event){
     m_GridCtrl->AutoSizeColumns();
 }
 
+
+void TBVFrame::OnProcessSQLFile (wxCommandEvent & event){
+    wxFileDialog myOpenDlg(this, _("Open SQL file"), "","", _("SQL file (*.sql)|*.sql"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (myOpenDlg.ShowModal() != wxID_OK) {
+        return;
+    }
+    
+    wxFileInputStream inputStream (myOpenDlg.GetPath());
+    if (inputStream.IsOk() == false) {
+        wxLogError(_("Opening file: '%s' failed!"), myOpenDlg.GetPath());
+        return;
+    }
+    wxTextInputStream textStream (inputStream, _T(" \t"), wxConvUTF8);
+    wxString myQuery;
+    long index = 0;
+    while (inputStream.Eof() == false) {
+        wxString myLine = textStream.ReadLine();
+        if (myLine.StartsWith(_T("--"))) {
+            continue;
+        }
+        
+        myQuery.Append(myLine);
+        if (myQuery.Find(';', true) == wxNOT_FOUND) {
+            continue;
+        }
+        
+        // execute query
+        if (m_Database.DataBaseQueryNoResults(myQuery)==false) {
+            wxLogError(_("Query num: %ld failed: %s"), index, myQuery);
+            return;
+        }
+        /*else{
+            wxString myQueryNoSpace (myQuery);
+            myQueryNoSpace.Replace(_("\n"), _(""));
+            wxLogMessage(_("OK: %s"), myQueryNoSpace);
+        }*/
+        ++ index;
+        myQuery = wxEmptyString;
+    }
+    _LoadTablesIntoToc();
+    wxMessageBox(wxString::Format(_("%ld Queries passed!"), index));
+}
 
 
 void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){

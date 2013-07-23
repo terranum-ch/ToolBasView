@@ -57,7 +57,7 @@ const int ID_MENU_AUTOSIZE_COLUMNS = wxID_HIGHEST + 19;
 const int ID_MENU_SHOW_LOG = wxWindow::NewControlId();
 const int ID_BTN_ADD_TO_LIST = wxWindow::NewControlId();
 const int ID_QUERY_LIST_TREE = wxWindow::NewControlId();
-
+const int ID_MENU_PROCESS_SQL_FILE = wxWindow::NewControlId();
 
 class TBVFrame: public wxFrame
 {
@@ -80,6 +80,7 @@ private:
     void OnUpdateUIDatabaseOpen (wxUpdateUIEvent & event);
     void OnAuiButtonPressed (wxAuiManagerEvent& evt);
     void OnColumnSize (wxCommandEvent & event);
+    void OnProcessSQLFile (wxCommandEvent & event);
     
     void OnBtnRun (wxCommandEvent & event);
     void OnBtnShowResults (wxCommandEvent & event);
