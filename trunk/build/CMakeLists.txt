@@ -1,6 +1,5 @@
 # CMAKE BUILD FILE FOR TOOLBASVIEW 
 # (c) Copyright 2011 Lucien Schreiber. All Rights Reserved. 
-
 cmake_minimum_required(VERSION 2.6)
 ## POLICY FOR WINDOWS ONLY ???
 if(COMMAND cmake_policy)
@@ -10,6 +9,14 @@ endif(COMMAND cmake_policy)
 SET (PROGNAME ToolBasView)
 PROJECT (${PROGNAME})
 MESSAGE("Project Name is : ${CMAKE_PROJECT_NAME}")
+
+IF(APPLE)
+  # add no optimization level to Debug version. Otherwise debugging didn't work correctly
+  SET (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+  SET (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0") 
+  MESSAGE(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+  MESSAGE(STATUS "CMAKE_C_FLAGS_DEBUG: ${CMAKE_C_FLAGS_DEBUG}")
+ENDIF(APPLE)
 
 # SEARCH FILES --------------------------------
 #search all source files
