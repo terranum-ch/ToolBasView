@@ -89,6 +89,8 @@ void QueryListTree::_RecursiveWrite (wxTreeItemId origin, wxFile * file){
         wxString myQuery = myDataOrigin->m_Query;
         bool bExpended = IsExpanded(myItem);
         
+        // support multi-line query
+        myQuery.Replace(_T("\n"), _T("###"));
         file->Write(wxString::Format(_T("%s\t%s\t%d\t%d\t%s\n"), myParentName, myName, myType, bExpended, myQuery));
 		if( ItemHasChildren( myItem ) ){
             _RecursiveWrite(myItem, file);
@@ -125,6 +127,8 @@ bool QueryListTree::Load(const wxFileName & filename) {
         long myExpended = 0;
         myTokenizer.GetNextToken().ToLong(&myExpended);
         wxString myQuery = myTokenizer.GetNextToken();
+        
+        myQuery.Replace(_T("###"), _T("\n"));
         
         wxTreeItemId myParent;
         if (myParentName == wxEmptyString) {
@@ -241,7 +245,7 @@ void QueryListTree::OnQueryDel(wxCommandEvent & event){
 
 void QueryListTree::AddQuery(const wxString & name, const wxString & sql) {
     wxTreeItemId mySelectedId = GetSelection();
-    if (mySelectedId.IsOk() == false) {
+    if (mySelectedId.IsOk() == false || GetCount() == 0) {
         mySelectedId = m_RootNode;
 		QueryListTreeData * myData = new QueryListTreeData();
 		myData->m_ItemType = QueryListTreeData::DATA_QUERY;
