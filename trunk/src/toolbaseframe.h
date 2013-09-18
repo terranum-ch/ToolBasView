@@ -22,8 +22,7 @@ const int ID_STATUS = 10003;
 #include <wx/imaglist.h>
 #include <wx/aui/aui.h>
 #include <wx/treectrl.h>
-
-
+#include <wx/stc/stc.h>
 
 #include "database.h"
 #include "databaseresult.h"
@@ -113,7 +112,7 @@ private:
     wxImageList * m_ImgList;
     wxAuiManager m_mgr;
     wxStaticText* m_VersionTxtCtrl;
-    wxTextCtrl* m_QueryTxtCtrl;
+    wxStyledTextCtrl* m_QueryTxtCtrl;
     wxButton* m_QueryRunCtrl;
     wxButton* m_QueryShowCtrl;
     wxButton* m_QueryHistoryCtrl;

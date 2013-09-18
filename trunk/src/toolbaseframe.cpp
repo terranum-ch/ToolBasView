@@ -191,7 +191,34 @@ void TBVFrame::_CreateControls(){
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxVERTICAL );
 	
-	m_QueryTxtCtrl = new wxTextCtrl( m_querypanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_PROCESS_TAB );
+	m_QueryTxtCtrl = new wxStyledTextCtrl( m_querypanel, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    m_QueryTxtCtrl->StyleClearAll();
+    m_QueryTxtCtrl->SetLexer(wxSTC_LEX_SQL);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_STRING,            wxColour(150,0,0));
+    
+    // comments
+    wxColourDatabase myDb;
+    wxColour myCommentColour = myDb.Find(_T("FOREST GREEN"));
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENT, myCommentColour);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENTDOC,        myCommentColour);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENTDOCKEYWORD,        myCommentColour);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENTLINE,        myCommentColour);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENTLINEDOC,       myCommentColour);
+    m_QueryTxtCtrl->StyleSetForeground (wxSTC_SQL_COMMENTDOCKEYWORDERROR,       myCommentColour);
+    m_QueryTxtCtrl->StyleSetBold(wxSTC_SQL_COMMENTDOCKEYWORD, true);
+    
+    // code
+    m_QueryTxtCtrl->StyleSetForeground(wxSTC_SQL_WORD, *wxBLUE);
+    m_QueryTxtCtrl->StyleSetForeground(wxSTC_SQL_WORD2, *wxBLUE);
+    m_QueryTxtCtrl->StyleSetBold(wxSTC_SQL_WORD, true);
+    m_QueryTxtCtrl->StyleSetBold(wxSTC_SQL_WORD2, true);
+    
+    m_QueryTxtCtrl->SetKeyWords(0, _T("accessible add all alter analyze and as asc asensitive before between bigint binary blob both by call cascade case change char character check collate column condition constraint continue convert create cross current_date current_time current_timestamp current_user cursor database databases day_hour day_microsecond day_minute day_second dec decimal declare default delayed delete desc describe deterministic distinct distinctrow div double drop dual each else elseif enclosed escaped exists exit explain false fetch float float4 float8 for force foreign from fulltext general grant group having high_priority hour_microsecond hour_minute hour_second if ignore ignore_server_ids in index infile inner inout insensitive insert int int1 int2 int3 int4 int8 integer interval into is iterate join key keys kill leading leave left like limit linear lines load localtime localtimestamp lock long longblob longtext loop low_priority master_heartbeat_period master_ssl_verify_server_cert match maxvalue mediumblob mediumint mediumtext middleint minute_microsecond minute_second mod modifies natural not no_write_to_binlog null numeric on optimize option optionally or order out outer outfile precision primary procedure purge range read reads read_write real references regexp release rename repeat replace require resignal restrict return revoke right rlike schema schemas second_microsecond select sensitive separator set show signal slow[d] smallint spatial specific sql sqlexception sqlstate sqlwarning sql_big_result sql_calc_found_rows sql_small_result ssl starting straight_join table terminated then tinyblob tinyint tinytext to trailing trigger true undo union unique unlock unsigned update usage use using utc_date utc_time utc_timestamp values varbinary varchar varcharacter varying when where while with write xor year_month zerofill   general ignore_server_ids master_heartbeat_period maxvalue resignal signal slow"));
+    
+    m_QueryTxtCtrl->SetMarginWidth(0, 30);
+    m_QueryTxtCtrl->SetMarginWidth(1, 0);
+    m_QueryTxtCtrl->SetMarginType(0, 1);
+    
 	bSizer6->Add( m_QueryTxtCtrl, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer7;
@@ -939,7 +966,7 @@ void TBVFrame::OnProcessSQLFile (wxCommandEvent & event){
 
 
 void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
-    if (m_Database.DataBaseGetName() != wxEmptyString) {
+    if (m_Database.DataBaseGetName() != wxEmptyString && m_QueryTxtCtrl->IsEmpty() == false) {
         event.Enable(true);
         return;
     }
