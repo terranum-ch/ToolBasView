@@ -112,6 +112,7 @@ INCLUDE ("cmake/Use_wingdiplus.cmake")
 
 #Copy errmsg.sys to correct path
 INCLUDE ("cmake/useMySQLEmbedded.cmake")
+INCLUDE("cmake/GDALCopyLibs.cmake")
 
 # UNIT TEST PROGRAM
 SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${PROGNAME}")
