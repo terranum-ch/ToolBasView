@@ -23,6 +23,9 @@ const int ID_STATUS = 10003;
 #include <wx/aui/aui.h>
 #include <wx/treectrl.h>
 #include <wx/stc/stc.h>
+#include <wx/filehistory.h>
+#include <wx/fileconf.h>
+
 
 #include "database.h"
 #include "databaseresult.h"
@@ -63,6 +66,7 @@ class TBVFrame: public wxFrame
 private:
 	void OnQuit(wxCloseEvent & event);
 	void OnOpenDatabase(wxCommandEvent & event);
+    void OnOpenRecentDatabase (wxCommandEvent & event);
 	void OnShowProcessRequest (wxCommandEvent & event);
     void OnShowLogPanel (wxCommandEvent & event);
 	void OnDisplayStatistics (wxCommandEvent & event);
@@ -99,6 +103,7 @@ private:
     void _CreateMenu();
     void _CreateToolBar();
     void _UpdateHistory (const wxString & sentence);
+    bool _OpenDatabase (const wxString & path);
 
     
 	DataBase m_Database;
@@ -108,6 +113,8 @@ private:
     wxArrayString m_History;
     wxFileName m_HistoryFileName;
     wxFileName m_QueryListFileName;
+    wxFileHistory m_FileHist;
+    wxFileConfig * m_ConfigFile;
     
     wxImageList * m_ImgList;
     wxAuiManager m_mgr;
@@ -121,8 +128,6 @@ private:
     wxPanel* m_QueryListPanel;
     QueryListTree* m_QueryListTreeCtrl;
     wxButton* m_AddToListBtnCtrl;
-
-  
     
     DECLARE_EVENT_TABLE();
     

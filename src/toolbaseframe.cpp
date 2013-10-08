@@ -21,6 +21,7 @@ BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
 EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
 EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
 EVT_MENU (wxID_OPEN,TBVFrame::OnOpenDatabase)
+EVT_MENU_RANGE(wxID_FILE1, wxID_FILE9, TBVFrame::OnOpenRecentDatabase)
 EVT_MENU (ID_MENU_SHOW_LOG, TBVFrame::OnShowLogPanel)
 EVT_CLOSE(TBVFrame::OnQuit)
 EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
@@ -63,6 +64,9 @@ END_EVENT_TABLE()
 
 /* Frame initialisation */
 TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize size): wxFrame(frame, -1, title,pos,size){
+    
+    m_ConfigFile = new wxFileConfig("toolbasview", "CREALP");
+    
     wxInitAllImageHandlers();
     initialize_images();
     results_initialize_images();
@@ -296,6 +300,17 @@ void TBVFrame::_CreateMenu(){
     wxMenu* item1 = new wxMenu;
 	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
     item1->Append( wxID_OPEN, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
+    
+    wxMenu* recentmenu = new wxMenu();
+    item1->AppendSubMenu(recentmenu, _("Recent"));
+    
+    m_FileHist.UseMenu(recentmenu);
+    m_FileHist.AddFilesToMenu(recentmenu);
+
+    // load configuration
+    wxASSERT(m_ConfigFile);
+    m_FileHist.Load(*m_ConfigFile);
+    
     item1->AppendSeparator();
     item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
 	item1->AppendSeparator();
@@ -382,36 +397,59 @@ TBVFrame::~TBVFrame()
     
     wxDELETE(m_ImgList);
     
+    // save configuration
+    m_FileHist.Save(*m_ConfigFile);
+    wxDELETE(m_ConfigFile);
 }
 
 
-void TBVFrame::OnOpenDatabase(wxCommandEvent & event)
-{
+void TBVFrame::OnOpenDatabase(wxCommandEvent & event){
 	const wxString & dir = wxDirSelector (_("Choose the database folder"));
-	if (dir.empty())
-		return;
-	
-	// clear all the controls.
-	ClearCtrls();
-	wxFileName myDirPath (dir, _T(""));
-	if (myDirPath.IsOk()==false)	{
-		wxLogError(_T("Incorrect path"));
-		return;
-	}
-	
-	wxArrayString myDirsString = myDirPath.GetDirs();
-	myDirPath.RemoveLastDir();
-	
-	if(m_Database.DataBaseOpen(myDirPath.GetFullPath(wxPATH_NATIVE),myDirsString.Item(myDirsString.GetCount()-1))==false){
+	if (dir.empty()){
 		return;
     }
 	
-	wxLogMessage(_("Path : %s, Name : %s"), m_Database.DataBaseGetPath().c_str(), m_Database.DataBaseGetName().c_str());
-	_LoadTablesIntoToc();
-		
-	// get the database size
-	wxLogMessage( m_Database.DataBaseGetSize());
+    if (_OpenDatabase(dir) == false) {
+        return;
+    }
+    m_FileHist.AddFileToHistory(dir);
 }
+
+
+
+bool TBVFrame::_OpenDatabase (const wxString & path){
+    wxFileName myDbFileName (path, "");
+    
+    // clear all the controls.
+	ClearCtrls();
+	if (myDbFileName.IsOk()==false)	{
+		wxLogError(_T("Incorrect path"));
+		return false;
+	}
+    
+    wxArrayString myDirs = myDbFileName.GetDirs();
+    myDbFileName.RemoveLastDir();
+    
+    if (m_Database.DataBaseOpen(myDbFileName.GetFullPath(wxPATH_NATIVE) , myDirs.Last()) == false) {
+        wxLogError(_("Loading: %s failed!"), myDbFileName.GetFullPath());
+        return false;
+    }
+    wxLogMessage(myDbFileName.GetFullPath());
+	_LoadTablesIntoToc();
+    wxLogMessage( m_Database.DataBaseGetSize());
+    return true;
+}
+
+
+void TBVFrame::OnOpenRecentDatabase (wxCommandEvent & event){
+    wxString myFileNameTxt (m_FileHist.GetHistoryFile(event.GetId() - wxID_FILE1));
+    if (myFileNameTxt.IsEmpty()) {
+        return;
+    }
+    _OpenDatabase(myFileNameTxt);
+}
+
+
 
 void TBVFrame::OnDeleteData (wxCommandEvent & event)
 {	
