@@ -121,7 +121,7 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
     wxFlexGridSizer *item3 = new wxFlexGridSizer( 3, 0, 0 );
     item3->AddGrowableCol( 1 );
 
-    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT2, _("Database Path :"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT2, _("Path :"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item5 = new wxTextCtrl( parent, ID_TXT_DB_PATH, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
@@ -130,7 +130,7 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
     wxButton *item6 = new wxButton( parent, ID_BTN_CHOOSE_PATH, _("..."), wxDefaultPosition, wxSize(40,-1), 0 );
     item3->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT2, _("Database Name"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT2, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item8 = new wxTextCtrl( parent, ID_TXT_DB_NAME, wxT(""), wxDefaultPosition, wxSize(300,-1), 0 );
@@ -142,11 +142,11 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item10 = new wxButton( parent, wxID_OK, _("Create new database"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item10 = new wxButton( parent, wxID_OK, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->SetDefault();
     item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item11 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item11->SetDefault();
     item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item9, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );

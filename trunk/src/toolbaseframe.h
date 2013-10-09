@@ -1,20 +1,15 @@
 /*!
-@file main.h
-@brief   declaration of TBVApp and TBVFrame Class
-@author Lucien Schreiber (c) CREALP 2007
-*/
-
+ @file main.h
+ @brief   declaration of TBVApp and TBVFrame Class
+ @author Lucien Schreiber (c) CREALP 2007
+ */
 
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-const int ID_RUN = 10001;
-const int ID_ABOUT = 10002;
-const int ID_STATUS = 10003;
-
-#include <wx/treectrl.h> // for tree control
+#include <wx/treectrl.h>
 #include <wx/stdpaths.h>
-#include <wx/progdlg.h>				// progress dialog.
+#include <wx/progdlg.h>
 #include <wx/wupdlock.h>
 #include <wx/textfile.h>
 #include <wx/treectrl.h>
@@ -25,7 +20,7 @@ const int ID_STATUS = 10003;
 #include <wx/stc/stc.h>
 #include <wx/filehistory.h>
 #include <wx/fileconf.h>
-
+#include <wx/msgdlg.h>
 
 #include "database.h"
 #include "databaseresult.h"
@@ -36,7 +31,6 @@ const int ID_STATUS = 10003;
 #include "deletetabledata_dlg.h"	// deleting data dialog
 #include "searchspatialpoint_dlg.h"		// searching spatial data
 
-class lsFoldBarCtrl;
 class QueryListTree;
 
 // menus
@@ -88,6 +82,8 @@ private:
     void OnColumnSize (wxCommandEvent & event);
     void OnProcessSQLFile (wxCommandEvent & event);
     void OnImportTXTFile (wxCommandEvent & event);
+    void OnChangeColumnType (wxCommandEvent & event);
+    void OnMySQLReference (wxCommandEvent & event);
     
     void OnBtnRun (wxCommandEvent & event);
     void OnBtnShowResults (wxCommandEvent & event);
@@ -108,7 +104,7 @@ private:
     void _CreateToolBar();
     void _UpdateHistory (const wxString & sentence);
     bool _OpenDatabase (const wxString & path);
-
+    
     
 	DataBase m_Database;
 	wxTreeCtrl * m_TreeCtrl;
@@ -135,7 +131,7 @@ private:
     
     DECLARE_EVENT_TABLE();
     
-public:  
+public:
 	TBVFrame(wxFrame *frame, const wxString& title,
 			 wxPoint  pos,  wxSize  size);
 	~TBVFrame();

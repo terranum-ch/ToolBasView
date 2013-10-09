@@ -13,8 +13,7 @@
 #include "toolbasview_bmp.h"
 #include "results_bmp.h"
 #include "querylisttree.h"
-
-
+#include "changecolumn_dlg.h"
 
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
@@ -37,6 +36,8 @@ EVT_MENU(ID_MENU_EXPORT_DUMPCLIPBOARD, TBVFrame::OnExportStructureToClipboard)
 EVT_MENU(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnColumnSize)
 EVT_MENU(ID_MENU_IMPORT_SQL, TBVFrame::OnProcessSQLFile)
 EVT_MENU(ID_MENU_IMPORT_TXT, TBVFrame::OnImportTXTFile)
+EVT_MENU(ID_MENU_MANIP_CHANGE_COL_TYPE, TBVFrame::OnChangeColumnType)
+EVT_MENU(ID_MENU_WEB_MYSQL, TBVFrame::OnMySQLReference)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
@@ -49,6 +50,7 @@ EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
 EVT_UPDATE_UI(ID_BTN_ADD_TO_LIST, TBVFrame::OnUpdateUIAddToList)
 EVT_UPDATE_UI(ID_MENU_IMPORT_SQL, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_IMPORT_TXT, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_MANIP_CHANGE_COL_TYPE, TBVFrame::OnUpdateUIDatabaseOpen)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
@@ -79,7 +81,8 @@ TBVFrame::TBVFrame(wxFrame *frame, const wxString& title,wxPoint pos, wxSize siz
     SetIcon(myIcon);
 	
     // adding status bar
-	CreateStatusBar(2,0,ID_STATUS);
+	CreateStatusBar(2);
+    SetStatusBarPane(-1);
     _CreateControls();
     _CreateMenu();
     _CreateToolBar();
@@ -1123,10 +1126,36 @@ void TBVFrame::OnImportTXTFile (wxCommandEvent & event){
         ++ myLineImported;
     }
     
-    wxLogMessage(_("%ld line imported, %ld line skipped, %d errors!"), myLineImported, myLineSkipped, myNbError);
+    wxMessageBox(wxString::Format(_("%ld line imported\n%ld line skipped (empty lines)\n%d errors!"), myLineImported, myLineSkipped, myNbError));
 }
 
 
+
+
+void TBVFrame::OnChangeColumnType (wxCommandEvent & event){
+    
+    wxArrayString myTables;
+    if(m_Database.DataBaseQuery(_T("SHOW TABLES"))==true){
+        m_Database.DataBaseGetResults(myTables);
+    }
+    wxSingleChoiceDialog myTableDlg(this, _("Select Table"), _("Change column type on"), myTables);
+    if (myTableDlg.ShowModal() != wxID_OK) {
+        return;
+    }
+    wxString myTableName = myTableDlg.GetStringSelection();
+    if (myTableName.IsEmpty()) {
+        wxLogError(_("No table name specified!"));
+        return;
+    }
+    
+    ChangeColumn_DLG myDlg(this, &m_Database, myTableName);
+    myDlg.ShowModal();
+}
+
+
+void TBVFrame::OnMySQLReference (wxCommandEvent & event){
+    wxLaunchDefaultBrowser(_T("http://dev.mysql.com/doc/refman/5.6/en/sql-syntax.html"));
+}
 
 
 void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
