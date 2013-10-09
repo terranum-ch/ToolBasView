@@ -1064,10 +1064,10 @@ void TBVFrame::OnImportTXTFile (wxCommandEvent & event){
         wxLogError(_("Opening file: '%s' failed!"), myOpenDlg.GetPath());
         return;
     }
-    wxTextInputStream textStream (inputStream, _T(" \t"), wxConvUTF8);
+    wxTextInputStream textStream (inputStream, _T(" \t"));
     
     // read first line to create table
-    wxArrayString myFirstLine = wxStringTokenize(textStream.ReadLine());
+    wxArrayString myFirstLine = wxStringTokenize(textStream.ReadLine(), _T("\t"), wxTOKEN_RET_EMPTY_ALL);
     if (myFirstLine.GetCount() == 0) {
         wxLogError(_("Nothing to import!"));
         return;
@@ -1093,7 +1093,7 @@ void TBVFrame::OnImportTXTFile (wxCommandEvent & event){
     int myNbError = 0;
     
     while (inputStream.Eof() == false) {
-        wxArrayString myLineContent = wxStringTokenize( textStream.ReadLine());
+        wxArrayString myLineContent = wxStringTokenize( textStream.ReadLine(), _T("\t"), wxTOKEN_RET_EMPTY_ALL);
         if (myLineContent.GetCount() == 0) {
             ++ myLineSkipped;
             continue;
