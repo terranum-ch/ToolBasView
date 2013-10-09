@@ -87,6 +87,7 @@ private:
     void OnAuiButtonPressed (wxAuiManagerEvent& evt);
     void OnColumnSize (wxCommandEvent & event);
     void OnProcessSQLFile (wxCommandEvent & event);
+    void OnImportTXTFile (wxCommandEvent & event);
     
     void OnBtnRun (wxCommandEvent & event);
     void OnBtnShowResults (wxCommandEvent & event);

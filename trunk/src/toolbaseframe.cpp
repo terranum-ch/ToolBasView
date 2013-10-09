@@ -36,6 +36,7 @@ EVT_MENU(ID_MENU_MAINTENANCE, TBVFrame::OnDatabaseOperation)
 EVT_MENU(ID_MENU_EXPORT_DUMPCLIPBOARD, TBVFrame::OnExportStructureToClipboard)
 EVT_MENU(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnColumnSize)
 EVT_MENU(ID_MENU_IMPORT_SQL, TBVFrame::OnProcessSQLFile)
+EVT_MENU(ID_MENU_IMPORT_TXT, TBVFrame::OnImportTXTFile)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
@@ -47,6 +48,7 @@ EVT_UPDATE_UI(ID_MENU_EXPORT_DUMPCLIPBOARD, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
 EVT_UPDATE_UI(ID_BTN_ADD_TO_LIST, TBVFrame::OnUpdateUIAddToList)
 EVT_UPDATE_UI(ID_MENU_IMPORT_SQL, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_IMPORT_TXT, TBVFrame::OnUpdateUIDatabaseOpen)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
@@ -1044,9 +1046,87 @@ void TBVFrame::OnProcessSQLFile (wxCommandEvent & event){
         ++ index;
         myQuery = wxEmptyString;
     }
+    ClearCtrls();
     _LoadTablesIntoToc();
     wxMessageBox(wxString::Format(_("%ld Queries passed!"), index));
 }
+
+
+
+void TBVFrame::OnImportTXTFile (wxCommandEvent & event){
+    wxFileDialog myOpenDlg(this, _("Open TXT file"), "","", _("txt file (*.txt)|*.txt"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (myOpenDlg.ShowModal() != wxID_OK) {
+        return;
+    }
+    
+    wxFileInputStream inputStream (myOpenDlg.GetPath());
+    if (inputStream.IsOk() == false) {
+        wxLogError(_("Opening file: '%s' failed!"), myOpenDlg.GetPath());
+        return;
+    }
+    wxTextInputStream textStream (inputStream, _T(" \t"), wxConvUTF8);
+    
+    // read first line to create table
+    wxArrayString myFirstLine = wxStringTokenize(textStream.ReadLine());
+    if (myFirstLine.GetCount() == 0) {
+        wxLogError(_("Nothing to import!"));
+        return;
+    }
+    
+    wxFileName myTxtFileName (myOpenDlg.GetPath());
+    wxString myQueryCols = wxEmptyString;
+    for (unsigned int i = 0; i<myFirstLine.GetCount(); i++) {
+        myQueryCols.Append(wxString::Format(_T("`%s` VARCHAR(1000) NULL DEFAULT NULL,"), myFirstLine.Item(i)));
+    }
+    myQueryCols.RemoveLast();
+    wxString myQuery = wxString::Format( _T("CREATE TABLE `%s` (%s) ENGINE=MyISAM  DEFAULT CHARSET=utf8;"), myTxtFileName.GetName(), myQueryCols);
+    
+    if (m_Database.DataBaseQueryNoResults(myQuery) == false) {
+        wxLogMessage(myQuery);
+        wxLogError(_("Error creating table for storing TXT file content"));
+        return;
+    }
+
+    // import data
+    long myLineSkipped = 0;
+    long myLineImported = 0;
+    int myNbError = 0;
+    
+    while (inputStream.Eof() == false) {
+        wxArrayString myLineContent = wxStringTokenize( textStream.ReadLine());
+        if (myLineContent.GetCount() == 0) {
+            ++ myLineSkipped;
+            continue;
+        }
+        
+        wxString myInsQuery = wxString::Format(_T("INSERT INTO `%s` VALUES ("), myTxtFileName.GetName());
+        for (unsigned int i = 0; i< myLineContent.GetCount(); i++) {
+            wxString myItem = myLineContent.Item(i);
+            if (myItem.IsEmpty() == true) {
+                myInsQuery.Append(_T("NULL,"));
+            }
+            else {
+                myInsQuery.Append(_T("\"") + myItem + _T("\","));
+            }
+        }
+        myInsQuery.RemoveLast();
+        myInsQuery.Append(_T(");"));
+        if (m_Database.DataBaseQueryNoResults(myInsQuery) == false) {
+            wxLogError(myInsQuery);
+            if (myNbError == 10) {
+                break;
+            }
+            ++ myNbError;
+            continue;
+        }
+        
+        ++ myLineImported;
+    }
+    
+    wxLogMessage(_("%ld line imported, %ld line skipped, %d errors!"), myLineImported, myLineSkipped, myNbError);
+}
+
+
 
 
 void TBVFrame::OnUpdateUIBtnRun (wxUpdateUIEvent & event){
