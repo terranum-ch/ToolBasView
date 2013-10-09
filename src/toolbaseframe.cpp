@@ -25,28 +25,28 @@ EVT_MENU_RANGE(wxID_FILE1, wxID_FILE9, TBVFrame::OnOpenRecentDatabase)
 EVT_MENU (ID_MENU_SHOW_LOG, TBVFrame::OnShowLogPanel)
 EVT_CLOSE(TBVFrame::OnQuit)
 EVT_TREE_ITEM_ACTIVATED (ID_LISTTABLE,TBVFrame::OnDoubleClickListe)
-EVT_MENU (ID_PROCESS_MENU,TBVFrame::OnShowProcessRequest)
-EVT_MENU (ID_NEW_DBASE,TBVFrame::OnNewDataBase)
+EVT_MENU (ID_MENU_SHOW_QUERYPANEL,TBVFrame::OnShowProcessRequest)
+EVT_MENU (wxID_NEW,TBVFrame::OnNewDataBase)
 EVT_MENU (ID_MENU_STATISTICS,TBVFrame::OnDisplayStatistics)
 EVT_MENU (ID_MENU_SPATIAL_ADD,TBVFrame::OnSpatialDataAdd)
-EVT_MENU (ID_MENU_DELETE, TBVFrame::OnDeleteData)
+EVT_MENU (ID_MENU_MANIP_DELETE, TBVFrame::OnDeleteData)
 EVT_MENU (ID_MENU_SPATIAL_SEARCH, TBVFrame::OnSpatialDataSearch )
-EVT_MENU(wxID_SAVEAS, TBVFrame::OnExportData)
-EVT_MENU(ID_MENU_DB_OPERATION, TBVFrame::OnDatabaseOperation)
-EVT_MENU(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnExportStructureToClipboard)
+EVT_MENU(ID_MENU_EXPORT_TXT, TBVFrame::OnExportData)
+EVT_MENU(ID_MENU_MAINTENANCE, TBVFrame::OnDatabaseOperation)
+EVT_MENU(ID_MENU_EXPORT_DUMPCLIPBOARD, TBVFrame::OnExportStructureToClipboard)
 EVT_MENU(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnColumnSize)
-EVT_MENU(ID_MENU_PROCESS_SQL_FILE, TBVFrame::OnProcessSQLFile)
+EVT_MENU(ID_MENU_IMPORT_SQL, TBVFrame::OnProcessSQLFile)
 
 EVT_UPDATE_UI(ID_MENU_STATISTICS, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_ADD, TBVFrame::OnUpdateUIDatabaseOpen)
-EVT_UPDATE_UI(ID_MENU_DELETE, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_MANIP_DELETE, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_SPATIAL_SEARCH, TBVFrame::OnUpdateUIDatabaseOpen)
-EVT_UPDATE_UI(wxID_SAVEAS, TBVFrame::OnUpdateUIDatabaseOpen)
-EVT_UPDATE_UI(ID_MENU_DB_OPERATION, TBVFrame::OnUpdateUIDatabaseOpen)
-EVT_UPDATE_UI(ID_MENU_EXPORT_STRUCTURE, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_EXPORT_TXT, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_MAINTENANCE, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_EXPORT_DUMPCLIPBOARD, TBVFrame::OnUpdateUIDatabaseOpen)
 EVT_UPDATE_UI(ID_MENU_AUTOSIZE_COLUMNS, TBVFrame::OnUpdateUIAutosize)
 EVT_UPDATE_UI(ID_BTN_ADD_TO_LIST, TBVFrame::OnUpdateUIAddToList)
-EVT_UPDATE_UI(ID_MENU_PROCESS_SQL_FILE, TBVFrame::OnUpdateUIDatabaseOpen)
+EVT_UPDATE_UI(ID_MENU_IMPORT_SQL, TBVFrame::OnUpdateUIDatabaseOpen)
 
 EVT_BUTTON(ID_BTN_HISTORY, TBVFrame::OnBtnHistory)
 EVT_BUTTON(ID_BTN_RUN, TBVFrame::OnBtnRun)
@@ -297,9 +297,10 @@ void TBVFrame::_CreateControls(){
 void TBVFrame::_CreateMenu(){
     wxMenuBar *myMenuBar = new wxMenuBar;
     
+    // FILE
     wxMenu* item1 = new wxMenu;
-	item1->Append(ID_NEW_DBASE,_("Create new database...\tCtrl-N"),_("Display the dialog box for creating new database"));
-    item1->Append( wxID_OPEN, _("Open database...\tCtrl-O"), _("Display the dialog box for selecting the database to open") );
+	item1->Append( wxID_NEW,_("Create...\tCtrl-N"));
+    item1->Append( wxID_OPEN, _("Open...\tCtrl-O"));
     
     wxMenu* recentmenu = new wxMenu();
     item1->AppendSubMenu(recentmenu, _("Recent"));
@@ -312,14 +313,58 @@ void TBVFrame::_CreateMenu(){
     m_FileHist.Load(*m_ConfigFile);
     
     item1->AppendSeparator();
-    item1->Append( ID_MENU_STATISTICS, _("Database statistics...\tCtrl-I"), _("Display the statistics from the opened database") );
-	item1->AppendSeparator();
+    item1->Append(ID_MENU_MAINTENANCE, _("Maintenance..."));
+    item1->Append( ID_MENU_STATISTICS, _("Statistics..."));
+#ifndef __WXMAC__
+    item1->AppendSeparator();
+#endif
+    item1->Append( wxID_EXIT );
+    myMenuBar->Append( item1, _("File") );
+    
+    
+    // DATA
+    wxMenu* item2 = new wxMenu;
+    wxMenu* import_menu = new wxMenu();
+    import_menu->Append(ID_MENU_IMPORT_TXT, _("From TXT...\tCtrl+Alt+I"));
+    import_menu->Append(ID_MENU_IMPORT_SQL, _("From SQL...\tCtrl+Alt+P"));
+    item2->AppendSubMenu(import_menu, _("Import"));
+    
+    wxMenu* export_menu = new wxMenu();
+    export_menu->Append(ID_MENU_EXPORT_TXT, _("To TXT...\tCtrl+Alt+E"));
+    export_menu->Append(ID_MENU_EXPORT_DUMPCLIPBOARD, _("Structure to clipboard\tCtrl+Alt+D"));
+    item2->AppendSubMenu(export_menu, _("Export"));
+    
+    item2->AppendSeparator();
+    
+    wxMenu* manipulation_menu = new wxMenu();
+    manipulation_menu->Append(ID_MENU_MANIP_CHANGE_COL_TYPE, _("Change column type...\tCtrl+M"));
+    manipulation_menu->Append(ID_MENU_MANIP_DELETE, _("Delete data...\tCtrl+Del"));
+    item2->AppendSubMenu(manipulation_menu, _("Manipulation"));
+    myMenuBar->Append( item2, _("Data") );
+
+    
+    // SPATIAL
+    wxMenu * spatial_menu = new wxMenu();
+    spatial_menu->Append(ID_MENU_SPATIAL_ADD, _("Add spatial data..."));
+    spatial_menu->Append(ID_MENU_SPATIAL_SEARCH, _("Search spatial data..."));
+    myMenuBar->Append(spatial_menu, _("Spatial"));
+    
+    
+    // VIEW
+    wxMenu * view_menu = new wxMenu();
+    view_menu->Append(ID_MENU_SHOW_QUERYPANEL, _("Show query panel\tCtrl+P"));
+    view_menu->Append(ID_MENU_SHOW_LOG, _("Show log panel\tCtrl+L"));
+    view_menu->AppendSeparator();
+    view_menu->Append(ID_MENU_AUTOSIZE_COLUMNS, _("Autosize columns"));
+    myMenuBar->Append(view_menu, _("View"));
+
+   
+    /*
     item1->Append( wxID_SAVEAS, _("Export as CSV...\tCtrl-Alt-E"), _("Select and Export data as CSV.") );
     item1->Append(ID_MENU_EXPORT_STRUCTURE, _("Dump to Clipboard...\tCtrl+D"));
     item1->AppendSeparator();
-    item1->Append( wxID_EXIT, _("Exit program"), _("Quit the program") );
-    myMenuBar->Append( item1, _("File") );
     
+   
     wxMenu* item2 = new wxMenu;
     item2->Append( ID_PROCESS_MENU, _("Show Process Query...\tCtrl-P"), _("Allow user to edit a personalized SQL request") );
     item2->Append(ID_MENU_SHOW_LOG, _("Show Log panel\tCtrl+L"), _("Show the log panel"));
@@ -329,17 +374,18 @@ void TBVFrame::_CreateMenu(){
     item2->Append(ID_MENU_PROCESS_SQL_FILE, _("Process SQL file...\tCtrl+Alt+P"), wxEmptyString);
 	item2->AppendSeparator();
 	item2->Append( ID_MENU_DELETE, _("Delete data from database...\tCtrl-Del"),_("Dialog for deleting data from the database") );
-    item2->Append(ID_MENU_DB_OPERATION, _("Database operations"), _("Perform maintenance Database operations"));
     item2->AppendSeparator();
     item2->Append(ID_MENU_AUTOSIZE_COLUMNS, _("Autosize columns"), _("Autosize columns"));
+    */
     
-    
-    myMenuBar->Append( item2, _("Operations") );
-    
+    // HELO
 	wxMenu* item3 = new wxMenu;
-    item3->Append( wxID_ABOUT, _("About..."), _("Show the about dialog") );
+    item3->Append( wxID_ABOUT);
+#ifndef __WXMAC__
+    item3->AppendSeparator();
+#endif
+    item3->Append(ID_MENU_WEB_MYSQL, _("MySQL web references..."));
     myMenuBar->Append( item3, _("Help") );
-	
     SetMenuBar(myMenuBar);
 }
 
@@ -353,14 +399,14 @@ void TBVFrame::_CreateToolBar(){
     wxToolBar* m_toolBar1 = this->CreateToolBar( style, wxID_ANY );
 	m_toolBar1->SetToolBitmapSize(wxSize(32,32));
     wxString myText = _("New database");
-	m_toolBar1->AddTool( ID_NEW_DBASE, myText, *_img_database_new, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+	m_toolBar1->AddTool( wxID_NEW, myText, *_img_database_new, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Open database");
     m_toolBar1->AddTool( wxID_OPEN, myText, *_img_database_open, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     
     //m_toolBar1->AddSeparator();
     
-    myText = _("Process query");
-    m_toolBar1->AddTool( ID_PROCESS_MENU, myText, *_img_database_process, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
+    myText = _("Query panel");
+    m_toolBar1->AddTool( ID_MENU_SHOW_QUERYPANEL, myText, *_img_database_process, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Autosize columns");
     m_toolBar1->AddTool( ID_MENU_AUTOSIZE_COLUMNS, myText, *_img_results_autosize, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Export...");

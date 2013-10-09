@@ -39,27 +39,30 @@ const int ID_STATUS = 10003;
 class lsFoldBarCtrl;
 class QueryListTree;
 
-
-const int ID_FILE_MENU = wxID_HIGHEST + 1;
-const int ID_MENU = wxID_HIGHEST + 3;
-const int ID_OP_MENU = wxID_HIGHEST + 4;
-const int ID_PROCESS_MENU = wxID_HIGHEST + 5;
-const int ID_NEW_DBASE = wxID_HIGHEST + 6;
-const int ID_MENU_STATISTICS = wxID_HIGHEST + 7;
-const int ID_MENU_SPATIAL_ADD = wxID_HIGHEST + 8;
-const int ID_MENU_DELETE = wxID_HIGHEST + 9;
-const int ID_MENU_SPATIAL_SEARCH = wxID_HIGHEST + 10;
-const int ID_MENU_DB_OPERATION = wxID_HIGHEST + 11;
-const int ID_MENU_EXPORT_STRUCTURE = wxID_HIGHEST + 12;
-const int ID_LISTTABLE = wxID_HIGHEST + 13;
-const int ID_BTN_RUN = wxID_HIGHEST + 14;
-const int ID_BTN_SHOW_RESULTS = wxID_HIGHEST + 15;
-const int ID_BTN_HISTORY = wxID_HIGHEST + 16;
-const int ID_MENU_AUTOSIZE_COLUMNS = wxID_HIGHEST + 19;
+// menus
+const int ID_MENU_MAINTENANCE = wxWindow::NewControlId();
+const int ID_MENU_STATISTICS = wxWindow::NewControlId();
+const int ID_MENU_IMPORT_TXT = wxWindow::NewControlId();
+const int ID_MENU_IMPORT_SQL = wxWindow::NewControlId();
+const int ID_MENU_EXPORT_TXT = wxWindow::NewControlId();
+const int ID_MENU_EXPORT_DUMPCLIPBOARD = wxWindow::NewControlId();
+const int ID_MENU_MANIP_CHANGE_COL_TYPE = wxWindow::NewControlId();
+const int ID_MENU_MANIP_DELETE = wxWindow::NewControlId();
+const int ID_MENU_SPATIAL_ADD = wxWindow::NewControlId();
+const int ID_MENU_SPATIAL_SEARCH = wxWindow::NewControlId();
+const int ID_MENU_SHOW_QUERYPANEL = wxWindow::NewControlId();
 const int ID_MENU_SHOW_LOG = wxWindow::NewControlId();
+const int ID_MENU_AUTOSIZE_COLUMNS = wxWindow::NewControlId();
+const int ID_MENU_WEB_MYSQL = wxWindow::NewControlId();
+
+// controls
+const int ID_LISTTABLE = wxWindow::NewControlId();
+const int ID_BTN_RUN = wxWindow::NewControlId();
+const int ID_BTN_SHOW_RESULTS = wxWindow::NewControlId();
+const int ID_BTN_HISTORY = wxWindow::NewControlId();
 const int ID_BTN_ADD_TO_LIST = wxWindow::NewControlId();
 const int ID_QUERY_LIST_TREE = wxWindow::NewControlId();
-const int ID_MENU_PROCESS_SQL_FILE = wxWindow::NewControlId();
+
 
 class TBVFrame: public wxFrame
 {

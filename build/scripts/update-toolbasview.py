@@ -49,14 +49,26 @@ def BuildMacPro():
     print("Error creating makefile")
 
 
-def BuildMacBook():
-  print ("Configuring MacBook")
+def BuildMacBookDeploy():
+  print ("Configuring MacBook (deployement)")
   builddir = "/Users/lucien/DATA/PROGRAMATION/toolbasview/bin"
 
   try:
     p = Popen("cmake -GXcode " + GetCmakeDirName() + "  -DCMAKE_OSX_ARCHITECTURES:TEXT=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET:TEXT=10.6 -DCMAKE_OSX_SYSROOT:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/SDKs/MacOSX10.6.sdk -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DwxWIDGETS_USING_SVN:BOOL=1 -DwxWIDGETS_PATH_SVN:STRING=/Users/lucien/DATA/PROGRAMATION/_LIB/64/wxWidgets-svn -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS -DMYSQL_IS_LOGGING:BOOL=1 -DSEARCH_CURL_LIB_PATH:STRING=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBCURL", shell=True, cwd=builddir)
   except:
     print("Error creating makefile")
+
+
+
+def BuildMacBook():
+  print ("Configuring MacBook (developpement)")
+  builddir = "/Users/lucien/DATA/PROGRAMATION/toolbasview/bin"
+
+  try:
+    p = Popen("cmake -GXcode " + GetCmakeDirName() + "  -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBWXSVN/bin/wx-config -DwxWIDGETS_USING_SVN:BOOL=1 -DwxWIDGETS_PATH_SVN:STRING=/Users/lucien/DATA/PROGRAMATION/_LIB/64/wxWidgets-svn -DMYSQL_MAIN_DIR:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GIS_LIB_PATH:PATH=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBGIS -DMYSQL_IS_LOGGING:BOOL=1 -DSEARCH_CURL_LIB_PATH:STRING=/Users/lucien/DATA/PROGRAMATION/_LIB/64/_LIBCURL", shell=True, cwd=builddir)
+  except:
+    print("Error creating makefile")
+
 
 
 def BuildWindows7():
@@ -120,9 +132,12 @@ if __name__ == '__main__':
   orient1 = Separator(myContainer1, orient='horizontal')
   orient1.pack(fill = BOTH, expand = True, pady=5, padx=5)
 
-  button2 = Button(myContainer1, text="Configure MacBook", command=BuildMacBook)
+  button2 = Button(myContainer1, text="Configure MacBook (dev)", command=BuildMacBook)
   button2.pack()
 
+  button6 = Button(myContainer1, text="Configure MacBook (deploy)", command=BuildMacBookDeploy)
+  button6.pack()
+  
   button1 = Button(myContainer1, text="Configure Mac Pro (UNIL)", command=BuildMacPro)
   button1.pack()
 
