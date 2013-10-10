@@ -14,6 +14,8 @@ except :
   from tkinter import *
 from subprocess import *
 from ttk import *
+import platform
+import shutil
 
 def GetCmakeDirName():
   pathname = os.path.dirname(sys.argv[0])        
@@ -115,7 +117,38 @@ def RunBuildWindows(solutionname):
     p.wait()
   except:
     print ("Error building in", builddir)
-    return  
+    return 
+
+def createInstaller():
+  builddir =  myPath = os.path.normpath(os.path.join(GetCmakeDirName(), "..", "..",  "bin"))
+  myCpackCommand = "cpack "
+  myInstallerExtension = ".dmg"
+  if (platform.system() == 'Windows'):
+    myCpackCommand = myCpackCommand + " -C RelWithDebInfo"
+    myInstallerExtension = ".exe"
+  
+  try:
+    p = Popen (myCpackCommand, shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print ("Error creating installer")
+
+  # search and move installer to install folder
+  myInstallerName = ""
+  for f in os.listdir(builddir):
+    if(myInstallerExtension in f):
+      myInstallerName = f
+  
+  if (myInstallerName == ""):
+    print ("No installer found!")
+    pass
+
+  shutil.move (os.path.join(builddir, myInstallerName), os.path.join(builddir, "..", "install", myInstallerName))
+  print ("Installer {0} moved to install folder".format(myInstallerName)) 
+
+    
+  
+
 
 
 if __name__ == '__main__':
@@ -154,7 +187,12 @@ if __name__ == '__main__':
   button5 = Button(myContainer1, text= "Build Windows (bin)", command=lambda:RunBuildWindows(solutionname))
   button5.pack()
 
+  orient3 = Separator(myContainer1, orient='horizontal')
+  orient3.pack(fill = BOTH, expand = True, pady=5, padx=5)
   
+  button7 = Button (myContainer1, text="Create installer", command=createInstaller)
+  button7.pack()
+
   root.mainloop()
 
 

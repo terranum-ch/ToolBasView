@@ -38,28 +38,12 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../art/")
 # WXWIDGETS
 SET(WXWINDOWS_USE_GL 0)
 INCLUDE ("cmake/FindwxWidgets.cmake")
-
-#MYSQL EMBEDDED
 INCLUDE ("cmake/findMySQLEmbedded.cmake")
-
-#GEOS - GDAL libs
 INCLUDE ("cmake/findGISLib.cmake")
-
-# LSVERSION
 INCLUDE("../plugins/lsversion/build/use_lsversion.cmake")
 
 # SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
 IF( APPLE )
-  #SET (APP_ICON "toolbasview.icns")
-  #bundle variables for compilation under Mac OS
-  #SET(MACOSX_BUNDLE_INFO_STRING "ToolMap database Viewer")
-  #SET(MACOSX_BUNDLE_ICON_FILE ${APP_ICON})
-  #MACOSX_BUNDLE_GUI_IDENTIFIER
-  #MACOSX_BUNDLE_LONG_VERSION_STRING
-  #SET(MACOSX_BUNDLE_BUNDLE_NAME "${PROGNAME}")
-  #SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "Version 1.2")
-  #SET(MACOSX_BUNDLE_BUNDLE_VERSION "1.2")
-  #SET(MACOSX_BUNDLE_COPYRIGHT "Lucien Schreiber (c) CREALP 2013")
   # Need to copy the icon file
   set_source_files_properties( "../art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   set( SRC_FILES ${SRC_FILES} "../art/toolbasview.icns")
@@ -110,9 +94,11 @@ ENDIF (WIN32)
 # CAN CALL THIS WITHOUT FEAR...
 INCLUDE ("cmake/Use_wingdiplus.cmake")
 
-#Copy errmsg.sys to correct path
 INCLUDE ("cmake/useMySQLEmbedded.cmake")
 INCLUDE("cmake/GDALCopyLibs.cmake")
+
+# installer
+INCLUDE("cmake/create_installer.cmake")
 
 # UNIT TEST PROGRAM
 SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${PROGNAME}")
