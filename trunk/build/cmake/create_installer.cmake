@@ -55,6 +55,30 @@ IF (WIN32)
     "http://www.crealp.ch" "www.crealp.ch")
 ENDIF(WIN32)
 
+IF (UNIX AND NOT APPLE)
+  INSTALL(FILES "../install/linux/toolbasview.png" DESTINATION share/pixmaps)
+  INSTALL(FILES "../install/linux/ToolBasView.desktop" DESTINATION share/applications)
+
+  SET(CPACK_GENERATOR "DEB")
+  SET(CPACK_PACKAGE_NAME "toolbasview")
+  #SET(CPACK_PACKAGE_VERSION "2.4.1328") // in python build script!
+#  SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+#  SET(CPACK_PACKAGE_VERSION_MINOR "0")
+#  SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+  SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+  SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Lucien Schreiber <lucien.schreiber@crealp.vs.ch>")
+  SET(CPACK_PACKAGE_VENDOR "CREALP")
+  SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libmysqlclient18 (>= 5.1), mysql-server-core-5.5, libgeos-c1, libcurl3-gnutls, libgdal1-1.7.0, libwrap0")
+  SET(CPACK_PACKAGE_DESCRIPTION "Open MySQL embedded databases")
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Open and issues query to embedded MySQL database. Part of the ToolMap software suite")
+  SET(CPACK_DEBIAN_PACKAGE_SECTION "science")
+  SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+  INCLUDE(CPack)
+ENDIF(UNIX AND NOT APPLE)
+
+
+
 # including cpack isn't working with Linux 
 IF(APPLE OR WIN32)
   INCLUDE(CPACK)
