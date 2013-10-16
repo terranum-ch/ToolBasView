@@ -11,9 +11,9 @@ install (
 # TODO: TEMP CODE FOR COPYING LIBRARIES TO BIN FOLDER. SHOULD BE 
 # PLACED TO SUBFILES
 IF(WIN32)
-#  # copy CURL 
-#  install(FILES "${CURL_INCLUDE_DIR}/../lib/DLL-Release/libcurl.dll" DESTINATION bin CONFIGURATIONS Release;RelWithDebInfo)
-#  install(FILES "${CURL_INCLUDE_DIR}/../lib/DLL-Debug/libcurld.dll" DESTINATION bin CONFIGURATIONS Debug)
+  #  # copy CURL 
+  #  install(FILES "${CURL_INCLUDE_DIR}/../lib/DLL-Release/libcurl.dll" DESTINATION bin CONFIGURATIONS Release;RelWithDebInfo)
+  #  install(FILES "${CURL_INCLUDE_DIR}/../lib/DLL-Debug/libcurld.dll" DESTINATION bin CONFIGURATIONS Debug)
 
   # copy All libs GDAL, GEOS, etc.
   install(FILES ${GDAL_DLL_NAME} DESTINATION bin)
@@ -55,4 +55,8 @@ IF (WIN32)
     "http://www.crealp.ch" "www.crealp.ch")
 ENDIF(WIN32)
 
-INCLUDE (CPACK)
+# including cpack isn't working with Linux 
+IF(APPLE OR WIN32)
+  INCLUDE(CPACK)
+ENDIF()
+
