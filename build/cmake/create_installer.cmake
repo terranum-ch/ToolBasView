@@ -56,15 +56,11 @@ IF (WIN32)
 ENDIF(WIN32)
 
 IF (UNIX AND NOT APPLE)
-  INSTALL(FILES "../install/linux/toolbasview.png" DESTINATION share/pixmaps)
+  INSTALL(FILES "../art/toolbasview.png" DESTINATION share/pixmaps)
   INSTALL(FILES "../install/linux/ToolBasView.desktop" DESTINATION share/applications)
 
   SET(CPACK_GENERATOR "DEB")
   SET(CPACK_PACKAGE_NAME "toolbasview")
-  #SET(CPACK_PACKAGE_VERSION "2.4.1328") // in python build script!
-#  SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-#  SET(CPACK_PACKAGE_VERSION_MINOR "0")
-#  SET(CPACK_PACKAGE_VERSION_PATCH "0")
 
   SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
   SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Lucien Schreiber <lucien.schreiber@crealp.vs.ch>")
