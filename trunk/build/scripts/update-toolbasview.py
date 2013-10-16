@@ -82,6 +82,19 @@ def BuildWindows7():
   except:
     print("Error creating makefile")
 
+
+def BuildLinuxHome():
+  print("Configuring Linux")
+  builddir = "/home/lucien/programmation/ToolBasView/bin"
+  try:
+    p = Popen("cmake -G\"CodeBlocks - Unix Makefiles\" " + GetCmakeDirName() + " -DwxWIDGETS_USING_SVN:BOOL=1  -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/home/lucien/programmation/LIB/_LIBWX/bin/wx-config  -DwxWIDGETS_PATH_SVN:PATH=/home/lucien/programmation/LIB/wxWidgets-SVN  -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1", shell=True, cwd=builddir)
+    #p = Popen("cmake -G\"CodeBlocks - Unix Makefiles\" " + GetCmakeDirName() + " -DwxWIDGETS_USING_SVN:BOOL=1  -DCMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE:FILE=/home/lucien/programmation/LIB/_LIBWX/bin/wx-config  -DwxWIDGETS_PATH_SVN:PATH=/home/lucien/programmation/LIB/wxWidgets-SVN -DMYSQL_IGNORE_NORMAL:BOOL=1 -DMYSQL_MAIN_DIR:PATH=/home/lucien/programmation/LIB/_LIBMYSQL -DSEARCH_GDAL:BOOL=1 -DSEARCH_GEOS:BOOL=1 -DSEARCH_GDAL_LIB_PATH:PATH=/home/lucien/programmation/LIB/_LIBGIS -DSEARCH_GEOS_LIB_PATH:PATH=/home/lucien/programmation/LIB/_LIBGIS", shell=True, cwd=builddir)
+    p.wait()
+  except:
+    print("Error creating makefile")
+
+
+
 def RunBuildMac():
   builddir =  myPath = os.path.normpath(os.path.join(GetCmakeDirName(), "..", "..",  "bin"))
   print (builddir)
@@ -176,6 +189,9 @@ if __name__ == '__main__':
 
   button3 = Button(myContainer1, text= "Configure Windows 7", command=BuildWindows7)
   button3.pack()
+
+  button8 = Button(myContainer1, text="Configure Linux (Home)", command=BuildLinuxHome)
+  button8.pack()
  
   orient = Separator(myContainer1, orient='horizontal')
   orient.pack(fill = BOTH, expand = True, pady=5, padx=5)
