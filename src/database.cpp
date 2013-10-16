@@ -109,13 +109,16 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
 		"this_program",       /* this string is not used*/
 		myDatadir.mb_str(wxConvUTF8),
 		mylanguagedir.mb_str(wxConvUTF8),
-		//"--port=3309",
 		"--character-set-server=utf8",
         "--default-storage-engine=MyISAM",
-        "--default_tmp_storage_engine=MyISAM",
-        //"--skip-innodb"
+#ifdef __LINUX__  // Linux still uses version 5.5
+        "--skip-innodb"
+#else  // this is needed for version 5.6
+        "--default_tmp_storage_engine=MyISAM"
+#endif
+
 #if defined (MYSQL_IS_LOGGING)
-        "--general-log=1"
+        ,"--general-log=1"
         ,myLogDirString.mb_str(wxConvUTF8)
 #endif
 	};
