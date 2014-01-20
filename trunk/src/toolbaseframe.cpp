@@ -292,8 +292,8 @@ void TBVFrame::_CreateControls(){
     // update cols width
     int myWidth = m_GridCtrl->GetClientSize().GetWidth() - 80;
     int myColWidth = wxRound(myWidth / m_GridCtrl->GetNumberCols());
-    for (unsigned int i = 0; i< m_GridCtrl->GetNumberCols(); i++) {
-        m_GridCtrl->SetColumnWidth(i, myColWidth);
+    for (int i = 0; i< m_GridCtrl->GetNumberCols(); i++) {
+        m_GridCtrl->SetColSize(i, myColWidth);
     }
 }
 
