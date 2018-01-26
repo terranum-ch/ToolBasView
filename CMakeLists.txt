@@ -92,7 +92,9 @@ INCLUDE ("build/cmake/useMySQLEmbedded.cmake")
 INCLUDE("build/cmake/GDALCopyLibs.cmake")
 
 # installer
-INCLUDE("build/cmake/create_installer.cmake")
+if (CREATE_INSTALLER)
+  INCLUDE("build/cmake/create_installer.cmake")
+endif (CREATE_INSTALLER)
 
 # UNIT TEST PROGRAM
 SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${PROGNAME}")
