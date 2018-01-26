@@ -67,7 +67,6 @@ private:
 	void OnShowProcessRequest (wxCommandEvent & event);
     void OnShowLogPanel (wxCommandEvent & event);
 	void OnDisplayStatistics (wxCommandEvent & event);
-	void OnAboutDlg (wxCommandEvent & event);
 	void OnMenuExit (wxCommandEvent & event);
 	void OnDeleteData (wxCommandEvent & event);
 	void OnSpatialDataAdd (wxCommandEvent & event);

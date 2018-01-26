@@ -5,7 +5,6 @@
 */
 
 #include "toolbaseframe.h"
-#include "lsversion_dlg.h"
 #include "exportcsv_dlg.h"
 #include "databaseoperation.h"
 #include "dlg_operation.h" // for dialogs operations.
@@ -17,7 +16,6 @@
 
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
-EVT_MENU (wxID_ABOUT, TBVFrame::OnAboutDlg)
 EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
 EVT_MENU (wxID_OPEN,TBVFrame::OnOpenDatabase)
 EVT_MENU_RANGE(wxID_FILE1, wxID_FILE9, TBVFrame::OnOpenRecentDatabase)
@@ -385,10 +383,6 @@ void TBVFrame::_CreateMenu(){
     
     // HELO
 	wxMenu* item3 = new wxMenu;
-    item3->Append( wxID_ABOUT);
-#ifndef __WXMAC__
-    item3->AppendSeparator();
-#endif
     item3->Append(ID_MENU_WEB_MYSQL, _("MySQL web references..."));
     myMenuBar->Append( item3, _("Help") );
     SetMenuBar(myMenuBar);
@@ -981,14 +975,6 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 					 this);
 		
 }
-
-void TBVFrame::OnAboutDlg(wxCommandEvent & event)
-{
-	lsVersionDlg myDlg(this, wxID_ANY, _("About"));
-    myDlg.SetBitmapLogo(*_img_toolbasview);
-    myDlg.ShowModal();
-}
-
 
 
 void TBVFrame::OnAuiButtonPressed (wxAuiManagerEvent& evt){

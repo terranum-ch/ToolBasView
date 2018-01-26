@@ -63,11 +63,6 @@ IF (APPLE)
   set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/custominfo.plist)
 ENDIF(APPLE)
 
-# LINK LSVERSION PLUGIN
-IF(USE_VERSION)
-  TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${LSVERSION_NAME})
-ENDIF(USE_VERSION)
-
 # copy libs to bundle if we are under mac...
 # check is done internally.
 INCLUDE ("build/cmake/installMacGISLIB.cmake")
