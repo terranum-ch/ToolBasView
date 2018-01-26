@@ -249,7 +249,20 @@ IF(WIN32_STYLE_FIND)
       "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
       DOC "wxWindows static regex library" )
- 
+
+    FIND_LIBRARY(WXWINDOWS_STATIC_DEBUG_LIBRARY_SCINTILLA
+            NAMES wxscintillad wxscintillaud
+            PATHS
+            "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
+            ${WXWINDOWS_POSSIBLE_LIB_PATHS}
+            DOC "wxWindows static debug scintilla library" )
+
+    FIND_LIBRARY(WXWINDOWS_STATIC_LIBRARY_SCINTILLA
+            NAMES wxscintilla wxscintillau
+            PATHS
+            "${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
+            ${WXWINDOWS_POSSIBLE_LIB_PATHS}
+            DOC "wxWindows static scintilla library" )
 	
 	FIND_LIBRARY (WXWINDOWS_STATIC_DEBUG_LIBRARY_EXPAT
 		NAMES wxexpatd wxexpatud
@@ -315,6 +328,7 @@ IF(WIN32_STYLE_FIND)
       wxjpeg
       wxpng
       wxregex
+      wxscintilla
       wxtiff
       wxzlib
       comctl32
@@ -339,6 +353,7 @@ IF(WIN32_STYLE_FIND)
       wxjpegd
       wxpngd
       wxregexd
+      wxscintillad
       wxtiffd
       wxzlibd
       comctl32
@@ -375,6 +390,7 @@ IF(WIN32_STYLE_FIND)
       #   ctl3d32
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_ZLIB}   optimized ${WXWINDOWS_STATIC_LIBRARY_ZLIB}
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_REGEX}  optimized ${WXWINDOWS_STATIC_LIBRARY_REGEX}
+      debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_SCINTILLA}  optimized ${WXWINDOWS_STATIC_LIBRARY_SCINTILLA}
 	  debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_EXPAT}  optimized ${WXWINDOWS_STATIC_LIBRARY_EXPAT}
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_PNG}    optimized ${WXWINDOWS_STATIC_LIBRARY_PNG}
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_JPEG}   optimized ${WXWINDOWS_STATIC_LIBRARY_JPEG}
@@ -565,6 +581,8 @@ IF(WIN32_STYLE_FIND)
     WXWINDOWS_STATIC_DEBUG_LIBRARY_ZLIB
     WXWINDOWS_STATIC_LIBRARY_REGEX
     WXWINDOWS_STATIC_DEBUG_LIBRARY_REGEX
+    WXWINDOWS_STATIC_LIBRARY_SCINTILLA
+    WXWINDOWS_STATIC_DEBUG_LIBRARY_SCINTILLA
 	WXWINDOWS_STATIC_LIBRARY_EXPAT
 	WXWINDOWS_STATIC_DEBUG_LIBRARY_EXPAT
     WXWINDOWS_STATIC_LIBRARY_PNG
