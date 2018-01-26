@@ -94,6 +94,12 @@ INCLUDE("build/cmake/GDALCopyLibs.cmake")
 # installer
 if (CREATE_INSTALLER)
   INCLUDE("build/cmake/create_installer.cmake")
+else(CREATE_INSTALLER)
+  install(
+          TARGETS ${CMAKE_PROJECT_NAME}
+          BUNDLE DESTINATION .
+          RUNTIME DESTINATION bin
+  )
 endif (CREATE_INSTALLER)
 
 # UNIT TEST PROGRAM
