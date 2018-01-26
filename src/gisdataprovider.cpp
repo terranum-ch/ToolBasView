@@ -71,8 +71,8 @@ bool GISDataProvider::GISIsOpened ()
 GISOgrProvider::GISOgrProvider()
 {
 	//m_NumOfVector		= 0;
-	m_pLayer			= NULL;
-	m_pDatasource		= NULL;
+	m_Layer			= NULL;
+	m_Datasource		= NULL;
 	m_iFeatureLoop		= 0;
 	m_LayerSpatType		= GISSPATIAL_ERROR;
 	
@@ -99,13 +99,13 @@ GISOgrProvider::~GISOgrProvider()
  *******************************************************************************/
 bool GISOgrProvider::GISOpen (const wxString & filename)
 {
-		
-	m_pDatasource = OGRSFDriverRegistrar::Open(filename.ToAscii(), FALSE );
-    if( m_pDatasource != NULL )
+	m_Datasource = (GDALDataset*) GDALOpenEx(filename.ToAscii(), GDAL_OF_VECTOR | GDAL_OF_READONLY, NULL, NULL, NULL);
+
+    if( m_Datasource != NULL )
     {
 		GISDataProvider::GISOpen(filename);
-		m_pLayer = m_pDatasource->GetLayer(0);
-		m_pLayer->ResetReading();
+		m_Layer = m_Datasource->GetLayer(0);
+		m_Layer->ResetReading();
 		
 		wxLogDebug(_T("Opening vector file OK"));
 		
@@ -136,7 +136,7 @@ OGREnvelope * GISOgrProvider::GISGetExtend ()
 	// here...
 	OGREnvelope * myEnveloppe = new OGREnvelope();
 	// compute the extend
-	if (m_pLayer->GetExtent(myEnveloppe, TRUE) == OGRERR_NONE)
+	if (m_Layer->GetExtent(myEnveloppe, TRUE) == OGRERR_NONE)
 	{
 		return myEnveloppe;
 	}
@@ -150,7 +150,7 @@ OGREnvelope * GISOgrProvider::GISGetExtend ()
 
 long GISOgrProvider::GISGetFeatureCount ()
 {
-	return m_pLayer->GetFeatureCount();
+	return m_Layer->GetFeatureCount();
 }
 
 
@@ -160,7 +160,7 @@ bool GISOgrProvider::GISGetNextFeatureAsWkT (wxString & wkbstring)
 	OGRGeometry *poGeometry;
 	char * myExport;
 	
-	poFeature = m_pLayer->GetNextFeature();
+	poFeature = m_Layer->GetNextFeature();
 	poGeometry = poFeature->GetGeometryRef();
 	if (poGeometry != NULL)
 	{
@@ -207,7 +207,7 @@ bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString * featurelist,
 	{
 		OGRFeature *poFeature;
 		char * myExport;
-		if ((poFeature = m_pLayer->GetNextFeature()) != NULL)
+		if ((poFeature = m_Layer->GetNextFeature()) != NULL)
 		{
 			poGeometry = poFeature->GetGeometryRef();
 			if (poGeometry != NULL)
@@ -237,7 +237,7 @@ bool GISOgrProvider::GISClose ()
 {
 	if (GISIsOpened())
 	{
-		OGRDataSource::DestroyDataSource( m_pDatasource);
+        GDALClose( m_Datasource);
 		GISDataProvider::GISClose();
 		return TRUE;
 	}
@@ -260,11 +260,11 @@ GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
 	OGRFeature *poFeature;
 	GISSPATIAL_TYPE retvalue = GISSPATIAL_ERROR;
 	
-	wxASSERT(m_pLayer);
+	wxASSERT(m_Layer);
 	
 	// computing features count, not able to know the
 	// spatial type if no features are present.
-	if (m_pLayer->GetFeatureCount () <= 0)
+	if (m_Layer->GetFeatureCount () <= 0)
 	{
 		wxLogError(_("Unable to add the layer, layer is empty"));
 		return GISSPATIAL_ERROR;
@@ -272,7 +272,7 @@ GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
 	
 	
 	// computing layer type (point, line, polygon or unknown)
-	if ((poFeature = m_pLayer->GetNextFeature()) == NULL)
+	if ((poFeature = m_Layer->GetNextFeature()) == NULL)
 	{
 		wxLogError(_("Unable to read feature, layer may be corrupted"));
 		return GISSPATIAL_ERROR;
@@ -313,7 +313,7 @@ GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
 	}
 	
 	// reset reading 
-	m_pLayer->ResetReading();
+	m_Layer->ResetReading();
 	
 	return retvalue;
 }
@@ -326,8 +326,8 @@ GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
 GISDBProvider::GISDBProvider()
 {
 	//m_NumOfVector		= 0;
-	m_pLayer			= NULL;
-	m_pDatasource		= NULL;
+	m_Layer			= NULL;
+	m_Datasource		= NULL;
 	m_iFeatureLoop		= 0;
 	m_LayerName			= _T("");
 	
@@ -343,13 +343,13 @@ GISDBProvider::~GISDBProvider()
 
 bool GISDBProvider::GISOpen (const wxString & filename)
 {
-	
-	m_pDatasource = OGRSFDriverRegistrar::Open(filename.ToAscii(), TRUE );
-    if( m_pDatasource != NULL )
+
+	m_Datasource = (GDALDataset*) GDALOpenEx(filename.ToAscii(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL);
+    if( m_Datasource != NULL )
     {
 		GISDataProvider::GISOpen(filename);
-//		m_pLayer = m_pDatasource->GetLayer(0);
-//		m_pLayer->ResetReading();
+//		m_Layer = m_Datasource->GetLayer(0);
+//		m_Layer->ResetReading();
 		
 		wxLogDebug(_T("Opening Database vector file OK"));
 		return TRUE;
@@ -450,7 +450,7 @@ long GISDBProvider::GISGetFeatureCount ()
 
 int GISDBProvider::GISGetLayerCount ()
 {
-	return m_pDatasource->GetLayerCount();
+	return m_Datasource->GetLayerCount();
 }
 
 
@@ -479,7 +479,7 @@ bool GISDBProvider::GISSetActiveLayer (const wxString & layername)
 OGRLayer * GISDBProvider::GISGetLayer (const wxString & layername)
 {
 //	// do not delete the returned layer... properties of datasource
-//	OGRLayer * myLayer = m_pDatasource->GetLayerByName(layername.ToAscii());
+//	OGRLayer * myLayer = m_Datasource->GetLayerByName(layername.ToAscii());
 //	if (myLayer == NULL)
 //	{
 //		wxLogDebug(_T("No layer with name : %s"), layername.c_str());
@@ -611,7 +611,7 @@ bool GISDBProvider::GISGetNextFeatureAsWkT (wxString & wkbstring)
 //	OGRGeometry *poGeometry;
 //	char * myExport;
 //	
-//	poFeature = m_pLayer->GetNextFeature();
+//	poFeature = m_Layer->GetNextFeature();
 //	poGeometry = poFeature->GetGeometryRef();
 //	if (poGeometry != NULL)
 //	{
@@ -644,7 +644,7 @@ bool GISDBProvider::GISClose ()
 {
 	if (GISIsOpened())
 	{
-		//OGRDataSource::DestroyDataSource( m_pDatasource);
+		//OGRDataSource::DestroyDataSource( m_Datasource);
 		GISDataProvider::GISClose();
 		return TRUE;
 	}
