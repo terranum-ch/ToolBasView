@@ -125,16 +125,16 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
     item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item5 = new wxTextCtrl( parent, ID_TXT_DB_PATH, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item3->Add( item5, 0, wxGROW|wxALL, 5 );
 
     wxButton *item6 = new wxButton( parent, ID_BTN_CHOOSE_PATH, _("..."), wxDefaultPosition, wxSize(40,-1), 0 );
-    item3->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item3->Add( item6, 0, wxGROW|wxALL, 5 );
 
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT2, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item8 = new wxTextCtrl( parent, ID_TXT_DB_NAME, wxT(""), wxDefaultPosition, wxSize(300,-1), 0 );
-    item3->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item3->Add( item8, 0, wxGROW|wxALL, 5 );
 
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
@@ -149,7 +149,7 @@ wxSizer *NEWDBASE( wxWindow *parent, bool call_fit, bool set_sizer )
     wxButton *item11 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item9, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item9, 0, wxALIGN_RIGHT|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -169,7 +169,7 @@ wxSizer *SHOWRESULT( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxGrid *item1 = new wxGrid( parent, ID_GRID_PROCESS, wxDefaultPosition, wxSize(200,160), wxWANTS_CHARS );
     item1->CreateGrid( 10, 10, wxGrid::wxGridSelectCells );
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    item0->Add( item1, 1, wxGROW, 5 );
 
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxHORIZONTAL );

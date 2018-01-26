@@ -773,8 +773,8 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	if (myFieldArray.Count() > 0)
 	{
 		// debug message...
-		wxLogMessage(_("%ld fields readed from the table '%s'"),
-					 myFieldArray.Count(),myTempString.c_str());
+		wxLogMessage(_("%d fields readed from the table '%s'"),
+                     (int)myFieldArray.Count(),myTempString.c_str());
 		
 		// change the number of cols
 		m_GridOp->GridOpSetNumberOfColumn(myFieldArray.Count());
