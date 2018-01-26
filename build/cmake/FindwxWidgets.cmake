@@ -87,18 +87,19 @@ IF(WIN32_STYLE_FIND)
   ## should have subdirs include and lib containing include/wx/wx.h
   ## fix the root dir to avoid mixing of headers/libs from different
   ## versions/builds:
-  
-  SET (WXWINDOWS_POSSIBLE_ROOT_PATHS
-    $ENV{WXWIN}
-    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  ## WX 2.6.x
-    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWindows_is1;Inno Setup: App Path]"  ## WX 2.4.x
-    C:\\wxWidgets-2.6.2 
-    D:\\wxWidgets-2.6.2 
-    C:\\wxWidgets-2.6.1 
-    D:\\wxWidgets-2.6.1 
-    C:\\wxWindows-2.4.2 
-    D:\\wxWindows-2.4.2 
-    )
+
+  SET(WXWINDOWS_POSSIBLE_ROOT_PATHS
+          ${SEARCH_WXWIDGETS_PATH}
+          $ENV{WXWIN}
+          "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWidgets_is1;Inno Setup: App Path]"  ## WX 2.6.x
+          "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\wxWindows_is1;Inno Setup: App Path]"  ## WX 2.4.x
+          C:\\wxWidgets-2.6.2
+          D:\\wxWidgets-2.6.2
+          C:\\wxWidgets-2.6.1
+          D:\\wxWidgets-2.6.1
+          C:\\wxWindows-2.4.2
+          D:\\wxWindows-2.4.2
+          )
   
   ## WX supports monolithic and multiple smaller libs (since 2.5.x), we prefer monolithic for now.
   ## monolithic = WX is built as a single big library
@@ -264,21 +265,7 @@ IF(WIN32_STYLE_FIND)
 		${WXWINDOWS_POSSIBLE_LIB_PATHS} 
 		DOC "wxWindows expat XML library" )
 
-	FIND_LIBRARY (WXWINDOWS_STATIC_DEBUG_SCINTILLA
-		NAMES wxscintillad
-		PATHS
-		"${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
-		${WXWINDOWS_POSSIBLE_LIB_PATHS} 
-		DOC "wxWindows scintilla library (debug)" )
-	
-	FIND_LIBRARY (WXWINDOWS_STATIC_SCINTILLA
-		NAMES wxscintilla
-		PATHS
-		"${WXWINDOWS_ROOT_DIR}/lib/vc_lib"
-		${WXWINDOWS_POSSIBLE_LIB_PATHS} 
-	DOC "wxWindows scintilla library" )
-
-
+    
     ## untested:
     FIND_LIBRARY(WXWINDOWS_SHARED_LIBRARY_GL
       NAMES wx_gl wxmsw_gl wxmsw26_gl 
@@ -293,6 +280,7 @@ IF(WIN32_STYLE_FIND)
       "${WXWINDOWS_ROOT_DIR}/lib/vc_dll"      
       ${WXWINDOWS_POSSIBLE_LIB_PATHS} 
       DOC "wxWindows shared debug build GL library" )            
+    
  
     ELSE (WXWINDOWS_USE_MONOLITHIC)
     ## WX is built as multiple small pieces libraries instead of monolithic
@@ -391,7 +379,6 @@ IF(WIN32_STYLE_FIND)
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_PNG}    optimized ${WXWINDOWS_STATIC_LIBRARY_PNG}
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_JPEG}   optimized ${WXWINDOWS_STATIC_LIBRARY_JPEG}
       debug ${WXWINDOWS_STATIC_DEBUG_LIBRARY_TIFF}   optimized ${WXWINDOWS_STATIC_LIBRARY_TIFF}
-	  debug ${WXWINDOWS_STATIC_DEBUG_SCINTILLA}      optimized ${WXWINDOWS_STATIC_SCINTILLA}
       )
   ENDIF (NOT WXWINDOWS_USE_SHARED_LIBS)
 
@@ -589,9 +576,7 @@ IF(WIN32_STYLE_FIND)
     WXWINDOWS_SHARED_LIBRARY
     WXWINDOWS_SHARED_DEBUG_LIBRARY
     WXWINDOWS_SHARED_LIBRARY_GL
-    WXWINDOWS_SHARED_DEBUG_LIBRARY_GL
-    WXWINDOWS_STATIC_SCINTILLA
-	WXWINDOWS_STATIC_DEBUG_SCINTILLA
+    WXWINDOWS_SHARED_DEBUG_LIBRARY_GL    
     )
   
   
@@ -615,12 +600,18 @@ ELSE(WIN32_STYLE_FIND)
     
     # wx-config should be in your path anyhow, usually no need to set WXWIN or
     # search in ../wx or ../../wx
-    FIND_PROGRAM(CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE wx-config
-      $ENV{WXWIN}
-      $ENV{WXWIN}/bin
-      ../wx/bin
-      ../../wx/bin )
-    
+    if(IS_DIRECTORY $ENV{WXWIN})
+      # If WXWIN is defined, force using the specified version
+      FIND_PROGRAM(CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE wx-config
+          $ENV{WXWIN}
+          $ENV{WXWIN}/bin
+          NO_DEFAULT_PATH)
+    else()
+      FIND_PROGRAM(CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE wx-config
+          ../wx/bin
+          ../../wx/bin )
+    endif()
+
     # check wether wx-config was found:
     IF(CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE)    
 
@@ -652,7 +643,7 @@ ELSE(WIN32_STYLE_FIND)
         SET(WX_CONFIG_CXXFLAGS_ARGS "${WX_CONFIG_CXXFLAGS_ARGS} --debug=no")
       ENDIF(CMAKE_BUILD_TYPE STREQUAL "Release")
 
-      ##MESSAGE("DBG: WX_CONFIG_ARGS_LIBS=${WX_CONFIG_ARGS_LIBS}")
+      MESSAGE("DBG: WX_CONFIG_ARGS_LIBS=${WX_CONFIG_ARGS_LIBS}")
 
       
       #### LUCIEN CHANGE FOR XCODE COMPATIBILITY ############################################
@@ -695,7 +686,7 @@ ELSE(WIN32_STYLE_FIND)
       	EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
         ARGS ${WX_CONFIG_CXXFLAGS_ARGS}
         OUTPUT_VARIABLE CMAKE_WXWINDOWS_CXX_FLAGS)
-      ##MESSAGE("DBG: ${CMAKE_WXWINDOWS_CXX_FLAGS}")
+        MESSAGE("DBG: ${CMAKE_WXWINDOWS_CXX_FLAGS}")
         
       	EXEC_PROGRAM(${CMAKE_WXWINDOWS_WXCONFIG_EXECUTABLE}
         ARGS ${WX_CONFIG_ARGS_LIBS}
@@ -706,7 +697,7 @@ ELSE(WIN32_STYLE_FIND)
 			SET(WXWINDOWS_LIBRARIES "${WXWINDOWS_LIBRARIES} -lexpat")
 		ENDIF(WX_USE_XML)
 
-    ##MESSAGE("DBG: ${WXWINDOWS_LIBRARIES}")
+        MESSAGE("DBG: ${WXWINDOWS_LIBRARIES}")
 
       
      #   IF(WX_CONFIG_LIBS)
@@ -773,7 +764,11 @@ IF(WXWINDOWS_FOUND)
   ENDIF(WXWINDOWS_LINK_DIRECTORIES)
   
   IF(WXWINDOWS_LIBRARIES)
-    LINK_LIBRARIES(${WXWINDOWS_LIBRARIES})
+    IF(UNIX AND NOT APPLE)
+	  LINK_LIBRARIES(${WXWINDOWS_LIBRARIES} -lwebkitgtk-1.0)
+	ELSE(UNIX AND NOT APPLE)
+	  LINK_LIBRARIES(${WXWINDOWS_LIBRARIES})
+	ENDIF(UNIX AND NOT APPLE)
   ENDIF(WXWINDOWS_LIBRARIES)
   
   IF (CMAKE_WXWINDOWS_CXX_FLAGS)
