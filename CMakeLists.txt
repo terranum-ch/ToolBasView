@@ -60,7 +60,7 @@ ENDIF (WIN32)
 
 IF (APPLE)
   # Copy plist to ToolMap (should be after add executable!
-  set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/custominfo.plist)
+  set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/build/custominfo.plist)
 ENDIF(APPLE)
 
 # copy libs to bundle if we are under mac...
