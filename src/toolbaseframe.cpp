@@ -962,8 +962,8 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 	// getting the stats...
 	long myiNumberTables = 0;
 	wxString mysNumberTables = _T("Unkhown");
-	if (!m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") +
-							 _T("FROM information_schema.tables ") +
+	if (!m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ")
+							 _T("FROM information_schema.tables ")
 							 _T("WHERE table_schema = \"") + m_Database.DataBaseGetName() + _T("\""))) {
         wxLogError(_("Building query failed!"));
     }
