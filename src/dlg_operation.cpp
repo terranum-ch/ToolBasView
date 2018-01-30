@@ -198,11 +198,13 @@ bool SHOWRESULT_OP2::TransferDataToWindow(){
     DataBaseResult myResult;
     if (m_DB->DataBaseGetResults(&myResult)==false) {
         wxLogError(_("Getting results failed!"));
+        wxDELETE(myGridOP);
         return false;
     }
     
     if (myResult.HasResults() == false) {
         wxLogMessage(_("No results returned by your request"));
+        wxDELETE(myGridOP);
         return true;
     }
     
@@ -228,6 +230,8 @@ bool SHOWRESULT_OP2::TransferDataToWindow(){
     wxStaticText * myTextCtrl = (wxStaticText*) FindWindowById(ID_COLROW_INFO);
     wxASSERT(myTextCtrl);
     myTextCtrl->SetLabel(wxString::Format(_T("columns: %d, rows: %ld"),myColCount, myResult.GetRowCount()));
+    wxDELETE(myGridOP);
+
    	return true;
 }
 

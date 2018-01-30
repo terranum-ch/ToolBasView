@@ -22,6 +22,8 @@ DataBaseResult::DataBaseResult() {
 	m_ResultSet = NULL;
 	m_RowIndex = wxNOT_FOUND;
 	m_RowLengths.Clear();
+	m_Row = NULL;
+	m_Field = NULL;
 }
 
 
@@ -34,6 +36,7 @@ void DataBaseResult::Create(MYSQL_RES ** results) {
 	m_RowLengths.Clear();
 	m_ResultSet = results;
     m_Field = mysql_fetch_fields(*m_ResultSet);
+	m_Row = NULL;
 }
 
 

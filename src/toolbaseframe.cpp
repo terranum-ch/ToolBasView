@@ -764,7 +764,9 @@ void TBVFrame::OnDoubleClickListe (wxTreeEvent & event)
 	wxTreeItemId myItemID = event.GetItem();
 	// get the table name
 	wxString myTempString = m_TreeCtrl->GetItemText(myItemID);
-	m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString);
+	if (!m_Database.DataBaseQuery(_T("SHOW COLUMNS FROM ") + myTempString)) {
+        wxLogError(_("Building query failed!"));
+    }
 	m_Database.DataBaseGetResults(myFieldArray);
 	
     long myNumberRow = 0;
@@ -960,9 +962,11 @@ void TBVFrame::OnDisplayStatistics (wxCommandEvent & event)
 	// getting the stats...
 	long myiNumberTables = 0;
 	wxString mysNumberTables = _T("Unkhown");
-	m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") 
-							 _T("FROM information_schema.tables ") 
-							 _T("WHERE table_schema = \"") + m_Database.DataBaseGetName() + _T("\""));
+	if (!m_Database.DataBaseQuery(_T("SELECT COUNT(*) AS number_of_tables ") +
+							 _T("FROM information_schema.tables ") +
+							 _T("WHERE table_schema = \"") + m_Database.DataBaseGetName() + _T("\""))) {
+        wxLogError(_("Building query failed!"));
+    }
 	if (m_Database.DataBaseGetNextResult(myiNumberTables)==true)
 		mysNumberTables = wxString::Format(_T("%d"), myiNumberTables);
 	m_Database.DataBaseClearResults();

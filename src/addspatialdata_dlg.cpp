@@ -100,6 +100,7 @@ void ADDSPATIALDATA_DLG::Init()
     m_DLGAS_ListTables = NULL;
 	m_pDatabase = NULL;
 	m_DLGAS_Chk_Index = NULL;
+    m_bComputeIndex = false;
 }
 
 

@@ -323,14 +323,14 @@ GISSPATIAL_TYPE GISOgrProvider::GetLayerSpatialType()
 
 
 /*************************  DB GIS PROVIDER (sqlite) ***************************/
-GISDBProvider::GISDBProvider()
-{
+GISDBProvider::GISDBProvider() {
 	//m_NumOfVector		= 0;
-	m_Layer			= NULL;
-	m_Datasource		= NULL;
-	m_iFeatureLoop		= 0;
-	m_LayerName			= _T("");
-	
+	m_Layer = NULL;
+	m_Datasource = NULL;
+	m_iFeatureLoop = 0;
+	m_LayerName = _T("");
+	m_pActiveDB = NULL;
+
 }
 
 
@@ -393,6 +393,7 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	{
 		wxLogDebug(_T("Error computing extend"));
 		m_pActiveDB->DataBaseClearResults();
+		wxDELETE(psExtent);
 		return NULL;
 	}
 	
@@ -402,6 +403,7 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 	if(m_pActiveDB->DataBaseGetNextRowResult(row, row_length)==false)
 	{
 		m_pActiveDB->DataBaseClearResults();
+		wxDELETE(psExtent);
 		return NULL;
 	}
 	
@@ -431,6 +433,9 @@ OGREnvelope * GISDBProvider::GISGetExtend ()
 		}
 		delete poGeometry;
 	}
+
+	wxDELETE(psExtent);
+
 	return psExtent;
 }
 

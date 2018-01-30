@@ -152,7 +152,7 @@ void SEARCHSPATIALPOINT_DLG::Init()
     m_DLGSS_Map_Ymin = NULL;
     m_DLGSS_Map_Ymax = NULL;
     m_DLGSS_coord_x = NULL;
-    m_DLGSS_coord_x = NULL;
+    m_DLGSS_coord_y = NULL;
     m_DLGSS_buffer = NULL;
     m_DLGSS_result_index = NULL;
     m_DLGSS_result_index_tm = NULL;
