@@ -21,6 +21,8 @@
 #include <wx/filehistory.h>
 #include <wx/fileconf.h>
 #include <wx/msgdlg.h>
+#include <wx/aboutdlg.h>
+
 
 #include "database.h"
 #include "databaseresult.h"
@@ -62,6 +64,7 @@ class TBVFrame: public wxFrame
 {
 private:
 	void OnQuit(wxCloseEvent & event);
+	void OnAbout(wxCommandEvent & event);
 	void OnOpenDatabase(wxCommandEvent & event);
     void OnOpenRecentDatabase (wxCommandEvent & event);
 	void OnShowProcessRequest (wxCommandEvent & event);

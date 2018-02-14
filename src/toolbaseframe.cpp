@@ -13,10 +13,12 @@
 #include "results_bmp.h"
 #include "querylisttree.h"
 #include "changecolumn_dlg.h"
+#include "version_param.h"
 
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
 EVT_MENU (wxID_EXIT, TBVFrame::OnMenuExit)
+EVT_MENU (wxID_ABOUT, TBVFrame::OnAbout)
 EVT_MENU (wxID_OPEN,TBVFrame::OnOpenDatabase)
 EVT_MENU_RANGE(wxID_FILE1, wxID_FILE9, TBVFrame::OnOpenRecentDatabase)
 EVT_MENU (ID_MENU_SHOW_LOG, TBVFrame::OnShowLogPanel)
@@ -383,6 +385,7 @@ void TBVFrame::_CreateMenu(){
     
     // HELO
 	wxMenu* item3 = new wxMenu;
+    item3->Append(wxID_ABOUT, _("About..."));
     item3->Append(ID_MENU_WEB_MYSQL, _("MySQL web references..."));
     myMenuBar->Append( item3, _("Help") );
     SetMenuBar(myMenuBar);
@@ -518,6 +521,21 @@ void TBVFrame::OnMenuExit(wxCommandEvent & event)
 void TBVFrame::OnQuit(wxCloseEvent & event)
 {
 	this->Destroy();
+}
+
+
+void TBVFrame::OnAbout(wxCommandEvent &event) {
+    wxAboutDialogInfo aboutInfo;
+    aboutInfo.SetName("ToolBasView");
+    aboutInfo.SetVersion(wxString::Format("%s.%s.%s %s %s",
+                                          VERSION_MAJOR,
+                                          VERSION_MINOR,
+                                          VERSION_SOFT_VERSION,
+                                          VERSION_SOFT_VERSION_BRANCH,
+                                          VERSION_SOFT_VERSION_REVISION));
+    aboutInfo.SetDescription(_("ToolMap project explorer"));
+    aboutInfo.SetCopyright(wxString::Format("(C) TERRANUM, %d", wxDateTime::Now().GetYear()));
+    wxAboutBox(aboutInfo);
 }
 
 
