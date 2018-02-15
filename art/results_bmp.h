@@ -12,7 +12,6 @@ extern void results_clean_images(void);
 
 
 extern wxBitmap *_img_results_autosize;
-extern wxBitmap *_img_results_close;
 extern wxBitmap *_img_results_copy;
 extern wxBitmap *_img_results_excel;
 extern wxBitmap *_img_results_autosize_row;
