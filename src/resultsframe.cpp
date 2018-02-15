@@ -31,7 +31,6 @@ EVT_TOOL( ID_AUTOSIZE_COLUMN, Results_DLG::OnMenuAutosize )
 EVT_TOOL(ID_AUTOSIZE_ROW, Results_DLG::OnMenuAutosizeVertical)
 EVT_UPDATE_UI( ID_AUTOSIZE_COLUMN, Results_DLG::OnUpdateUIAutosize )
 EVT_UPDATE_UI(ID_AUTOSIZE_ROW, Results_DLG::OnUpdateUIAutosize)
-EVT_TOOL( wxID_EXIT, Results_DLG::OnMenuClose )
 END_EVENT_TABLE()
 
 
@@ -141,12 +140,6 @@ void Results_DLG::OnMenuAutosize( wxCommandEvent& event ) {
 void Results_DLG::OnMenuAutosizeVertical ( wxCommandEvent& event ){
     wxBusyCursor myCursor;
     m_GridCtrl->AutoSizeRows(false);
-}
-
-
-
-void Results_DLG::OnMenuClose( wxCommandEvent& event ) {
-    Close();
 }
 
 
@@ -291,17 +284,10 @@ void Results_DLG::_CreateControls(){
     
     myText = _("Resize rows");
     m_toolBar1->AddTool(ID_AUTOSIZE_ROW, myText, *_img_results_autosize_row, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL);
-    
-	
-    myText = _("Close");
-	m_toolBar1->AddTool(wxID_EXIT, myText, *_img_results_close,  wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
-	
-	m_toolBar1->Realize();
-	
-	m_statusBar1 = this->CreateStatusBar( 1, wxST_SIZEGRIP, wxID_ANY );
-	
-}
 
+	m_toolBar1->Realize();
+	m_statusBar1 = this->CreateStatusBar( 1, wxST_SIZEGRIP, wxID_ANY );
+}
 
 
 void Results_DLG::_SetRandomPosition(){
