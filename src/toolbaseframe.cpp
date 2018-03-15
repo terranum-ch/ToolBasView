@@ -383,7 +383,7 @@ void TBVFrame::_CreateMenu(){
     item2->Append(ID_MENU_AUTOSIZE_COLUMNS, _("Autosize columns"), _("Autosize columns"));
     */
     
-    // HELO
+    // HELP
 	wxMenu* item3 = new wxMenu;
     item3->Append(wxID_ABOUT, _("About..."));
     item3->Append(ID_MENU_WEB_MYSQL, _("MySQL web references..."));
