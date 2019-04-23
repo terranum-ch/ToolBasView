@@ -134,7 +134,7 @@ bool DataBase::DBLibraryInit (const wxString & datadir){
 	int num_elements = (sizeof(server_args) / sizeof(char *));
 	int myReturn = mysql_library_init(num_elements, const_cast<char**>(server_args), const_cast<char**>(server_groups));
 	if (myReturn != 0){
-		wxLogError(DataBaseGetLastError());
+		wxLogError(_("Could not initialize MySQL client library."));
 		return false;
 	}
 

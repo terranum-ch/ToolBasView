@@ -1,6 +1,9 @@
 
+*.dll
 \.idea/
 bin/
 cmake-build-debug/
 cmake-build-release/
 cmake-build-relwithdebinfo/
+CMakeFiles/
+ToolBasView\.dir/
