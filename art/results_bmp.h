@@ -16,4 +16,9 @@ extern wxBitmap *_img_results_copy;
 extern wxBitmap *_img_results_excel;
 extern wxBitmap *_img_results_autosize_row;
 
+extern wxBitmap *_img_w_results_autosize;
+extern wxBitmap *_img_w_results_autosize_row;
+extern wxBitmap *_img_w_results_copy;
+extern wxBitmap *_img_w_results_excel;
+
 #endif /* _RESULTS_BMP_H_ */

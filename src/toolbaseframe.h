@@ -99,6 +99,8 @@ private:
     void OnUpdateUIBtnHistory (wxUpdateUIEvent & event);
     void OnUpdateUIAutosize (wxUpdateUIEvent & event);
     void OnUpdateUIAddToList (wxUpdateUIEvent & event);
+
+    void OnSysColourChanged (wxSysColourChangedEvent & event);
     
     void _LoadTablesIntoToc();
     void _CreateControls();
@@ -106,6 +108,7 @@ private:
     void _CreateToolBar();
     void _UpdateHistory (const wxString & sentence);
     bool _OpenDatabase (const wxString & path);
+    void _UpdateToolBarColour();
     
     
 	DataBase m_Database;

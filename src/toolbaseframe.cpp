@@ -58,6 +58,7 @@ EVT_BUTTON(ID_BTN_SHOW_RESULTS, TBVFrame::OnBtnShowResults)
 EVT_BUTTON(ID_BTN_ADD_TO_LIST, TBVFrame::OnAddToList)
 
 EVT_TREE_ITEM_ACTIVATED(ID_QUERY_LIST_TREE, TBVFrame::OnTreeItemDoubleClick)
+EVT_SYS_COLOUR_CHANGED(TBVFrame::OnSysColourChanged)
 
 EVT_UPDATE_UI(ID_BTN_RUN, TBVFrame::OnUpdateUIBtnRun)
 EVT_UPDATE_UI(ID_BTN_SHOW_RESULTS, TBVFrame::OnUpdateUIBtnShowResults)
@@ -413,7 +414,8 @@ void TBVFrame::_CreateToolBar(){
     m_toolBar1->AddTool( ID_MENU_AUTOSIZE_COLUMNS, myText, *_img_results_autosize, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
     myText = _("Export...");
     m_toolBar1->AddTool( wxID_SAVEAS, myText, *_img_database_export, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL );
-	m_toolBar1->Realize();
+	_UpdateToolBarColour();
+    m_toolBar1->Realize();
 }
 
 
@@ -486,6 +488,30 @@ bool TBVFrame::_OpenDatabase (const wxString & path){
 	_LoadTablesIntoToc();
     wxLogMessage( m_Database.DataBaseGetSize());
     return true;
+}
+
+
+void TBVFrame::_UpdateToolBarColour(){
+    // this function is only used in OSX for Dark mode support
+#if defined( __WXMAC__ ) && wxOSX_USE_COCOA_OR_CARBON
+    wxColor baseColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+    if ((baseColour.Red() < 75)  //dark mode
+        && (baseColour.Green() < 75)
+        && (baseColour.Blue() < 75)) {
+        GetToolBar()->SetToolNormalBitmap(wxID_NEW, *_img_w_database_new);
+        GetToolBar()->SetToolNormalBitmap(wxID_OPEN, *_img_w_database_open);
+        GetToolBar()->SetToolNormalBitmap(ID_MENU_SHOW_QUERYPANEL, *_img_w_database_process);
+        GetToolBar()->SetToolNormalBitmap(ID_MENU_AUTOSIZE_COLUMNS, *_img_w_results_autosize);
+        GetToolBar()->SetToolNormalBitmap(wxID_SAVEAS, *_img_w_database_export);
+    }
+    else{ // light mode
+        GetToolBar()->SetToolNormalBitmap(wxID_NEW, *_img_database_new);
+        GetToolBar()->SetToolNormalBitmap(wxID_OPEN, *_img_database_open);
+        GetToolBar()->SetToolNormalBitmap(ID_MENU_SHOW_QUERYPANEL, *_img_database_process);
+        GetToolBar()->SetToolNormalBitmap(ID_MENU_AUTOSIZE_COLUMNS, *_img_results_autosize);
+        GetToolBar()->SetToolNormalBitmap(wxID_SAVEAS, *_img_database_export);
+    }
+#endif
 }
 
 
@@ -1212,6 +1238,10 @@ void TBVFrame::OnUpdateUIAddToList (wxUpdateUIEvent & event){
     event.Enable(!m_QueryTxtCtrl->GetValue().IsEmpty());
 }
 
+void TBVFrame::OnSysColourChanged (wxSysColourChangedEvent & event){
+    _UpdateToolBarColour();
+    event.Skip();
+}
 
 
 void TBVFrame::_UpdateHistory (const wxString & sentence){

@@ -23,4 +23,10 @@ extern wxBitmap *_img_table_sml;
 extern wxBitmap *_img_query_category;
 extern wxBitmap *_img_query_item;
 
+// white images
+extern wxBitmap *_img_w_database_export;
+extern wxBitmap *_img_w_database_new;
+extern wxBitmap *_img_w_database_process;
+extern wxBitmap *_img_w_database_open;
+
 #endif /* _TOOLBASVIEW_BITMAP_H_ */

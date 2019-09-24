@@ -43,6 +43,7 @@ private:
     void _CreateControls();
     void _SetRandomPosition();
     void _DisplayResults();
+    void _UpdateToolBarColour();
 	
     // events
     void OnCloseResults( wxCloseEvent& event );
@@ -54,6 +55,7 @@ private:
     void OnUpdateUICopy( wxUpdateUIEvent& event ) ;
     void OnUpdateUIAutosize( wxUpdateUIEvent& event ) ;
     void OnUpdateUIExport( wxUpdateUIEvent& event );
+    void OnColourSystemChange (wxSysColourChangedEvent & event);
     DECLARE_EVENT_TABLE()
 
     
