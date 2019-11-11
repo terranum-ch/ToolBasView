@@ -5,54 +5,52 @@
 cmake_minimum_required(VERSION 2.4)
 
 ## POLICY FOR WINDOWS ONLY ???
-if(COMMAND cmake_policy)
+if (COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
+endif (COMMAND cmake_policy)
 
-SET (PROGNAMETEST ${PROGNAME}_test)
+SET(PROGNAMETEST ${PROGNAME}_test)
 
 
 #search all source files
-FILE (GLOB SRC_FILES ../src_test/*.cpp)
-SOURCE_GROUP (source FILES ${SRC_FILES})
+FILE(GLOB SRC_FILES ../src_test/*.cpp)
+SOURCE_GROUP(source FILES ${SRC_FILES})
 
 # search all headers files
-FILE (GLOB HEAD_FILES "../src_test/*.h")
-SOURCE_GROUP (header FILES ${HEAD_FILES})
+FILE(GLOB HEAD_FILES "../src_test/*.h")
+SOURCE_GROUP(header FILES ${HEAD_FILES})
 
 
-
-MESSAGE ("Build type is : " ${CMAKE_BUILD_TYPE})
+MESSAGE("Build type is : " ${CMAKE_BUILD_TYPE})
 
 
 # WXWIDGETS
 # DEFINE ALL INCLUDES AND SO ON
- SET(WXWINDOWS_USE_GL 0) 
- INCLUDE ("cmake/Use_wxWindows.cmake")
+INCLUDE("cmake/Use_wxWindows.cmake")
 
 #MYSQL EMBEDDED
-INCLUDE ("cmake/findMySQLEmbedded.cmake")
+INCLUDE("cmake/findMySQLEmbedded.cmake")
 
 
 #UNIT TESTING LIBRARY
-INCLUDE ("cmake/findcppunit.cmake")
+INCLUDE("cmake/findcppunit.cmake")
 
- 
+
 # ADD ALSO HEADERS NOT REALY NEEDED JUST FOR VS
 # COMPILING
 
 IF (WIN32)
- 	ADD_EXECUTABLE (${PROGNAMETEST} WIN32 ${SRC_FILES} ${HEAD_FILES})
- 	TARGET_LINK_LIBRARIES (${PROGNAMETEST})
+    ADD_EXECUTABLE(${PROGNAMETEST} WIN32 ${SRC_FILES} ${HEAD_FILES})
+    TARGET_LINK_LIBRARIES(${PROGNAMETEST})
 
 ELSE (WIN32)
- 	ADD_EXECUTABLE (${PROGNAMETEST} ${SRC_FILES} ${HEAD_FILES} ) 
- 
+    ADD_EXECUTABLE(${PROGNAMETEST} ${SRC_FILES} ${HEAD_FILES})
+
 ENDIF (WIN32)
 
 
 # SHOULD WE USE THE MT VERSION FOR DEFAULT 
 # COMPATIBILITY WITH < WINXP
 IF (WIN32)
-	INCLUDE ("cmake/Use_visualstudioMT.cmake")
+    INCLUDE("cmake/Use_visualstudioMT.cmake")
 ENDIF (WIN32)

@@ -2,51 +2,50 @@
 # (c) Copyright 2011 Lucien Schreiber. All Rights Reserved. 
 cmake_minimum_required(VERSION 2.6)
 ## POLICY FOR WINDOWS ONLY ???
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
+if (COMMAND cmake_policy)
+    cmake_policy(SET CMP0003 NEW)
+endif (COMMAND cmake_policy)
 
 PROJECT("ToolBasView")
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "3")
 set(VERSION_PATCH "0") # will be modified later during cmake process
 
-IF(APPLE)
-  # add no optimization level to Debug version. Otherwise debugging didn't work correctly
-  SET (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-  SET (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0") 
-  MESSAGE(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
-  MESSAGE(STATUS "CMAKE_C_FLAGS_DEBUG: ${CMAKE_C_FLAGS_DEBUG}")
-ENDIF(APPLE)
+IF (APPLE)
+    # add no optimization level to Debug version. Otherwise debugging didn't work correctly
+    SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    MESSAGE(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+    MESSAGE(STATUS "CMAKE_C_FLAGS_DEBUG: ${CMAKE_C_FLAGS_DEBUG}")
+ENDIF (APPLE)
 
 # SEARCH FILES --------------------------------
 #search all source files
-FILE (GLOB SRC_FILES src/*.cpp)
-FILE (GLOB_RECURSE ART_FILES_C art/*.cpp)
+FILE(GLOB SRC_FILES src/*.cpp)
+FILE(GLOB_RECURSE ART_FILES_C art/*.cpp)
 SET(SRC_FILES ${SRC_FILES} ${ART_FILES_C})
-SOURCE_GROUP (source FILES ${SRC_FILES})
+SOURCE_GROUP(source FILES ${SRC_FILES})
 
 # search all headers files
-FILE (GLOB HEAD_FILES "src/*.h")
-FILE (GLOB_RECURSE ART_FILES_H art/*.h)
+FILE(GLOB HEAD_FILES "src/*.h")
+FILE(GLOB_RECURSE ART_FILES_H art/*.h)
 SET(HEAD_FILES ${HEAD_FILES} ${ART_FILES_H})
-SOURCE_GROUP (header FILES ${HEAD_FILES})
+SOURCE_GROUP(header FILES ${HEAD_FILES})
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/art/")
 
 # INCLUDE LIBRARIES NEEDED ----------------------
 # WXWIDGETS
-SET(WXWINDOWS_USE_GL 0)
-INCLUDE ("build/cmake/FindwxWidgets.cmake")
-INCLUDE ("build/cmake/findMySQLEmbedded.cmake")
-INCLUDE ("build/cmake/findGISLib.cmake")
+INCLUDE("build/cmake/FindwxWidgets.cmake")
+INCLUDE("build/cmake/findMySQLEmbedded.cmake")
+INCLUDE("build/cmake/findGISLib.cmake")
 
 # SPECIAL APPLE COMMAND FOR BUNDLE ---------------------
-IF( APPLE )
-  # Need to copy the icon file
-  set_source_files_properties( "art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-  set( SRC_FILES ${SRC_FILES} "art/toolbasview.icns")
+IF (APPLE)
+    # Need to copy the icon file
+    set_source_files_properties("art/toolbasview.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(SRC_FILES ${SRC_FILES} "art/toolbasview.icns")
 ENDIF (APPLE)
 
 # VERSION INFORMATION
@@ -55,36 +54,36 @@ EXECUTE_PROCESS(COMMAND git rev-list --count HEAD
         TIMEOUT 20
         OUTPUT_VARIABLE VERSION_SOFT_VERSION
         ERROR_VARIABLE MY_ERROR1)
-IF(MY_ERROR1)
+IF (MY_ERROR1)
     MESSAGE(FATAL_ERROR "myError1 : ${MY_ERROR1}")
-ENDIF(MY_ERROR1)
+ENDIF (MY_ERROR1)
 if (NOT ${VERSION_SOFT_VERSION} STREQUAL "")
-  STRING(STRIP ${VERSION_SOFT_VERSION} VERSION_SOFT_VERSION)
-endif()
+    STRING(STRIP ${VERSION_SOFT_VERSION} VERSION_SOFT_VERSION)
+endif ()
 
 EXECUTE_PROCESS(COMMAND git rev-parse --abbrev-ref HEAD
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         TIMEOUT 20
         OUTPUT_VARIABLE VERSION_SOFT_VERSION_BRANCH
         ERROR_VARIABLE MY_ERROR1)
-IF(MY_ERROR1)
+IF (MY_ERROR1)
     MESSAGE(FATAL_ERROR "myError1 : ${MY_ERROR1}")
-ENDIF(MY_ERROR1)
+ENDIF (MY_ERROR1)
 if (NOT ${VERSION_SOFT_VERSION_BRANCH} STREQUAL "")
-  STRING(STRIP ${VERSION_SOFT_VERSION_BRANCH} VERSION_SOFT_VERSION_BRANCH)
-endif()
+    STRING(STRIP ${VERSION_SOFT_VERSION_BRANCH} VERSION_SOFT_VERSION_BRANCH)
+endif ()
 
 EXECUTE_PROCESS(COMMAND git rev-parse --short HEAD
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         TIMEOUT 20
         OUTPUT_VARIABLE VERSION_SOFT_VERSION_REVISION
         ERROR_VARIABLE MY_ERROR1)
-IF(MY_ERROR1)
+IF (MY_ERROR1)
     MESSAGE(FATAL_ERROR "myError1 : ${MY_ERROR1}")
-ENDIF(MY_ERROR1)
+ENDIF (MY_ERROR1)
 if (NOT ${VERSION_SOFT_VERSION_REVISION} STREQUAL "")
-  STRING(STRIP ${VERSION_SOFT_VERSION_REVISION} VERSION_SOFT_VERSION_REVISION)
-endif()
+    STRING(STRIP ${VERSION_SOFT_VERSION_REVISION} VERSION_SOFT_VERSION_REVISION)
+endif ()
 
 MESSAGE(STATUS "${VERSION_SOFT_NAME} version: ${VERSION_MAJOR}.${VERSION_MINOR}")
 MESSAGE(STATUS "${VERSION_SOFT_NAME} patch: ${VERSION_SOFT_VERSION}")
@@ -96,38 +95,38 @@ INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 
 # Use C++11
 if (UNIX)
-  add_definitions(-std=c++11)
+    add_definitions(-std=c++11)
 endif (UNIX)
 
 # ADD ALSO HEADERS NOT REALY NEEDED JUST FOR VS
 # COMPILING
 IF (WIN32)
-  SOURCE_GROUP (resource FILES src/ToolBasView.rc)
-  ADD_EXECUTABLE (${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${HEAD_FILES} src/ToolBasView.rc)
-  TARGET_LINK_LIBRARIES (${CMAKE_PROJECT_NAME} ${WXWINDOWS_LIBS})
+    SOURCE_GROUP(resource FILES src/ToolBasView.rc)
+    ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} WIN32 ${SRC_FILES} ${HEAD_FILES} src/ToolBasView.rc)
+    TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${WXWINDOWS_LIBS})
 ELSE (WIN32)
-  ADD_EXECUTABLE (${CMAKE_PROJECT_NAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES} ) 
+    ADD_EXECUTABLE(${CMAKE_PROJECT_NAME} MACOSX_BUNDLE ${SRC_FILES} ${HEAD_FILES})
 ENDIF (WIN32)
 
 IF (APPLE)
-  # Copy plist to ToolMap (should be after add executable!
-  set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/build/custominfo.plist)
-ENDIF(APPLE)
+    # Copy plist to ToolMap (should be after add executable!
+    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/build/custominfo.plist)
+ENDIF (APPLE)
 
 # copy libs to bundle if we are under mac...
 # check is done internally.
-INCLUDE ("build/cmake/installMacGISLIB.cmake")
+INCLUDE("build/cmake/installMacGISLIB.cmake")
 
 #SOULD WE ADD THE LIBTIFF INTO BUNDLE
 # ONLY FOR CERTAIN MAC WITH PPC 
 # CHECK ARE DONE INTERNALLY YOU 
 # CAN CALL THIS WITHOUT FEAR...
-INCLUDE ("build/cmake/installMacLibTiff.cmake")
+INCLUDE("build/cmake/installMacLibTiff.cmake")
 
 # SHOULD WE USE THE MT VERSION FOR DEFAULT 
 # COMPATIBILITY WITH < WINXP
 IF (WIN32)
-  INCLUDE ("build/cmake/Use_visualstudioMT.cmake")
+    INCLUDE("build/cmake/Use_visualstudioMT.cmake")
 ENDIF (WIN32)
 
 #SOULD WE ADD THE GDIPLUS.dll INTO project
@@ -137,24 +136,24 @@ ENDIF (WIN32)
 # OS. 
 # CHECK ARE DONE INTERNALLY YOU 
 # CAN CALL THIS WITHOUT FEAR...
-INCLUDE ("build/cmake/Use_wingdiplus.cmake")
+INCLUDE("build/cmake/Use_wingdiplus.cmake")
 
-INCLUDE ("build/cmake/useMySQLEmbedded.cmake")
+INCLUDE("build/cmake/useMySQLEmbedded.cmake")
 INCLUDE("build/cmake/GDALCopyLibs.cmake")
 
 # installer
 if (CREATE_INSTALLER)
-  INCLUDE("build/cmake/create_installer.cmake")
-else(CREATE_INSTALLER)
-  install(
-          TARGETS ${CMAKE_PROJECT_NAME}
-          BUNDLE DESTINATION .
-          RUNTIME DESTINATION bin
-  )
+    INCLUDE("build/cmake/create_installer.cmake")
+else (CREATE_INSTALLER)
+    install(
+            TARGETS ${CMAKE_PROJECT_NAME}
+            BUNDLE DESTINATION .
+            RUNTIME DESTINATION bin
+    )
 endif (CREATE_INSTALLER)
 
 # UNIT TEST PROGRAM
-SET (USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${CMAKE_PROJECT_NAME}")
+SET(USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${CMAKE_PROJECT_NAME}")
 IF (USE_UNITTEST)
-  ADD_SUBDIRECTORY("test/build" ${PROJECT_BINARY_DIR})
+    ADD_SUBDIRECTORY("test/build" ${PROJECT_BINARY_DIR})
 ENDIF (USE_UNITTEST)
