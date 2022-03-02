@@ -3,17 +3,17 @@
 #define EXCEL_H
 
 #include <stdio.h>
+
 #include <cstring>
 
 #define MAXLEN 1024
 
-class Excel
-{
-public:
+class Excel {
+ public:
   Excel();
   ~Excel();
 
-public:
+ public:
   bool Open(const char* filename);
   void Close();
   bool IsOpen();
@@ -25,10 +25,10 @@ public:
 
   const char* LastError() const;
 
-private:
+ private:
   inline void putcc(FILE* file, const int value);
 
-private:
+ private:
   FILE* file;
   char error[MAXLEN];
 };

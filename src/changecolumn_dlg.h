@@ -21,34 +21,31 @@
 #include <wx/wx.h>
 #endif
 class DataBase;
-const wxString m_FieldTypes [] = { _T("INTEGER*"), _T("FLOAT*"), _T("DATE"), _T("TIME"), _T("DATETIME"), _T("VARCHAR*") };
-class ChangeColumn_DLG : public wxDialog
-{
-private:
-    wxChoice* m_ColumnCtrl;
-    wxRadioBox* m_TypeCtrl;
-    wxTextCtrl* m_OptionCtrl;
-    wxStaticText* m_ResultCtrl;
-    wxButton* m_BtnCtrlOK;
-	wxButton* m_BtnCtrlApply;
-    
-    DataBase * m_Database;
-    wxString m_TableName;    
-    
-    void _CreateControls ();
-    void _LoadColumnsIntoArray (wxArrayString & array);
-    void _DoApplyChange();
-    
-    void OnApplyButton( wxCommandEvent& event );
-    void OnOkButton( wxCommandEvent& event );
+const wxString m_FieldTypes[] = {_T("INTEGER*"), _T("FLOAT*"), _T("DATE"), _T("TIME"), _T("DATETIME"), _T("VARCHAR*")};
+class ChangeColumn_DLG : public wxDialog {
+ private:
+  wxChoice* m_ColumnCtrl;
+  wxRadioBox* m_TypeCtrl;
+  wxTextCtrl* m_OptionCtrl;
+  wxStaticText* m_ResultCtrl;
+  wxButton* m_BtnCtrlOK;
+  wxButton* m_BtnCtrlApply;
 
-	
-public:
-    ChangeColumn_DLG( wxWindow* parent, DataBase * database, const wxString & tablename, wxWindowID id = wxID_ANY, const wxString& title = _("Change Column Type"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
-    ~ChangeColumn_DLG();
+  DataBase* m_Database;
+  wxString m_TableName;
+
+  void _CreateControls();
+  void _LoadColumnsIntoArray(wxArrayString& array);
+  void _DoApplyChange();
+
+  void OnApplyButton(wxCommandEvent& event);
+  void OnOkButton(wxCommandEvent& event);
+
+ public:
+  ChangeColumn_DLG(wxWindow* parent, DataBase* database, const wxString& tablename, wxWindowID id = wxID_ANY,
+                   const wxString& title = _("Change Column Type"), const wxPoint& pos = wxDefaultPosition,
+                   const wxSize& size = wxSize(-1, -1), long style = wxDEFAULT_DIALOG_STYLE);
+  ~ChangeColumn_DLG();
 };
 
-
-
 #endif
-

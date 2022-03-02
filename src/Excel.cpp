@@ -2,27 +2,23 @@
 #include "Excel.h"
 
 /// Constructor
-Excel::Excel()
-{
+Excel::Excel() {
   file = 0;
   strcpy(error, "");
 }
 
 /// Destructor
-Excel::~Excel()
-{
+Excel::~Excel() {
   Close();
 }
 
 /// open a file. Returns true if succesfully opened.
 /// else returns false and you can read the status via LastError();
-bool Excel::Open(const char* filename)
-{
+bool Excel::Open(const char* filename) {
   Close();
 
-  file = fopen (filename,"wb");  // important: open binary
-  if (file == 0)
-  {
+  file = fopen(filename, "wb");  // important: open binary
+  if (file == 0) {
     sprintf(error, "Could not open file \"%.255s\"", filename);
     return false;
   }
@@ -31,27 +27,22 @@ bool Excel::Open(const char* filename)
 }
 
 /// Close an opened excel file
-void Excel::Close()
-{
-  if (file != 0)
-  {
+void Excel::Close() {
+  if (file != 0) {
     fclose(file);
     file = 0;
   }
 }
 
 // Returns true if there is an excel file open
-bool Excel::IsOpen()
-{
+bool Excel::IsOpen() {
   return (file != 0);
 }
 
 /// write the start bytes to the excel file
 /// execute this function once before you start writing to a file
-void Excel::Begin()
-{
-  if (!IsOpen())
-  {
+void Excel::Begin() {
+  if (!IsOpen()) {
     strcpy(error, "Cannot begin file. No file open.");
     return;
   }
@@ -66,10 +57,8 @@ void Excel::Begin()
 
 /// write the end bytes to the excel file
 /// execute this function once after you are finished writing to a file
-void Excel::End()
-{
-  if (!IsOpen())
-  {
+void Excel::End() {
+  if (!IsOpen()) {
     strcpy(error, "Cannot end file. No file open.");
     return;
   }
@@ -79,16 +68,13 @@ void Excel::End()
 }
 
 /// write a string to the file
-void Excel::Write(const int row, const int col, const char* value)
-{
-  if (value == 0)
-  {
+void Excel::Write(const int row, const int col, const char* value) {
+  if (value == 0) {
     strcpy(error, "Cannot write to file. No value provided.");
     return;
   }
 
-  if (!IsOpen())
-  {
+  if (!IsOpen()) {
     strcpy(error, "Cannot write to file. No file open.");
     return;
   }
@@ -104,16 +90,13 @@ void Excel::Write(const int row, const int col, const char* value)
 }
 
 /// write a double to the file
-void Excel::Write(const int row, const int col, const double value)
-{
-  if (value == 0)
-  {
+void Excel::Write(const int row, const int col, const double value) {
+  if (value == 0) {
     strcpy(error, "Cannot write to file. No value provided.");
     return;
   }
 
-  if (!IsOpen())
-  {
+  if (!IsOpen()) {
     strcpy(error, "Cannot write to file. No file open.");
     return;
   }
@@ -128,15 +111,12 @@ void Excel::Write(const int row, const int col, const double value)
 }
 
 /// Returns the last error
-const char* Excel::LastError() const
-{
+const char* Excel::LastError() const {
   return error;
 }
 
 /// Write given integer to the file stream as two bytes (16 bits)
-void Excel::putcc(FILE* file, const int value)
-{
+void Excel::putcc(FILE* file, const int value) {
   putc(value % 256, file);
   putc(value / 256, file);
 }
-

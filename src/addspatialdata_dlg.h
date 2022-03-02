@@ -2,7 +2,7 @@
  addspatialdata_dlg.h
  Functions for adding spatial data into a database
  -------------------
- copyright            : (C) 2007 CREALP Lucien Schreiber 
+ copyright            : (C) 2007 CREALP Lucien Schreiber
  email                : lucien.schreiber at crealp dot vs dot ch
  ***************************************************************************/
 
@@ -20,8 +20,9 @@
 /*!
  * Includes
  */
-#include "database.h"
 #include <wx/filepicker.h>
+
+#include "database.h"
 #include "wx/statline.h"
 
 ////@begin includes
@@ -44,86 +45,78 @@
 #define ID_LISTTABLES 10002
 #define ID_CHECKBOX 10009
 #define ID_STATICLINE 10003
-#define SYMBOL_ADDSPATIALDATA_DLG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
+#define SYMBOL_ADDSPATIALDATA_DLG_STYLE wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 #define SYMBOL_ADDSPATIALDATA_DLG_TITLE _("Add spatial data into database")
 #define SYMBOL_ADDSPATIALDATA_DLG_IDNAME ID_ADDSPATIALDATA_DLG
 #define SYMBOL_ADDSPATIALDATA_DLG_SIZE wxSize(400, 300)
 #define SYMBOL_ADDSPATIALDATA_DLG_POSITION wxDefaultPosition
 ////@end control identifiers
 
-
 /*!
  * ADDSPATIALDATA_DLG class declaration
  */
 
-class ADDSPATIALDATA_DLG: public wxDialog
-{    
-    DataBase * m_pDatabase;
-	
-	DECLARE_DYNAMIC_CLASS( ADDSPATIALDATA_DLG )
-    DECLARE_EVENT_TABLE()
-	
+class ADDSPATIALDATA_DLG : public wxDialog {
+  DataBase* m_pDatabase;
 
+  DECLARE_DYNAMIC_CLASS(ADDSPATIALDATA_DLG)
+  DECLARE_EVENT_TABLE()
 
-public:
-	wxString m_VectorFileName;
-	wxString m_DBTableName;
-	bool m_bComputeIndex;
-	
-    /// Constructors
-    ADDSPATIALDATA_DLG();
-    ADDSPATIALDATA_DLG( wxWindow* parent,
-					   DataBase * pDatabase,
-					   wxWindowID id = SYMBOL_ADDSPATIALDATA_DLG_IDNAME, 
-					   const wxString& caption = SYMBOL_ADDSPATIALDATA_DLG_TITLE, 
-					   const wxPoint& pos = SYMBOL_ADDSPATIALDATA_DLG_POSITION, 
-					   const wxSize& size = SYMBOL_ADDSPATIALDATA_DLG_SIZE, 
-					   long style = SYMBOL_ADDSPATIALDATA_DLG_STYLE );
+ public:
+  wxString m_VectorFileName;
+  wxString m_DBTableName;
+  bool m_bComputeIndex;
 
-    /// Creation
-    bool Create( wxWindow* parent,
-				DataBase * pDatabase,
-				wxWindowID id = SYMBOL_ADDSPATIALDATA_DLG_IDNAME, 
-				const wxString& caption = SYMBOL_ADDSPATIALDATA_DLG_TITLE, 
-				const wxPoint& pos = SYMBOL_ADDSPATIALDATA_DLG_POSITION, 
-				const wxSize& size = SYMBOL_ADDSPATIALDATA_DLG_SIZE, 
-				long style = SYMBOL_ADDSPATIALDATA_DLG_STYLE );
+  /// Constructors
+  ADDSPATIALDATA_DLG();
+  ADDSPATIALDATA_DLG(wxWindow* parent, DataBase* pDatabase, wxWindowID id = SYMBOL_ADDSPATIALDATA_DLG_IDNAME,
+                     const wxString& caption = SYMBOL_ADDSPATIALDATA_DLG_TITLE,
+                     const wxPoint& pos = SYMBOL_ADDSPATIALDATA_DLG_POSITION,
+                     const wxSize& size = SYMBOL_ADDSPATIALDATA_DLG_SIZE, long style = SYMBOL_ADDSPATIALDATA_DLG_STYLE);
 
-    /// Destructor
-    ~ADDSPATIALDATA_DLG();
+  /// Creation
+  bool Create(wxWindow* parent, DataBase* pDatabase, wxWindowID id = SYMBOL_ADDSPATIALDATA_DLG_IDNAME,
+              const wxString& caption = SYMBOL_ADDSPATIALDATA_DLG_TITLE,
+              const wxPoint& pos = SYMBOL_ADDSPATIALDATA_DLG_POSITION,
+              const wxSize& size = SYMBOL_ADDSPATIALDATA_DLG_SIZE, long style = SYMBOL_ADDSPATIALDATA_DLG_STYLE);
 
-    /// Initialises member variables
-    void Init();
+  /// Destructor
+  ~ADDSPATIALDATA_DLG();
 
-    /// Creates the controls and sizers
-    void CreateControls();
-	
-	bool AddListOfTable ();
+  /// Initialises member variables
+  void Init();
 
-	virtual bool TransferDataFromWindow();
-////@begin ADDSPATIALDATA_DLG event handler declarations
+  /// Creates the controls and sizers
+  void CreateControls();
 
-////@end ADDSPATIALDATA_DLG event handler declarations
+  bool AddListOfTable();
 
-////@begin ADDSPATIALDATA_DLG member function declarations
-	void SetDataBase(DataBase * pDatabase){m_pDatabase = pDatabase;}
+  virtual bool TransferDataFromWindow();
+  ////@begin ADDSPATIALDATA_DLG event handler declarations
 
-    /// Retrieves bitmap resources
-    wxBitmap GetBitmapResource( const wxString& name );
+  ////@end ADDSPATIALDATA_DLG event handler declarations
 
-    /// Retrieves icon resources
-    wxIcon GetIconResource( const wxString& name );
-////@end ADDSPATIALDATA_DLG member function declarations
+  ////@begin ADDSPATIALDATA_DLG member function declarations
+  void SetDataBase(DataBase* pDatabase) {
+    m_pDatabase = pDatabase;
+  }
 
-    /// Should we show tooltips?
-    static bool ShowToolTips();
+  /// Retrieves bitmap resources
+  wxBitmap GetBitmapResource(const wxString& name);
 
-////@begin ADDSPATIALDATA_DLG member variables
-    wxFilePickerCtrl * m_DLGAS_FileSelector;
-	wxChoice* m_DLGAS_ListTables;
-	wxCheckBox* m_DLGAS_Chk_Index;
-////@end ADDSPATIALDATA_DLG member variables
+  /// Retrieves icon resources
+  wxIcon GetIconResource(const wxString& name);
+  ////@end ADDSPATIALDATA_DLG member function declarations
+
+  /// Should we show tooltips?
+  static bool ShowToolTips();
+
+  ////@begin ADDSPATIALDATA_DLG member variables
+  wxFilePickerCtrl* m_DLGAS_FileSelector;
+  wxChoice* m_DLGAS_ListTables;
+  wxCheckBox* m_DLGAS_Chk_Index;
+  ////@end ADDSPATIALDATA_DLG member variables
 };
 
 #endif
-    // _ADDSPATIALDATA_DLG_H_
+// _ADDSPATIALDATA_DLG_H_

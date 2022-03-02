@@ -1,7 +1,7 @@
 /***************************************************************************
  tableexport.h
  -------------------
- copyright            : (C) 2012 CREALP Lucien Schreiber 
+ copyright            : (C) 2012 CREALP Lucien Schreiber
  email                : lucien.schreiber at crealp dot vs dot ch
  ***************************************************************************/
 
@@ -25,23 +25,20 @@
 #endif
 #include <wx/filename.h>
 
-
-
-
 class DataBase;
 
 class TableExport {
-private:
-    DataBase * m_Database;
-    wxString m_Encoding;
-    
-    
-public:
-    TableExport(DataBase * database);
-    virtual ~TableExport();
-    
-    void SetEncoding(const wxString & encoding){m_Encoding = encoding;}
-    bool ExportCSV(const wxString & tablename, const wxFileName & path, int limit = wxNOT_FOUND, bool addtablename = false);
-    
+ private:
+  DataBase* m_Database;
+  wxString m_Encoding;
+
+ public:
+  TableExport(DataBase* database);
+  virtual ~TableExport();
+
+  void SetEncoding(const wxString& encoding) {
+    m_Encoding = encoding;
+  }
+  bool ExportCSV(const wxString& tablename, const wxFileName& path, int limit = wxNOT_FOUND, bool addtablename = false);
 };
 #endif

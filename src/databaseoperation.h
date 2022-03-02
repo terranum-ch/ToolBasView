@@ -1,7 +1,7 @@
 /***************************************************************************
  databaseoperation.h
  -------------------
- copyright            : (C) 2012 CREALP Lucien Schreiber 
+ copyright            : (C) 2012 CREALP Lucien Schreiber
  email                : lucien.schreiber at crealp dot vs dot ch
  ***************************************************************************/
 
@@ -24,50 +24,39 @@
 #include <wx/wx.h>
 #endif
 
-
-
 class DatabaseOp_DLG : public wxDialog {
-  private:
-    bool m_Check;
-    bool m_Repair;
-    bool m_Optimize;
-    wxCheckBox* m_CheckCtrl;
-    wxCheckBox* m_OptimizeCtrl;
-    wxCheckBox* m_RepairCtrl;
-	    
-    void _CreateControls();
+ private:
+  bool m_Check;
+  bool m_Repair;
+  bool m_Optimize;
+  wxCheckBox* m_CheckCtrl;
+  wxCheckBox* m_OptimizeCtrl;
+  wxCheckBox* m_RepairCtrl;
 
-    virtual bool TransferDataFromWindow();
-    void OnOk(wxCommandEvent & event);
+  void _CreateControls();
 
+  virtual bool TransferDataFromWindow();
+  void OnOk(wxCommandEvent& event);
 
-  public:
-    DatabaseOp_DLG(wxWindow * window, wxWindowID id, const wxString & title = _("Database operations"));
-    virtual ~DatabaseOp_DLG();
-    
-    inline const bool GetCheck() const;
-    inline const bool GetRepair() const;
-    inline const bool GetOptimize() const;
-    
+ public:
+  DatabaseOp_DLG(wxWindow* window, wxWindowID id, const wxString& title = _("Database operations"));
+  virtual ~DatabaseOp_DLG();
+
+  inline const bool GetCheck() const;
+  inline const bool GetRepair() const;
+  inline const bool GetOptimize() const;
 };
 
-
-
 inline const bool DatabaseOp_DLG::GetCheck() const {
-    return m_Check;
+  return m_Check;
 }
-
-
 
 inline const bool DatabaseOp_DLG::GetRepair() const {
-    return m_Repair;
+  return m_Repair;
 }
-
-
 
 inline const bool DatabaseOp_DLG::GetOptimize() const {
-    return m_Optimize;
+  return m_Optimize;
 }
-
 
 #endif

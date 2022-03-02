@@ -1,8 +1,8 @@
 /***************************************************************************
  databaseresult.h
- 
+
  -------------------
- copyright            : (C) 2010 CREALP Lucien Schreiber 
+ copyright            : (C) 2010 CREALP Lucien Schreiber
  email                : lucien.schreiber at crealp dot vs dot ch
  ***************************************************************************/
 
@@ -25,45 +25,42 @@
 #include <wx/wx.h>
 #endif
 
-#include "mysql.h"
-#include "ogrsf_frmts.h"		// OGR accessing
 #include "database.h"
+#include "mysql.h"
+#include "ogrsf_frmts.h"  // OGR accessing
 
 class DataBaseResult {
-private:
-    MYSQL_RES ** m_ResultSet;
-	MYSQL_ROW m_Row;
-    MYSQL_FIELD * m_Field;
-	long m_RowIndex;
-    tmArrayULong m_RowLengths;
-	
-protected:
-    bool _GetRowLength();
-	
-	
-public:
-	DataBaseResult();
-    DataBaseResult(MYSQL_RES ** results);
-	void Create(MYSQL_RES ** results);
-    ~DataBaseResult();
-	
-	bool HasResults();
-    int GetColCount();
-    long GetRowCount();
-	
-    bool GetColName(wxArrayString & fields);
-    bool GetValue(int col, wxString & value);
-    bool GetValue(int col, long & value);
-	bool GetValue(int col, OGRGeometry ** geometry);
-    
-    bool IsNumField(int col);
-    bool IsTextField (int col);
-    bool IsGeomField (int col);
-	
-	
-    bool NextRow();
-    bool IsRowOk();
-	bool GotoRow (long row);
+ private:
+  MYSQL_RES** m_ResultSet;
+  MYSQL_ROW m_Row;
+  MYSQL_FIELD* m_Field;
+  long m_RowIndex;
+  tmArrayULong m_RowLengths;
 
+ protected:
+  bool _GetRowLength();
+
+ public:
+  DataBaseResult();
+  DataBaseResult(MYSQL_RES** results);
+  void Create(MYSQL_RES** results);
+  ~DataBaseResult();
+
+  bool HasResults();
+  int GetColCount();
+  long GetRowCount();
+
+  bool GetColName(wxArrayString& fields);
+  bool GetValue(int col, wxString& value);
+  bool GetValue(int col, long& value);
+  bool GetValue(int col, OGRGeometry** geometry);
+
+  bool IsNumField(int col);
+  bool IsTextField(int col);
+  bool IsGeomField(int col);
+
+  bool NextRow();
+  bool IsRowOk();
+  bool GotoRow(long row);
 };
 #endif
