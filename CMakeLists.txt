@@ -9,6 +9,11 @@ cmake_minimum_required(VERSION 3.0)
 
 PROJECT("ToolBasView")
 
+# Use C++11
+if (UNIX)
+    add_definitions(-std=c++11)
+endif (UNIX)
+
 # using git version
 set(${PROJECT_NAME}_MAJOR_VERSION "1")
 set(${PROJECT_NAME}_MINOR_VERSION "4")
@@ -35,12 +40,6 @@ SOURCE_GROUP(source FILES ${SRC_FILES})
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/art/")
 
-# INCLUDE LIBRARIES NEEDED ----------------------
-# WXWIDGETS
-#INCLUDE("build/cmake/FindwxWidgets.cmake")
-#INCLUDE("build/cmake/findMySQLEmbedded.cmake")
-#INCLUDE("build/cmake/findGISLib.cmake")
-
 # osx icon
 set(MACOSX_BUNDLE_ICON_FILE art/toolbasview.icns)
 set(ICON_PATH "${CMAKE_SOURCE_DIR}/art/toolbasview.icns")
@@ -57,10 +56,6 @@ ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
         )
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${CONAN_LIBS})
 
-# Use C++11
-if (UNIX)
-    add_definitions(-std=c++11)
-endif (UNIX)
 
 IF (APPLE)
     # Copy plist to ToolMap (should be after add executable!

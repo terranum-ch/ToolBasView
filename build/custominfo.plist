@@ -21,17 +21,17 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.3</string>
+    <string>1.4</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
-    <string>1.3.0</string>
+    <string>1.4.0</string>
     <key>CSResourcesFileMapped</key>
     <true/>
     <key>LSRequiresCarbon</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
-    <string>Lucien Schreiber (c) CREALP 2013</string>
+    <string>(c) TERRANUM</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
   </dict>

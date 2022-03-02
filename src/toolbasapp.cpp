@@ -15,12 +15,12 @@ toolbaseapp.cpp
  ***************************************************************************/
 
 #include "toolbasapp.h"
+
 #include "toolbaseframe.h"
 
-bool TBVApp::OnInit()
-{
-	TBVFrame * frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50,50), wxSize(800,600));
-	frame->Centre();
-	frame->Show();
-	return true;
+bool TBVApp::OnInit() {
+  TBVFrame* frame = new TBVFrame(NULL, _T("ToolBasView"), wxPoint(50, 50), wxSize(800, 600));
+  frame->Centre();
+  frame->Show();
+  return true;
 }

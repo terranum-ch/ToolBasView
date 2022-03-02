@@ -21,11 +21,9 @@
 #include <wx/wx.h>
 #endif
 
-
-class TBVApp : public wxApp
-{
-public:
-	virtual bool OnInit();
+class TBVApp : public wxApp {
+ public:
+  virtual bool OnInit();
 };
 IMPLEMENT_APP(TBVApp);
 
