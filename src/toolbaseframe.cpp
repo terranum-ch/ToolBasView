@@ -13,7 +13,7 @@
 #include "results_bmp.h"
 #include "querylisttree.h"
 #include "changecolumn_dlg.h"
-#include "version_param.h"
+#include "version.h"
 
 
 BEGIN_EVENT_TABLE (TBVFrame, wxFrame)
@@ -554,11 +554,11 @@ void TBVFrame::OnAbout(wxCommandEvent &event) {
     wxAboutDialogInfo aboutInfo;
     aboutInfo.SetName("ToolBasView");
     aboutInfo.SetVersion(wxString::Format("%s.%s.%s %s %s",
-                                          VERSION_MAJOR,
-                                          VERSION_MINOR,
-                                          VERSION_SOFT_VERSION,
-                                          VERSION_SOFT_VERSION_BRANCH,
-                                          VERSION_SOFT_VERSION_REVISION));
+                                          ToolBasView_MAJOR_VERSION,
+                                          ToolBasView_MINOR_VERSION,
+                                          GIT_NUMBER,
+                                          GIT_BRANCH,
+                                          GIT_REV));
     aboutInfo.SetDescription(_("ToolMap project explorer"));
     aboutInfo.SetCopyright(wxString::Format("(C) TERRANUM, %d", wxDateTime::Now().GetYear()));
     wxAboutBox(aboutInfo);
