@@ -7,10 +7,11 @@ class ToolbasView(ConanFile):
     requires = [
         "wxwidgets/3.1.4@terranum-conan+wxwidgets/stable",
         "mysql/5.6.51@terranum-conan+mysql/stable",
-        "gdal/3.3.3",
+        "gdal/3.4.1@terranum-conan+gdal/stable",
         "geos/3.9.1",
         "proj/8.1.1",
         "libcurl/7.80.0",
+        "libdeflate/1.9"
     ]
 
     options = {"unit_test": [True, False]}
