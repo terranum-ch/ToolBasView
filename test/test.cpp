@@ -1,9 +1,19 @@
-#include "gtest/gtest.h"
-#include <wx/filename.h>
-#include <fstream>
-#include <iostream>
 #include "database.h"
+#include "gtest/gtest.h"
 
-TEST(TestSuite, Empty){
-  ASSERT_TRUE(true); // testing unit test
+class TestDatabase : public ::testing::Test {
+ protected:
+  DataBase* m_db = nullptr;
+
+  virtual void SetUp() {
+    m_db = new DataBase();
+  }
+  virtual void TearDown() {
+    wxDELETE(m_db);
+  }
+};
+
+TEST_F(TestDatabase, Empty) {
+  ASSERT_TRUE(true);  // testing unit test
+  ASSERT_TRUE(m_db != nullptr);
 }
