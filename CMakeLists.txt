@@ -32,20 +32,45 @@ conan_basic_setup()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #source files
-FILE(GLOB SRC_FILES src/*.cpp)
-FILE(GLOB_RECURSE ART_FILES_C art/*.cpp)
-SET(SRC_FILES ${SRC_FILES} ${ART_FILES_C})
-SOURCE_GROUP(source FILES ${SRC_FILES})
+SET(LIB_FILES
+        "src/addspatialdata_dlg.cpp"
+        "src/changecolumn_dlg.cpp"
+        "src/database.cpp"
+        "src/databaseoperation.cpp"
+        "src/databaseresult.cpp"
+        "src/deletetabledata_dlg.cpp"
+        "src/dialogs.cpp"
+        "src/dlg_operation.cpp"
+        "src/Excel.cpp"
+        "src/exportcsv_dlg.cpp"
+        "src/gisdataprovider.cpp"
+        "src/gridoperation.cpp"
+        "src/querylisttree.cpp"
+        "src/resultsframe.cpp"
+        "src/searchspatialpoint_dlg.cpp"
+        "src/tableexport.cpp"
+        )
+
+SET(SRC_FILES
+        "src/toolbasapp.cpp"
+        "src/toolbaseframe.cpp"
+        "art/results_bmp.cpp"
+        "art/toolbasview_bmp.cpp"
+        )
+
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/art/")
+INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 
 # osx icon
 set(MACOSX_BUNDLE_ICON_FILE art/toolbasview.icns)
 set(ICON_PATH "${CMAKE_SOURCE_DIR}/art/toolbasview.icns")
 set_source_files_properties(${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
+# Create a library with all sources files mainly for unit testing
+ADD_LIBRARY("${CMAKE_PROJECT_NAME}_lib" STATIC ${LIB_FILES})
+target_link_libraries("${CMAKE_PROJECT_NAME}_lib" ${CONAN_LIBS})
 
 # Create the Toolbasview binary
 ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
@@ -54,11 +79,11 @@ ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
         ${ICON_PATH}
         src/resource.rc
         )
-TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${CONAN_LIBS})
+TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}_lib" ${CONAN_LIBS})
 
 
+# Copy plist to bundle (should be placed after add executable!
 IF (APPLE)
-    # Copy plist to ToolMap (should be after add executable!
     set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/build/custominfo.plist)
 ENDIF (APPLE)
 
@@ -76,34 +101,6 @@ IF (APPLE)
 ENDIF (APPLE)
 
 
-# copy libs to bundle if we are under mac...
-# check is done internally.
-#INCLUDE("build/cmake/installMacGISLIB.cmake")
-
-#SOULD WE ADD THE LIBTIFF INTO BUNDLE
-# ONLY FOR CERTAIN MAC WITH PPC 
-# CHECK ARE DONE INTERNALLY YOU 
-# CAN CALL THIS WITHOUT FEAR...
-#INCLUDE("build/cmake/installMacLibTiff.cmake")
-
-# SHOULD WE USE THE MT VERSION FOR DEFAULT 
-# COMPATIBILITY WITH < WINXP
-#IF (WIN32)
-#    INCLUDE("build/cmake/Use_visualstudioMT.cmake")
-#ENDIF (WIN32)
-
-#SOULD WE ADD THE GDIPLUS.dll INTO project
-# ONLY FOR Windows, but needed if using
-# advanced graphics
-# do nothing under other 
-# OS. 
-# CHECK ARE DONE INTERNALLY YOU 
-# CAN CALL THIS WITHOUT FEAR...
-#INCLUDE("build/cmake/Use_wingdiplus.cmake")
-#
-#INCLUDE("build/cmake/useMySQLEmbedded.cmake")
-#INCLUDE("build/cmake/GDALCopyLibs.cmake")
-
 # installer
 #if (CREATE_INSTALLER)
 #    INCLUDE("build/cmake/create_installer.cmake")
@@ -116,7 +113,7 @@ ENDIF (APPLE)
 #endif (CREATE_INSTALLER)
 
 # UNIT TEST PROGRAM
-#SET(USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test (XP) for ${CMAKE_PROJECT_NAME}")
-#IF (USE_UNITTEST)
-#    ADD_SUBDIRECTORY("test/build" ${PROJECT_BINARY_DIR})
-#ENDIF (USE_UNITTEST)
+SET(USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test for ${CMAKE_PROJECT_NAME}")
+IF (USE_UNITTEST)
+   ADD_SUBDIRECTORY(test)
+ENDIF (USE_UNITTEST)

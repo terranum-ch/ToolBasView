@@ -13,7 +13,14 @@ class ToolbasView(ConanFile):
         "libcurl/7.80.0",
     ]
 
+    options = {"unit_test": [True, False]}
+    default_options = {"unit_test": False}
+
     generators = "cmake", "gcc", "txt"
+
+    def requirements(self):
+        if self.options.unit_test:
+            self.requires("gtest/1.11.0")
 
     def configure(self):
         self.options["gdal"].with_curl = True # for xml support
@@ -44,6 +51,8 @@ class ToolbasView(ConanFile):
 
     def build(self):
         cmake = CMake(self)
+        if self.options.unit_test:
+            cmake.definitions["USE_UNITTEST"] = "ON"
         cmake.configure()
         cmake.build()
         cmake.install()

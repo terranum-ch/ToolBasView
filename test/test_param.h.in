@@ -1,0 +1,14 @@
+// this file is used by cmake to create test_param.h
+
+#ifndef _TEST_PARAM_H_
+#define _TEST_PARAM_H_
+
+#include "wx/wxprec.h"
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
+const wxString UNIT_TESTING_DATA_PATH = "@UNIT_TESTING_DATA_PATH@";
+const wxString UNIT_TESTING_DATA_OUTPUT_PATH = "@UNIT_TESTING_DATA_OUTPUT_PATH@";
+
+#endif
