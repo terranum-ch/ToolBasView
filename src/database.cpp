@@ -36,7 +36,6 @@
 #include <wx/filename.h>  // to create the database path and name.
 #include <wx/stdpaths.h>  // std path for logging too.
 
-#include "database-config.h"  // for logging
 #include "database.h"
 #include "databaseresult.h"
 
