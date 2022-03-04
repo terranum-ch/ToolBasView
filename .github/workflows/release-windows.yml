@@ -1,0 +1,50 @@
+name: Release-Windows
+
+#on:
+#  release:
+#    types: [created]
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install conan
+        run: |
+          pip install conan
+          conan config set general.revisions_enabled=1
+
+          # gitlab support (wxwidgets, mysql, gdal)
+          conan remote add gitlab https://gitlab.com/api/v4/packages/conan
+          conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
+
+      - name: Install libraries
+        run: |
+          mkdir ${{github.workspace}}/bin
+          cd ${{github.workspace}}/bin
+          conan install ..
+
+      - name: Build
+        run: |
+          cd ${{github.workspace}}/bin
+          conan build ..
+        # cpack
+
+#      - name: upload file
+#        uses: xresloader/upload-to-github-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          file: "*.zip;bin/*.zip;/bin/bin/*.zip"
+#          tags: true
+#          draft: true
+      
+#      - name: Run unit testing
+#        run: |
+#          cd ${{github.workspace}}/bin
+#          ctest -C Release -V

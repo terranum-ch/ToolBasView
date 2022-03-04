@@ -54,4 +54,5 @@ class ToolbasView(ConanFile):
             cmake.definitions["USE_UNITTEST"] = "ON"
         cmake.configure()
         cmake.build()
-        cmake.install()
+        if self.settings.os == "Macos":
+            cmake.install()
