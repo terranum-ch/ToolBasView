@@ -2,11 +2,6 @@
 # (c) Copyright 2022 Terranum
 cmake_minimum_required(VERSION 3.0)
 
-## POLICY FOR WINDOWS ONLY ???
-#if (COMMAND cmake_policy)
-#    cmake_policy(SET CMP0003 NEW)
-#endif (COMMAND cmake_policy)
-
 PROJECT("ToolBasView")
 
 # Use C++11
@@ -28,7 +23,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-#Export for sourcetrail
+#Export compile commands (for sourcetrail)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #source files
@@ -58,7 +53,6 @@ SET(SRC_FILES
         "art/toolbasview_bmp.cpp"
         )
 
-
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/art/")
 INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
@@ -80,7 +74,6 @@ ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
         src/resource.rc
         )
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}_lib" ${CONAN_LIBS})
-
 
 # Copy plist to bundle (should be placed after add executable!
 IF (APPLE)
@@ -117,3 +110,6 @@ SET(USE_UNITTEST CACHE BOOL "Sould we Create the Unit Test for ${CMAKE_PROJECT_N
 IF (USE_UNITTEST)
    ADD_SUBDIRECTORY(test)
 ENDIF (USE_UNITTEST)
+
+# installer
+include(build/cmake/create_installer.cmake)
