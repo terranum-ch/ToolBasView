@@ -10,6 +10,10 @@ in order to be able to visualize, analyze and manipulate the data produced by To
 Toolbasview can also be used independently to create or work with MySQL data
 without the presence of a MySQL server.
 
-ToolbasView can be downloaded from the Release page
+ToolbasView works on Windows, OSX and Linux and can be downloaded from the Release page,
 
 ![ToolBasView main ui](docs/img/main_ui.jpg)
+
+## Build instructions
+
+see [build instructions](help/build_instructions.md).
