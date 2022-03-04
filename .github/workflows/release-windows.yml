@@ -49,9 +49,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.zip;bin/*.zip;/bin/bin/*.zip;*.exe"
+          file: "bin/*.zip;bin/*.exe"
           tags: true
           draft: true
+          verbose: true
       
 #      - name: Run unit testing
 #        run: |
