@@ -13,6 +13,7 @@ endif ()
 configure_file("test_param.h.in" "${CMAKE_BINARY_DIR}/test_param.h" @ONLY)
 include_directories(${CMAKE_BINARY_DIR})
 
+
 add_executable(UnitTests
         test.cpp )
 #         $<TARGET_OBJECTS:${PROJECT_NAME}_lib>)
@@ -23,3 +24,14 @@ add_test(NAME test COMMAND UnitTests)
 if (MSVC)
     set_target_properties(UnitTests PROPERTIES LINK_FLAGS "/ignore:4099")
 endif ()
+
+# Install step for linking *dylib to the executable_path (not a bundle here)
+IF (APPLE)
+    add_custom_command(
+            TARGET UnitTests
+            POST_BUILD
+            COMMAND install_name_tool -change @rpath/libgdal.30.dylib @executable_path/libgdal.30.dylib bin/UnitTests
+            COMMENT "Installing GDAL library for Unit testing"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+ENDIF (APPLE)
