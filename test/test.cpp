@@ -7,8 +7,6 @@ class TestDatabase : public ::testing::Test {
   DataBase* m_db = nullptr;
 
   virtual void SetUp() {
-    wxInitialize();
-    wxLog::SetActiveTarget(new wxLogStderr());
     m_db = new DataBase();
   }
   virtual void TearDown() {
