@@ -41,6 +41,8 @@ class ToolbasView(ConanFile):
             self.copy("errmsg.sys", dst="bin/mysql", src="share/english")
         if self.settings.os == "Macos":
             self.copy("errmsg.sys", dst="bin/ToolBasView.app/Contents/mysql", src="share/english")
+            if self.options.unit_test:
+                self.copy("errmsg.sys", dst="mysql", src="share/english")
 
         # copy proj library datum
         if self.settings.os == "Windows" or self.settings.os == "Linux":
