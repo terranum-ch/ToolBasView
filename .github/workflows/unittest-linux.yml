@@ -45,7 +45,7 @@ jobs:
         run: |
           mkdir ${{github.workspace}}/bin
           cd ${{github.workspace}}/bin
-          conan install ..
+          conan install .. -o unit_test=True
 
       - name: Build
         run: |
