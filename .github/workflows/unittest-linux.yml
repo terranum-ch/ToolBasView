@@ -1,0 +1,48 @@
+name: unit-test-linux
+
+on: [ push ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install Conan
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel conan
+          
+          # gitlab support (wxwidgets, mysql, gdal)
+          conan remote add gitlab https://gitlab.com/api/v4/packages/conan
+          conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
+
+      - name: Install system libs
+        run: sudo apt-get install libgtk2.0-dev libgl1-mesa-dev
+
+      - name: Install libraries
+          run: |
+            mkdir ${{github.workspace}}/bin
+            cd ${{github.workspace}}/bin
+            conan install ..
+
+      - name: Build
+        run: |
+          cd ${{github.workspace}}/bin
+          conan build ..
+
+      - name: Run unit testing
+        run: |
+          cd ${{github.workspace}}/bin
+          ./UnitTests
+
