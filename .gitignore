@@ -1,7 +1,9 @@
 
 *.dll
+*.err
 \.idea/
 bin/
 cmake-build-*
 CMakeFiles/
 ToolBasView\.dir/
+
