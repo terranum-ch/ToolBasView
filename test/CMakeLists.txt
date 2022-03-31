@@ -15,6 +15,7 @@ include_directories(${CMAKE_BINARY_DIR})
 
 
 add_executable(UnitTests
+        main.cpp
         test.cpp )
 #         $<TARGET_OBJECTS:${PROJECT_NAME}_lib>)
 target_link_libraries(UnitTests ${CONAN_LIBS} "${PROJECT_NAME}_lib")

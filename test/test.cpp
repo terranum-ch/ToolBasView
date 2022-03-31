@@ -129,3 +129,124 @@ TEST_F(TestDatabase, ResultArrayLong) {
   ASSERT_TRUE(m_db->DataBaseGetResultSize(&myCols, &myRows));
   ASSERT_TRUE(myCols == 1 && myRows == 17);
 }
+/*
+TEST_F(TestDatabase, ResultDouble) {
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestFloat32 FROM layer_at10 WHERE OBJECT_ID = 1")));
+  double value = 0;
+  ASSERT_TRUE(m_db->DataBaseGetNextResult(value));
+  ASSERT_TRUE(DOUBLES_EQUAL(8.99, value, 0.01);
+  ASSERT_TRUE(value == 8.99);
+}
+
+TEST_F(TestDatabase, ResultArrayDouble) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestFloat32 FROM layer_at1 ORDER BY OBJECT_ID")));
+  wxArrayDouble values;
+  ASSERT_TRUE(m_db->DataBaseGetNextResult(values));
+  ASSERT_TRUE(values.Item(0) == 8.99);
+}
+
+TEST_F(TestDatabase, ColResultsString) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestText FROM layer_at1 ORDER BY OBJECT_ID")));
+  wxArrayString myResults;
+  ASSERT_TRUE(m_db->DataBaseGetResults(myResults));
+  ASSERT_TRUE(myResults.GetCount() == 2);
+  ASSERT_TRUE(myResults.Item(1) == _T("Ceci est un test pour un max de caracteres ke lonp"));
+  ASSERT_TRUE(m_db->DataBaseGetResults(myResults) == false);
+  ASSERT_TRUE(myResults.GetCount() == 0);
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestText FROM layer_at1 ORDER BY OBJECT_ID")));
+  m_db->DataBaseClearResults();
+}
+
+TEST_F(TestDatabase, ColResultsLong) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT OBJECT_ID FROM layer_at1 ORDER BY OBJECT_ID")));
+  wxArrayLong myResults;
+  ASSERT_TRUE(m_db->DataBaseGetResults(myResults));
+  ASSERT_TRUE(myResults.GetCount() == 2);
+  ASSERT_TRUE(myResults.Item(1) == 4);
+}
+
+TEST_F(TestDatabase, ColResultsDouble) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestFloat32 FROM layer_at1 ORDER BY OBJECT_ID")));
+  wxArrayDouble myResults;
+  ASSERT_TRUE(m_db->DataBaseGetResults(myResults));
+  ASSERT_TRUE(myResults.GetCount() == 2);
+  ASSERT_TRUE(myResults.Item(1) == 6.00);
+}
+
+TEST_F(TestDatabase, PathName) {
+  ASSERT_TRUE(m_db->DataBaseGetName() == wxEmptyString);
+  ASSERT_TRUE(m_db->DataBaseGetPath() == wxEmptyString);
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseGetName() == _T("testfields"));
+  ASSERT_TRUE(m_db->DataBaseGetPath() == _T("/Users/Lucien/Downloads/"));
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads"), _T("testfieldssss")) == false);
+  ASSERT_TRUE(m_db->DataBaseGetName() == wxEmptyString);
+  ASSERT_TRUE(m_db->DataBaseGetPath() == wxEmptyString);
+}
+
+TEST_F(TestDatabase, QueriesNumber) {
+  wxString myQueries = _T("SELECT * FROM COUCOU; INSERT INTO ..; SELECT ALL");
+  ASSERT_TRUE(m_db->DataBaseQueriesNumber(myQueries) == 3);
+  wxString myQueries2 = _T("SELECT * FROM COUCOU; INSERT INTO; SELECT ALL;");
+  ASSERT_TRUE(m_db->DataBaseQueriesNumber(myQueries) == 3);
+}
+
+TEST_F(TestDatabase, Version) {
+  ASSERT_TRUE(DataBase::DataBaseGetVersion() == _T("5.1.33"));
+}
+
+TEST_F(TestDatabase, CreateNewDatabase) {
+  ASSERT_TRUE(m_db->DataBaseCreateNew(_T("/Users/Lucien/Downloads/"), _T("mytest1")) == false);
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("mytest1")));
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SHOW TABLES FROM mytest1")));
+}
+
+TEST_F(TestDatabase, GetDataBaseSize) {
+  wxString myFailMsg = _("Not available");
+  wxString myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
+  ASSERT_TRUE(myDBSize == myFailMsg);
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("mytest1")));
+  myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
+  wxLogDebug(myDBSize);
+  ASSERT_TRUE(myDBSize != myFailMsg);
+
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/DATA/SIG/COMBIOULA/CORRIGE/TOOLMAP/"), _T("combioula_correct")) ==
+              true);
+  myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
+  wxLogDebug(myDBSize);
+  ASSERT_TRUE(myDBSize != myFailMsg);
+}
+
+TEST_F(TestDatabase, GetLastInsertID) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  long myIID = m_db->DataBaseGetLastInsertedID();
+  ASSERT_TRUE(myIID == wxNOT_FOUND);
+  ASSERT_TRUE(m_db->DataBaseQueryNoResults(_T("INSERT INTO dmn_layer_object (OBJECT_CD) VALUES (1)")));
+
+  myIID = m_db->DataBaseGetLastInsertedID();
+  ASSERT_TRUE(myIID != wxNOT_FOUND);
+  wxLogDebug(_T("Last inserted ID = %d"), myIID);
+
+  myIID = m_db->DataBaseGetLastInsertedID();
+  ASSERT_TRUE(myIID != wxNOT_FOUND);
+}
+
+TEST_F(TestDatabase, GetRawRow) {
+  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseQuery(
+      _T("SELECT Envelope(OBJECT_GEOMETRY) FROM generic_lines WHERE OBJECT_ID = 1")));  // WHERE OBJECT_ID = 2")));
+  MYSQL_ROW myRow;
+  tmArrayULong myLength;
+  ASSERT_TRUE(m_db->DataBaseGetNextRowResult(myRow, myLength));
+  ASSERT_TRUE(myRow != NULL);
+  ASSERT_TRUE(myLength.GetCount() > 0);
+  ASSERT_TRUE(m_db->DataBaseGetNextRowResult(myRow, myLength) == false);
+  ASSERT_TRUE(myRow == NULL);
+  ASSERT_TRUE(myLength.GetCount() == 0);
+}
+*/
