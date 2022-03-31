@@ -55,5 +55,7 @@ jobs:
       - name: Run unit testing
         run: |
           cd ${{github.workspace}}/bin
-          ./UnitTests
+          pwd
+          ls
+          bin/UnitTests
 
