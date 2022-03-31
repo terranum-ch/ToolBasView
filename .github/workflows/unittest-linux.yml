@@ -28,7 +28,8 @@ jobs:
           conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
 
       - name: Install system libs
-        run: sudo apt-get install libgtk2.0-dev libgl1-mesa-dev
+        run: sudo apt-get install libgtk2.0-dev
+        # libgl1-mesa-dev
 
       - name: Install libraries
         run: |
