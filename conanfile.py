@@ -8,10 +8,11 @@ class ToolbasView(ConanFile):
         "wxwidgets/3.1.4@terranum-conan+wxwidgets/stable",
         "mysql/5.6.51@terranum-conan+mysql/stable",
         "gdal/3.4.1@terranum-conan+gdal/stable",
-        "geos/3.9.1",
-        "proj/8.1.1",
+        "geos/3.10.2",
+        "proj/9.0.0",
         "libcurl/7.80.0",
-        "libdeflate/1.9"
+        "libdeflate/1.9",
+        "zlib/1.2.12"
     ]
 
     options = {"unit_test": [True, False]}
