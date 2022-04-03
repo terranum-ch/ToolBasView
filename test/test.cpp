@@ -1,5 +1,6 @@
 #include "database.h"
 #include "gtest/gtest.h"
+#include "ogr_geometry.h"
 #include "test_param.h"
 
 class TestDatabase : public ::testing::Test {
@@ -13,6 +14,10 @@ class TestDatabase : public ::testing::Test {
     wxDELETE(m_db);
   }
 };
+
+TEST(TestGeneric, HaveGEOS) {
+  ASSERT_TRUE(OGRGeometryFactory::haveGEOS());
+}
 
 TEST_F(TestDatabase, Empty) {
   ASSERT_TRUE(true);  // testing unit test
