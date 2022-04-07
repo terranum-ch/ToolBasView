@@ -48,7 +48,7 @@ TEST_F(TestDatabase, ResultString) {
   wxString myReturnedString = wxEmptyString;
   ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT OBJECT_DESC_0 FROM dmn_layer_object WHERE OBJECT_ID = 17")));
   ASSERT_TRUE(m_db->DataBaseGetNextResult(myReturnedString));
-  ASSERT_TRUE(myReturnedString == _T("bord d'érosion"));  // oid = 17
+  ASSERT_TRUE(myReturnedString == wxString("bord d'érosion", wxConvUTF8));  // oid = 17
   ASSERT_FALSE(m_db->DataBaseGetNextResult(myReturnedString));
   ASSERT_TRUE(myReturnedString == wxEmptyString);
   m_db->DataBaseClearResults();
@@ -65,7 +65,7 @@ TEST_F(TestDatabase, ResultArrayString) {
 
   ASSERT_TRUE(m_db->DataBaseGetNextResult(myResults));
   ASSERT_TRUE(myResults.GetCount() == 13);  // 13 cols in dmn_layer_object
-  ASSERT_TRUE(myResults.Item(4) == _T("bord d'érosion"));
+  ASSERT_TRUE(myResults.Item(4) == wxString("bord d'érosion", wxConvUTF8));
   m_db->DataBaseClearResults();
   // limit tests
 
