@@ -85,9 +85,9 @@ TEST_F(TestDatabase, CountResults) {
   long myRows = 0;
   ASSERT_FALSE(m_db->DataBaseGetResultSize(&myCols, &myRows));
   ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT * FROM dmn_layer_object WHERE OBJECT_ID = 17")));
-  ASSERT_TRUE(m_db->DataBaseGetResultSize(&myCols, NULL));
+  ASSERT_TRUE(m_db->DataBaseGetResultSize(&myCols, nullptr));
   ASSERT_TRUE(myCols == 13);
-  ASSERT_TRUE(m_db->DataBaseGetResultSize(NULL, &myRows));
+  ASSERT_TRUE(m_db->DataBaseGetResultSize(nullptr, &myRows));
   ASSERT_TRUE(myRows == 1);
   myRows = 0;
   myCols = 0;
@@ -116,15 +116,14 @@ TEST_F(TestDatabase, ResultArrayLong) {
 
   wxArrayLong myResults;
   int i = 0;
-  bool bReturn = false;
-  while (1) {
-    bReturn = m_db->DataBaseGetNextResult(myResults);
+  while (true) {
+    bool bReturn = m_db->DataBaseGetNextResult(myResults);
     if (i < 17) {
       ASSERT_TRUE(bReturn == true);
     } else
       ASSERT_TRUE(bReturn == false);
     i++;
-    if (bReturn == false) break;
+    if (!bReturn) break;
   }
 
   m_db->DataBaseClearResults();
@@ -140,12 +139,12 @@ TEST_F(TestDatabase, ResultDouble) {
   ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestFloat32 FROM layer_at10 WHERE OBJECT_ID = 1")));
   double value = 0;
   ASSERT_TRUE(m_db->DataBaseGetNextResult(value));
-  ASSERT_TRUE(DOUBLES_EQUAL(8.99, value, 0.01);
+  EXPECT_NEAR(8.99, value, 0.01);
   ASSERT_TRUE(value == 8.99);
 }
 
 TEST_F(TestDatabase, ResultArrayDouble) {
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
   ASSERT_TRUE(m_db->DataBaseQuery(_T("SELECT TestFloat32 FROM layer_at1 ORDER BY OBJECT_ID")));
   wxArrayDouble values;
   ASSERT_TRUE(m_db->DataBaseGetNextResult(values));
