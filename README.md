@@ -12,8 +12,8 @@ without the presence of a MySQL server.
 
 ToolbasView works on Windows, OSX and Linux and can be downloaded from the Release page,
 
-![ToolBasView main ui](docs/img/main_ui.jpg)
+![ToolBasView main ui](resources/img/main_ui.jpg)
 
 ## Build instructions
 
-see [build instructions](help/build_instructions.md).
+see [build instructions](resources/help/build_instructions.md).
