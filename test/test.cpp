@@ -9,6 +9,12 @@ class TestDatabase : public ::testing::Test {
 
   virtual void SetUp() {
     m_db = new DataBase();
+
+    // create the output directory
+    wxFileName output_path(UNIT_TESTING_DATA_OUTPUT_PATH, wxEmptyString);
+    if (!output_path.Exists()) {
+      ASSERT_TRUE(output_path.Mkdir());
+    }
   }
   virtual void TearDown() {
     wxDELETE(m_db);
@@ -198,46 +204,44 @@ TEST_F(TestDatabase, NumberQueries) {
   ASSERT_EQ(m_db->DataBaseQueriesNumber(myQueries), 3);
 }
 
-/*
 TEST_F(TestDatabase, CreateNewDatabase) {
-  ASSERT_TRUE(m_db->DataBaseCreateNew(_T("/Users/Lucien/Downloads/"), _T("mytest1")) == false);
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("mytest1")));
-  ASSERT_TRUE(m_db->DataBaseQuery(_T("SHOW TABLES FROM mytest1")));
-}
+  ASSERT_TRUE(wxFileName::Exists(UNIT_TESTING_DATA_OUTPUT_PATH));
+  wxFileName db_path(UNIT_TESTING_DATA_OUTPUT_PATH, wxEmptyString);
+  db_path.AppendDir("toolbasview_test_db");
+  if (db_path.Exists()) {
+    ASSERT_TRUE(db_path.Rmdir(wxPATH_RMDIR_RECURSIVE));
+  }
 
-
-TEST_F(TestDatabase, GetDataBaseSize) {
-  wxString myFailMsg = _("Not available");
-  wxString myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
-  ASSERT_TRUE(myDBSize == myFailMsg);
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("mytest1")));
-  myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
-  wxLogDebug(myDBSize);
-  ASSERT_TRUE(myDBSize != myFailMsg);
-
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/DATA/SIG/COMBIOULA/CORRIGE/TOOLMAP/"), _T("combioula_correct")) ==
-              true);
-  myDBSize = m_db->DataBaseGetSize(2, myFailMsg);
-  wxLogDebug(myDBSize);
-  ASSERT_TRUE(myDBSize != myFailMsg);
+  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_OUTPUT_PATH, _T("toolbasview_test_db")));
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_OUTPUT_PATH, _T("toolbasview_test_db")));
+  ASSERT_TRUE(m_db->DataBaseQuery(_T("SHOW TABLES FROM toolbasview_test_db")));
 }
 
 TEST_F(TestDatabase, GetLastInsertID) {
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  wxString my_db_name = _("tb_insert_id");
+  ASSERT_TRUE(wxFileName::Exists(UNIT_TESTING_DATA_OUTPUT_PATH));
+  wxFileName db_path(UNIT_TESTING_DATA_OUTPUT_PATH, wxEmptyString);
+  db_path.AppendDir(my_db_name);
+  if (db_path.Exists()) {
+    ASSERT_TRUE(db_path.Rmdir(wxPATH_RMDIR_RECURSIVE));
+  }
+
+  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_OUTPUT_PATH, my_db_name));
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_OUTPUT_PATH, my_db_name));
+  ASSERT_TRUE(m_db->DataBaseQueryNoResults(
+      "CREATE TABLE Persons (PersonID int NOT NULL AUTO_INCREMENT, LastName varchar(255), PRIMARY KEY (PersonID));"));
   long myIID = m_db->DataBaseGetLastInsertedID();
   ASSERT_TRUE(myIID == wxNOT_FOUND);
-  ASSERT_TRUE(m_db->DataBaseQueryNoResults(_T("INSERT INTO dmn_layer_object (OBJECT_CD) VALUES (1)")));
-
+  ASSERT_TRUE(m_db->DataBaseQueryNoResults("INSERT INTO Persons (LastName) VALUES ('Mr. SMITH');"));
   myIID = m_db->DataBaseGetLastInsertedID();
   ASSERT_TRUE(myIID != wxNOT_FOUND);
-  wxLogDebug(_T("Last inserted ID = %d"), myIID);
-
+  wxLogMessage(_T("Last inserted ID = %ld"), myIID);
   myIID = m_db->DataBaseGetLastInsertedID();
   ASSERT_TRUE(myIID != wxNOT_FOUND);
 }
 
 TEST_F(TestDatabase, GetRawRow) {
-  ASSERT_TRUE(m_db->DataBaseOpen(_T("/Users/Lucien/Downloads/"), _T("testfields")) == true);
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
   ASSERT_TRUE(m_db->DataBaseQuery(
       _T("SELECT Envelope(OBJECT_GEOMETRY) FROM generic_lines WHERE OBJECT_ID = 1")));  // WHERE OBJECT_ID = 2")));
   MYSQL_ROW myRow;
@@ -245,8 +249,7 @@ TEST_F(TestDatabase, GetRawRow) {
   ASSERT_TRUE(m_db->DataBaseGetNextRowResult(myRow, myLength));
   ASSERT_TRUE(myRow != NULL);
   ASSERT_TRUE(myLength.GetCount() > 0);
-  ASSERT_TRUE(m_db->DataBaseGetNextRowResult(myRow, myLength) == false);
+  ASSERT_FALSE(m_db->DataBaseGetNextRowResult(myRow, myLength));
   ASSERT_TRUE(myRow == NULL);
   ASSERT_TRUE(myLength.GetCount() == 0);
 }
-*/
