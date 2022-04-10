@@ -1,0 +1,57 @@
+name: Release-OSX
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: macos-10.15
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install conan
+        run: |
+          pip install conan
+          conan config set general.revisions_enabled=1
+
+          # gitlab support (wxwidgets, mysql, gdal)
+          conan remote add gitlab https://gitlab.com/api/v4/packages/conan
+          conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
+
+      - name: Install libraries
+        run: |
+          mkdir ${{github.workspace}}/bin
+          cd ${{github.workspace}}/bin
+          conan install ..
+
+#      - name: Install OpenMP
+#        run: |
+#          brew install libomp
+
+      - name: Build
+        run: |
+          cd ${{github.workspace}}/bin
+          conan build ..
+
+      - name: Installer DND
+        run: |
+          cd ${{github.workspace}}/bin
+          cpack -G DragNDrop
+
+      - name: upload file
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "*.dmg;bin/*.dmg"
+          tags: true
+          draft: true

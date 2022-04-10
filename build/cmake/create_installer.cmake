@@ -2,17 +2,18 @@
 if (MSVC)
     install(DIRECTORY "${CMAKE_BINARY_DIR}/bin" DESTINATION .)
 
-    SET (CPACK_NSIS_CONTACT "Terranum info@terranum.ch")
-    SET (CPACK_NSIS_HELP_LINK "www.terranum.ch")
-    SET (CPACK_NSIS_MUI_FINISHPAGE_RUN ${CMAKE_PROJECT_NAME})
-    SET (CPACK_NSIS_URL_INFO_ABOUT "www.terranum.ch")
-    SET (CPACK_NSIS_MENU_LINKS
-    "bin/${CMAKE_PROJECT_NAME}" "${CMAKE_PROJECT_NAME}"
-    "http://www.terranum.ch" "www.terranum.ch")
+    SET(CPACK_NSIS_CONTACT "Terranum info@terranum.ch")
+    SET(CPACK_NSIS_HELP_LINK "www.terranum.ch")
+    SET(CPACK_NSIS_MUI_FINISHPAGE_RUN ${CMAKE_PROJECT_NAME})
+    SET(CPACK_NSIS_URL_INFO_ABOUT "www.terranum.ch")
+    SET(CPACK_NSIS_MENU_LINKS
+            "bin/${CMAKE_PROJECT_NAME}" "${CMAKE_PROJECT_NAME}"
+            "http://www.terranum.ch" "www.terranum.ch")
 
 endif ()
 
 if (APPLE)
+    install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION .)
     set(CPACK_GENERATOR "DragNDrop")
 endif ()
 include(CPack)
