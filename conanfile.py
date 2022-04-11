@@ -5,7 +5,7 @@ import os
 class ToolbasView(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = [
-        "wxwidgets/3.1.4@terranum-conan+wxwidgets/stable",
+        "wxwidgets/3.1.6@terranum-conan+wxwidgets/stable",
         "mysql/5.6.51@terranum-conan+mysql/stable",
         "gdal/3.4.1@terranum-conan+gdal/stable",
         "geos/3.10.2",
