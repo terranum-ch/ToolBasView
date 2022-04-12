@@ -15,6 +15,7 @@
 #include "resultsframe.h"
 #include "toolbasview_bmp.h"
 #include "version.h"
+#include "frameabout.h"
 
 BEGIN_EVENT_TABLE(TBVFrame, wxFrame)
 EVT_MENU(wxID_EXIT, TBVFrame::OnMenuExit)
@@ -374,7 +375,7 @@ void TBVFrame::_CreateControls() {
 
   // update cols width
   int myWidth = m_GridCtrl->GetClientSize().GetWidth() - 80;
-  int myColWidth = wxRound(myWidth / m_GridCtrl->GetNumberCols());
+  int myColWidth = myWidth / m_GridCtrl->GetNumberCols();
   for (int i = 0; i < m_GridCtrl->GetNumberCols(); i++) {
     m_GridCtrl->SetColSize(i, myColWidth);
   }
@@ -609,13 +610,8 @@ void TBVFrame::OnQuit(wxCloseEvent& event) {
 }
 
 void TBVFrame::OnAbout(wxCommandEvent& event) {
-  wxAboutDialogInfo aboutInfo;
-  aboutInfo.SetName("ToolBasView");
-  aboutInfo.SetVersion(wxString::Format("%s.%s.%s %s %s", ToolBasView_MAJOR_VERSION, ToolBasView_MINOR_VERSION,
-                                        GIT_NUMBER, GIT_BRANCH, GIT_REV));
-  aboutInfo.SetDescription(_("ToolMap project explorer"));
-  aboutInfo.SetCopyright(wxString::Format("(C) TERRANUM, %d", wxDateTime::Now().GetYear()));
-  wxAboutBox(aboutInfo);
+  FrameAbout about_dlg(this);
+  about_dlg.ShowModal();
 }
 
 void TBVFrame::OnShowProcessRequest(wxCommandEvent& event) {

@@ -44,6 +44,7 @@ SET(LIB_FILES
         "src/resultsframe.cpp"
         "src/searchspatialpoint_dlg.cpp"
         "src/tableexport.cpp"
+        "src/frameabout.cpp"
         )
 
 SET(SRC_FILES
