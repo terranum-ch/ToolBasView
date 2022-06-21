@@ -5,14 +5,14 @@ import os
 class ToolbasView(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = [
-        "wxwidgets/3.1.6@terranum-conan+wxwidgets/stable",
-        "mysql/5.6.51@terranum-conan+mysql/stable",
+        "wxwidgets/3.1.7@terranum-conan+wxwidgets/stable",
+        "mariadb/10.6.8@terranum-conan+mariadb/stable",
         "gdal/3.4.1@terranum-conan+gdal/stable",
         "geos/3.10.2",
         "proj/9.0.0",
         "libcurl/7.80.0",
         "libdeflate/1.9",
-        "zlib/1.2.12"
+        #"zlib/1.2.12"
     ]
 
     options = {"unit_test": [True, False]}
@@ -22,7 +22,7 @@ class ToolbasView(ConanFile):
 
     def requirements(self):
         if self.options.unit_test:
-            self.requires("gtest/1.11.0")
+            self.requires("gtest/cci.20210126")
 
     def configure(self):
         self.options["gdal"].with_curl = True # for xml support

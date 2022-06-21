@@ -6,4 +6,5 @@ bin/
 cmake-build-*
 CMakeFiles/
 ToolBasView\.dir/
+test/data/aria_*
 

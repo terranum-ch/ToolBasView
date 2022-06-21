@@ -18,7 +18,7 @@ FrameAbout::FrameAbout(wxWindow* parent, wxWindowID id, const wxString& title, c
             << "Tag: " << GIT_TAG << "\n"
             << "Branch: " << GIT_BRANCH << "\n";
 
-  myVersion << "MySQL: " << DataBase::DataBaseGetVersion() << "\n";
+  myVersion << "MariaDB: " << DataBase::DataBaseGetVersion() << "\n";
   myVersion << "GDAL: " << GDAL_RELEASE_NAME << "\n";
   myVersion << "GEOS: " << GEOS_VERSION << "\n";
   myVersion << "LibCurl: " << curl_version() << "\n";
