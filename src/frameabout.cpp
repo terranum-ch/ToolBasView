@@ -22,6 +22,7 @@ FrameAbout::FrameAbout(wxWindow* parent, wxWindowID id, const wxString& title, c
   myVersion << "GDAL: " << GDAL_RELEASE_NAME << "\n";
   myVersion << "GEOS: " << GEOS_VERSION << "\n";
   myVersion << "LibCurl: " << curl_version() << "\n";
+  myVersion << wxVERSION_STRING << "\n";
 
   myVersion << wxGetOsDescription();
   m_ctrl_txt->SetValue(myVersion);
