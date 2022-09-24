@@ -272,12 +272,12 @@ void Results_DLG::_CreateControls() {
 
   int ids[] = {wxID_COPY, ID_EXPORT_EXCEL, ID_AUTOSIZE_COLUMN, ID_AUTOSIZE_ROW};
   wxString labels[] = {_("Copy"), _("Export"), _("Resize columns"), _("Resize rows")};
-  std::vector<wxBitmap*> my_bitmaps = {_img_results_copy, _img_results_excel, _img_tb_resize,  _img_results_autosize_row};
+  std::vector<wxBitmap*> my_bitmaps = {_img_tb_copy, _img_tb_excel, _img_tb_resize,  _img_tb_resize_row};
 
   // support for dark theme
   wxSystemAppearance s = wxSystemSettings::GetAppearance();
   if (s.IsDark()) {
-    my_bitmaps = {_img_w_results_copy, _img_w_results_excel, _img_tb_w_resize,  _img_w_results_autosize_row};
+    my_bitmaps = {_img_tb_w_copy, _img_tb_w_excel, _img_tb_w_resize,  _img_tb_w_resize_row};
   }
 
   for (int i = 0; i < (sizeof(ids) / sizeof(int)); ++i) {
