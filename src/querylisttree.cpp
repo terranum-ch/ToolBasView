@@ -160,7 +160,6 @@ bool QueryListTree::Load(const wxFileName &filename) {
 }
 
 void QueryListTree::OnContextualMenu(wxContextMenuEvent &event) {
-  wxLogError(_("Coucou"));
   wxMenu myPopupMenu;
   myPopupMenu.Append(ID_QUERY_TREE_CATEGORY_ADD, _("Add category..."), wxEmptyString, false);
   myPopupMenu.Append(ID_QUERY_TREE_CATEGORY_DEL, _("Remove category"), wxEmptyString, false);

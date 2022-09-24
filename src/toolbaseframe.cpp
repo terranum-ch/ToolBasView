@@ -10,12 +10,12 @@
 #include "databaseoperation.h"
 #include "dlg_operation.h"  // for dialogs operations.
 #include "exportcsv_dlg.h"
+#include "frameabout.h"
 #include "querylisttree.h"
 #include "results_bmp.h"
 #include "resultsframe.h"
 #include "toolbasview_bmp.h"
 #include "version.h"
-#include "frameabout.h"
 
 BEGIN_EVENT_TABLE(TBVFrame, wxFrame)
 EVT_MENU(wxID_EXIT, TBVFrame::OnMenuExit)
@@ -203,17 +203,6 @@ void TBVFrame::_CreateControls() {
 
   m_TreeCtrl = new wxTreeCtrl(m_tocpanel, ID_LISTTABLE, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE);
   bSizer4->Add(m_TreeCtrl, 1, wxEXPAND, 5);
-
-  wxStaticBitmap* m_bitmap2 =
-      new wxStaticBitmap(m_tocpanel, wxID_ANY, *_img_mysql, wxDefaultPosition, wxDefaultSize, 0);
-  bSizer4->Add(m_bitmap2, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
-
-  m_mgr.GetPane(_T("toc")).MinSize(-1, m_bitmap2->GetSize().GetWidth());
-
-  m_VersionTxtCtrl = new wxStaticText(m_tocpanel, wxID_ANY, _("Version: ") + DataBase::DataBaseGetVersion(),
-                                      wxDefaultPosition, wxDefaultSize, 0);
-  m_VersionTxtCtrl->Wrap(-1);
-  bSizer4->Add(m_VersionTxtCtrl, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
   m_tocpanel->SetSizer(bSizer4);
   m_tocpanel->Layout();
