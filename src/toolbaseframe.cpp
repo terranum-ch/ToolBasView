@@ -59,7 +59,6 @@ EVT_BUTTON(ID_BTN_SHOW_RESULTS, TBVFrame::OnBtnShowResults)
 EVT_BUTTON(ID_BTN_ADD_TO_LIST, TBVFrame::OnAddToList)
 
 EVT_TREE_ITEM_ACTIVATED(ID_QUERY_LIST_TREE, TBVFrame::OnTreeItemDoubleClick)
-EVT_SYS_COLOUR_CHANGED(TBVFrame::OnSysColourChanged)
 
 EVT_UPDATE_UI(ID_BTN_RUN, TBVFrame::OnUpdateUIBtnRun)
 EVT_UPDATE_UI(ID_BTN_SHOW_RESULTS, TBVFrame::OnUpdateUIBtnShowResults)
@@ -462,31 +461,27 @@ void TBVFrame::_CreateMenu() {
 }
 
 void TBVFrame::_CreateToolBar() {
-  long style = wxTB_FLAT | wxTB_HORIZONTAL;
-#ifndef __WXMSW__
-  style += wxTB_TEXT;
+  long my_toolbar_style = wxTB_DEFAULT_STYLE;
+#ifdef __WXOSX__
+  my_toolbar_style = my_toolbar_style | wxTB_TEXT;
 #endif
+  wxToolBar *my_toolbar = TBVFrame::CreateToolBar(my_toolbar_style);
+  wxASSERT(my_toolbar);
 
-  wxToolBar* m_toolBar1 = this->CreateToolBar(style, wxID_ANY);
-  m_toolBar1->SetToolBitmapSize(wxSize(32, 32));
-  wxString myText = _("New database");
-  m_toolBar1->AddTool(wxID_NEW, myText, *_img_database_new, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL);
-  myText = _("Open database");
-  m_toolBar1->AddTool(wxID_OPEN, myText, *_img_database_open, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL);
+  int ids[] = {wxID_NEW, wxID_OPEN, ID_MENU_SHOW_QUERYPANEL, ID_MENU_AUTOSIZE_COLUMNS, ID_MENU_EXPORT_TXT};
+  wxString labels[] = {_("New"), _("Open"), _("Query panel"), _("Autosize"), _("Export")};
+  std::vector<wxBitmap*> my_bitmaps = {_img_tb_new, _img_tb_open, _img_tb_query, _img_tb_resize, _img_tb_export};
 
-  // m_toolBar1->AddSeparator();
+  // support for dark theme
+  wxSystemAppearance s = wxSystemSettings::GetAppearance();
+  if (s.IsDark()) {
+    my_bitmaps = {_img_tb_w_new, _img_tb_w_open, _img_tb_w_query, _img_tb_w_resize, _img_tb_w_export};
+  }
 
-  myText = _("Query panel");
-  m_toolBar1->AddTool(ID_MENU_SHOW_QUERYPANEL, myText, *_img_database_process, wxNullBitmap, wxITEM_NORMAL, myText,
-                      wxEmptyString, NULL);
-  myText = _("Autosize columns");
-  m_toolBar1->AddTool(ID_MENU_AUTOSIZE_COLUMNS, myText, *_img_results_autosize, wxNullBitmap, wxITEM_NORMAL, myText,
-                      wxEmptyString, NULL);
-  myText = _("Export...");
-  m_toolBar1->AddTool(wxID_SAVEAS, myText, *_img_database_export, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString,
-                      NULL);
-  _UpdateToolBarColour();
-  m_toolBar1->Realize();
+  for (int i = 0; i < (sizeof(ids) / sizeof(int)); ++i) {
+    my_toolbar->AddTool(ids[i], labels[i], *(my_bitmaps[i]));
+  }
+  my_toolbar->Realize();
 }
 
 /* Frame destruction */
@@ -553,27 +548,6 @@ bool TBVFrame::_OpenDatabase(const wxString& path) {
   _LoadTablesIntoToc();
   wxLogMessage(m_Database.DataBaseGetSize());
   return true;
-}
-
-void TBVFrame::_UpdateToolBarColour() {
-  // this function is only used in OSX for Dark mode support
-#if defined(__WXMAC__) && wxOSX_USE_COCOA_OR_CARBON
-  wxColor baseColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-  if ((baseColour.Red() < 75)  // dark mode
-      && (baseColour.Green() < 75) && (baseColour.Blue() < 75)) {
-    GetToolBar()->SetToolNormalBitmap(wxID_NEW, *_img_w_database_new);
-    GetToolBar()->SetToolNormalBitmap(wxID_OPEN, *_img_w_database_open);
-    GetToolBar()->SetToolNormalBitmap(ID_MENU_SHOW_QUERYPANEL, *_img_w_database_process);
-    GetToolBar()->SetToolNormalBitmap(ID_MENU_AUTOSIZE_COLUMNS, *_img_w_results_autosize);
-    GetToolBar()->SetToolNormalBitmap(wxID_SAVEAS, *_img_w_database_export);
-  } else {  // light mode
-    GetToolBar()->SetToolNormalBitmap(wxID_NEW, *_img_database_new);
-    GetToolBar()->SetToolNormalBitmap(wxID_OPEN, *_img_database_open);
-    GetToolBar()->SetToolNormalBitmap(ID_MENU_SHOW_QUERYPANEL, *_img_database_process);
-    GetToolBar()->SetToolNormalBitmap(ID_MENU_AUTOSIZE_COLUMNS, *_img_results_autosize);
-    GetToolBar()->SetToolNormalBitmap(wxID_SAVEAS, *_img_database_export);
-  }
-#endif
 }
 
 void TBVFrame::OnOpenRecentDatabase(wxCommandEvent& event) {
@@ -1201,11 +1175,6 @@ void TBVFrame::OnUpdateUIAutosize(wxUpdateUIEvent& event) {
 
 void TBVFrame::OnUpdateUIAddToList(wxUpdateUIEvent& event) {
   event.Enable(!m_QueryTxtCtrl->GetValue().IsEmpty());
-}
-
-void TBVFrame::OnSysColourChanged(wxSysColourChangedEvent& event) {
-  _UpdateToolBarColour();
-  event.Skip();
 }
 
 void TBVFrame::_UpdateHistory(const wxString& sentence) {

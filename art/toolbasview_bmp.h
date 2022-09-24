@@ -13,20 +13,32 @@ extern void uninitialize_images(void);
 extern wxBitmap *_img_mysql;
 extern wxBitmap *_img_toolbasview;
 
-extern wxBitmap *_img_database_export;
-extern wxBitmap *_img_database_new;
-extern wxBitmap *_img_database_open;
-extern wxBitmap *_img_database_process;
 extern wxBitmap *_img_database_small;
 extern wxBitmap *_img_table_sml;
-
 extern wxBitmap *_img_query_category;
 extern wxBitmap *_img_query_item;
 
-// white images
-extern wxBitmap *_img_w_database_export;
-extern wxBitmap *_img_w_database_new;
-extern wxBitmap *_img_w_database_process;
-extern wxBitmap *_img_w_database_open;
+// toolbar icons
+
+extern wxBitmap *_img_tb_new;
+extern wxBitmap *_img_tb_open;
+extern wxBitmap *_img_tb_query;
+extern wxBitmap *_img_tb_export;
+
+extern wxBitmap *_img_tb_w_new;
+extern wxBitmap *_img_tb_w_open;
+extern wxBitmap *_img_tb_w_query;
+extern wxBitmap *_img_tb_w_export;
+
+//extern wxBitmap *_img_database_export;
+//extern wxBitmap *_img_database_new;
+//extern wxBitmap *_img_database_open;
+//extern wxBitmap *_img_database_process;
+//
+//// white images
+//extern wxBitmap *_img_w_database_export;
+//extern wxBitmap *_img_w_database_new;
+//extern wxBitmap *_img_w_database_process;
+//extern wxBitmap *_img_w_database_open;
 
 #endif /* _TOOLBASVIEW_BITMAP_H_ */

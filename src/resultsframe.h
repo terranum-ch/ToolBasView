@@ -43,7 +43,6 @@ class Results_DLG : public wxFrame {
   void _CreateControls();
   void _SetRandomPosition();
   void _DisplayResults();
-  void _UpdateToolBarColour();
 
   // events
   void OnCloseResults(wxCloseEvent& event);
@@ -55,7 +54,6 @@ class Results_DLG : public wxFrame {
   void OnUpdateUICopy(wxUpdateUIEvent& event);
   void OnUpdateUIAutosize(wxUpdateUIEvent& event);
   void OnUpdateUIExport(wxUpdateUIEvent& event);
-  void OnColourSystemChange(wxSysColourChangedEvent& event);
   DECLARE_EVENT_TABLE()
 
  public:

@@ -31,7 +31,6 @@ EVT_TOOL(ID_AUTOSIZE_COLUMN, Results_DLG::OnMenuAutosize)
 EVT_TOOL(ID_AUTOSIZE_ROW, Results_DLG::OnMenuAutosizeVertical)
 EVT_UPDATE_UI(ID_AUTOSIZE_COLUMN, Results_DLG::OnUpdateUIAutosize)
 EVT_UPDATE_UI(ID_AUTOSIZE_ROW, Results_DLG::OnUpdateUIAutosize)
-EVT_SYS_COLOUR_CHANGED(Results_DLG::OnColourSystemChange)
 END_EVENT_TABLE()
 
 Results_DLG::Results_DLG(wxWindow* parent, DataBase* database, const wxString& query, wxWindowID id,
@@ -141,11 +140,6 @@ void Results_DLG::OnUpdateUIExport(wxUpdateUIEvent& event) {
   event.Enable(m_ResultDisplayed);
 }
 
-void Results_DLG::OnColourSystemChange(wxSysColourChangedEvent& event) {
-  _UpdateToolBarColour();
-  event.Skip();
-}
-
 void Results_DLG::_DisplayResults() {
   DataBaseResult myResult;
   if (m_DB->DataBaseGetResults(&myResult) == false) {
@@ -181,25 +175,6 @@ void Results_DLG::_DisplayResults() {
   SetStatusText(wxString::Format(_T("columns: %d, rows: %ld"), myColCount, myResult.GetRowCount()));
   m_ResultDisplayed = true;
   wxDELETE(myGridOP);
-}
-
-void Results_DLG::_UpdateToolBarColour() {
-  // this function is only used in OSX for Dark mode support
-#if defined(__WXMAC__) && wxOSX_USE_COCOA_OR_CARBON
-  wxColor baseColour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-  if ((baseColour.Red() < 75)  // dark mode
-      && (baseColour.Green() < 75) && (baseColour.Blue() < 75)) {
-    GetToolBar()->SetToolNormalBitmap(wxID_COPY, *_img_w_results_copy);
-    GetToolBar()->SetToolNormalBitmap(ID_EXPORT_EXCEL, *_img_w_results_excel);
-    GetToolBar()->SetToolNormalBitmap(ID_AUTOSIZE_COLUMN, *_img_w_results_autosize);
-    GetToolBar()->SetToolNormalBitmap(ID_AUTOSIZE_ROW, *_img_w_results_autosize_row);
-  } else {  // light mode
-    GetToolBar()->SetToolNormalBitmap(wxID_COPY, *_img_results_copy);
-    GetToolBar()->SetToolNormalBitmap(ID_EXPORT_EXCEL, *_img_results_excel);
-    GetToolBar()->SetToolNormalBitmap(ID_AUTOSIZE_COLUMN, *_img_results_autosize);
-    GetToolBar()->SetToolNormalBitmap(ID_AUTOSIZE_ROW, *_img_results_autosize_row);
-  }
-#endif
 }
 
 void Results_DLG::_CreateControls() {
@@ -287,32 +262,28 @@ void Results_DLG::_CreateControls() {
   m_mgr.Update();
   // this->Centre( wxBOTH );
 
-  long style = wxTB_FLAT | wxTB_HORIZONTAL;
-#ifndef __WXMSW__
-  style += wxTB_TEXT;
-#endif
-
   // TOOLBAR
-  m_toolBar1 = this->CreateToolBar(style, wxID_ANY);
-  m_toolBar1->SetToolBitmapSize(wxSize(32, 32));
+  long my_toolbar_style = wxTB_DEFAULT_STYLE;
+#ifdef __WXOSX__
+  my_toolbar_style = my_toolbar_style | wxTB_TEXT;
+#endif
+  wxToolBar *my_toolbar = Results_DLG::CreateToolBar(my_toolbar_style);
+  wxASSERT(my_toolbar);
 
-  wxString myText = _("Copy");
-  m_toolBar1->AddTool(wxID_COPY, myText, *_img_results_copy, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString, NULL);
+  int ids[] = {wxID_COPY, ID_EXPORT_EXCEL, ID_AUTOSIZE_COLUMN, ID_AUTOSIZE_ROW};
+  wxString labels[] = {_("Copy"), _("Export"), _("Resize columns"), _("Resize rows")};
+  std::vector<wxBitmap*> my_bitmaps = {_img_results_copy, _img_results_excel, _img_tb_resize,  _img_results_autosize_row};
 
-  myText = _("Export");
-  m_toolBar1->AddTool(ID_EXPORT_EXCEL, myText, *_img_results_excel, wxNullBitmap, wxITEM_NORMAL, myText, wxEmptyString,
-                      NULL);
+  // support for dark theme
+  wxSystemAppearance s = wxSystemSettings::GetAppearance();
+  if (s.IsDark()) {
+    my_bitmaps = {_img_w_results_copy, _img_w_results_excel, _img_tb_w_resize,  _img_w_results_autosize_row};
+  }
 
-  myText = _("Resize columns");
-  m_toolBar1->AddTool(ID_AUTOSIZE_COLUMN, myText, *_img_results_autosize, wxNullBitmap, wxITEM_NORMAL, myText,
-                      wxEmptyString, NULL);
-
-  myText = _("Resize rows");
-  m_toolBar1->AddTool(ID_AUTOSIZE_ROW, myText, *_img_results_autosize_row, wxNullBitmap, wxITEM_NORMAL, myText,
-                      wxEmptyString, NULL);
-
-  _UpdateToolBarColour();
-  m_toolBar1->Realize();
+  for (int i = 0; i < (sizeof(ids) / sizeof(int)); ++i) {
+    my_toolbar->AddTool(ids[i], labels[i], *(my_bitmaps[i]));
+  }
+  my_toolbar->Realize();
   m_statusBar1 = this->CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
 }
 
