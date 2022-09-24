@@ -28,8 +28,10 @@ class ToolbasView(ConanFile):
     def configure(self):
         self.options["gdal"].with_curl = True # for xml support
         self.options["gdal"].shared = True
-        if self.settings.os == "Linux":
-            self.options["wxwidgets"].webview = False  # webview control isn't available on linux.
+
+        # this isn't needed anymore with wxWidgets 3.2.1
+        # if self.settings.os == "Linux":
+        #    self.options["wxwidgets"].webview = False  # webview control isn't available on linux.
 
     def imports(self):
         # copy libraries
