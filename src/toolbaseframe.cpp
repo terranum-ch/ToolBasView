@@ -84,6 +84,11 @@ TBVFrame::TBVFrame(wxFrame* frame, const wxString& title, wxPoint pos, wxSize si
   // adding status bar
   CreateStatusBar(2);
   SetStatusBarPane(-1);
+  wxString myVersion = "Version: ";
+  myVersion << ToolBasView_MAJOR_VERSION << "." << ToolBasView_MINOR_VERSION << "." << GIT_NUMBER;
+  myVersion << " (" << GIT_REV << ")";
+  SetStatusText(myVersion, 0);
+
   _CreateControls();
   _CreateMenu();
   _CreateToolBar();
