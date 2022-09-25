@@ -123,19 +123,6 @@ bool DataBase::DBLibraryInit(const wxString &datadir) {
   return true;
 }
 
-bool DataBase::DBUseDataBase(const wxString &dbname) {
-  if (mysql_real_connect(m_MySQL, NULL, NULL, NULL, (const char *)dbname.mb_str(wxConvUTF8), 3309, NULL,
-                         CLIENT_MULTI_STATEMENTS) == NULL) {
-    wxLogError(DataBaseGetLastError());
-    return false;
-  }
-
-  if (dbname != wxEmptyString) {
-    wxLogMessage(_("Opening database : ") + dbname);
-  }
-  return true;
-}
-
 void DataBase::DBLibraryEnd() {
   m_DBName = wxEmptyString;
   m_DBPath = wxEmptyString;
@@ -161,20 +148,20 @@ bool DataBase::DataBaseCreateNew(const wxString &datadir, const wxString &name) 
   }
 
   // check that datadir didn't change from the first initialization (MariaDB limitation)
-  if (m_DBPath != wxEmptyString && datadir != m_DBPath){
+  if (m_DBPath != wxEmptyString && datadir != m_DBPath) {
     wxLogError(_("Unable to create a database in another path than: '%s'\nrestart the program!"), m_DBPath);
     return false;
   }
 
   // check if database path already exists
-  wxFileName mydb_path (datadir, name);
-  if (mydb_path.Exists()){
+  wxFileName mydb_path(datadir, name);
+  if (mydb_path.Exists()) {
     wxLogError(_("Database: '%s' allready exists!"), mydb_path.GetFullPath());
     return false;
   }
 
   if (!m_IsDatabaseOpened) {
-    if (mysql_real_connect(m_MySQL, NULL, NULL, NULL, (const char *) wxEmptyString, 3309, NULL,
+    if (mysql_real_connect(m_MySQL, NULL, NULL, NULL, (const char *)wxEmptyString, 3309, NULL,
                            CLIENT_MULTI_STATEMENTS) == NULL) {
       wxLogError(DataBaseGetLastError());
       return false;
@@ -217,14 +204,14 @@ bool DataBase::DataBaseOpen(const wxString &datadir, const wxString &name) {
   }
 
   // check that datadir didn't change from the first initialization (MariaDB limitation)
-  if (m_DBPath != wxEmptyString && datadir != m_DBPath){
+  if (m_DBPath != wxEmptyString && datadir != m_DBPath) {
     wxLogError(_("Unable to open a database in another path than: '%s'\nrestart the program!"), m_DBPath);
     return false;
   }
 
   // check if database path exists
-  wxFileName mydb_path (datadir, name);
-  if (!mydb_path.Exists()){
+  wxFileName mydb_path(datadir, name);
+  if (!mydb_path.Exists()) {
     wxLogError(_("Database: '%s' didn't exists!"), mydb_path.GetFullPath());
     return false;
   }
@@ -239,7 +226,7 @@ bool DataBase::DataBaseOpen(const wxString &datadir, const wxString &name) {
   }
 
   m_IsDatabaseConnected = true;
-  if (!DataBaseQueryNoResults(wxString::Format("USE %s", name))){
+  if (!DataBaseQueryNoResults(wxString::Format("USE %s", name))) {
     return false;
   }
   wxLogDebug(_("Opening database : ") + name);
@@ -267,7 +254,7 @@ wxString DataBase::DataBaseGetName() {
 }
 
 wxString DataBase::DataBaseGetPath() {
-  if (!m_IsDatabaseConnected){
+  if (!m_IsDatabaseConnected) {
     return wxEmptyString;
   }
   return m_DBPath;

@@ -66,7 +66,6 @@ class DataBase {
   // functions
   bool DBLibraryInit(const wxString& datadir);
   void DBLibraryEnd();
-  bool DBUseDataBase(const wxString& dbname);
   bool DBIsDataBaseReady();
   bool DBGetNextRecord(MYSQL_ROW& record);
   bool DBResultsNotNull();
