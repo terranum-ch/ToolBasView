@@ -61,9 +61,8 @@ jobs:
           cd ${{github.workspace}}/bin
           conan build ..
 
-# Disabling the Unit test for now, because we should refactor the Open process to avoid seg fault with mariadb
-#      - name: Run unit testing
-#        run: |
-#          cd ${{github.workspace}}/bin
-#          bin/UnitTests
+      - name: Run unit testing
+        run: |
+          cd ${{github.workspace}}/bin
+          bin/UnitTests
 

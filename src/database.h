@@ -56,6 +56,7 @@ class DataBase {
   // member
   bool m_IsLibraryStarted;
   bool m_IsDatabaseOpened;
+  bool m_IsDatabaseConnected;
   MYSQL* m_MySQL;
   MYSQL_RES* m_MySQLRes;
   wxString m_DBName;

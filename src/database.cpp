@@ -42,6 +42,7 @@
 DataBase::DataBase(const wxString &errmsgpath) {
   m_IsDatabaseOpened = false;
   m_IsLibraryStarted = false;
+  m_IsDatabaseConnected = false;
   m_MySQL = NULL;
   m_MySQLRes = NULL;
   m_DBName = wxEmptyString;
@@ -181,6 +182,9 @@ bool DataBase::DataBaseCreateNew(const wxString &datadir, const wxString &name) 
 ///    @param[in] name name of the database
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 bool DataBase::DataBaseOpen(const wxString &datadir, const wxString &name) {
+  m_IsDatabaseConnected = false;
+  m_DBName = wxEmptyString;
+
   // init the library if needed (only done once in the program lifetime)
   if (!m_IsLibraryStarted) {
     m_IsLibraryStarted = DBLibraryInit(datadir);
@@ -211,6 +215,7 @@ bool DataBase::DataBaseOpen(const wxString &datadir, const wxString &name) {
     m_IsDatabaseOpened = true;
   }
 
+  m_IsDatabaseConnected = true;
   if (!DataBaseQueryNoResults(wxString::Format("USE %s", name))){
     return false;
   }
@@ -239,6 +244,9 @@ wxString DataBase::DataBaseGetName() {
 }
 
 wxString DataBase::DataBaseGetPath() {
+  if (!m_IsDatabaseConnected){
+    return wxEmptyString;
+  }
   return m_DBPath;
 }
 
@@ -621,13 +629,18 @@ bool DataBase::DataBaseStringEscapeQuery(const wxString &query, wxString &result
 }
 
 bool DataBase::DBIsDataBaseReady() {
-  if (m_IsLibraryStarted == false) {
+  if (!m_IsLibraryStarted) {
     wxLogError(_("MySQL library not started"));
     return false;
   }
 
-  if (m_IsDatabaseOpened == false) {
+  if (!m_IsDatabaseOpened) {
     wxLogError(_("No database open"));
+    return false;
+  }
+
+  if (!m_IsDatabaseConnected) {
+    wxLogError(_("No database connected!"));
     return false;
   }
   return true;
