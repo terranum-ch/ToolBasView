@@ -170,21 +170,53 @@ bool DataBase::DataBaseCreateNew(const wxString &datadir, const wxString &name) 
   return DataBaseOpen(datadir, name);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief Open a mysql / mariadb database
+///  This function performs the following work:
+/// 1. Initialize the mysql library if necessary (will be done only once).
+/// 2. Check that the path (datadir) is not empty and is not different from the previous one
+/// 3. Close a possible connection and make a new connection.
+///    @param[out] bool  return true if opening is working
+///    @param[in] datadir  path of the database (only one path is working for the whole program, mariadb limitation)
+///    @param[in] name name of the database
+////////////////////////////////////////////////////////////////////////////////////////////////////
 bool DataBase::DataBaseOpen(const wxString &datadir, const wxString &name) {
-  if (m_IsLibraryStarted) {
-    DBLibraryEnd();
-    m_IsLibraryStarted = false;
+  // init the library if needed (only done once in the program lifetime)
+  if (!m_IsLibraryStarted) {
+    m_IsLibraryStarted = DBLibraryInit(datadir);
+    if (!m_IsLibraryStarted) {
+      return false;
+    }
   }
 
-  m_IsLibraryStarted = DBLibraryInit(datadir);
-  if (m_IsLibraryStarted == false) return false;
+  // check that datadir didn't change from the first initialization (MariaDB limitation)
+  if (m_DBPath != wxEmptyString && datadir != m_DBPath){
+    wxLogError(_("Unable to open a database in another path than: '%s'\nrestart the program!"), m_DBPath);
+    return false;
+  }
 
-  m_IsDatabaseOpened = DBUseDataBase(name);
-  if (m_IsDatabaseOpened == false) return false;
+  // check if database path exists
+  wxFileName mydb_path (datadir, name);
+  if (!mydb_path.Exists()){
+    wxLogError(_("Database: '%s' didn't exists!"), mydb_path.GetFullPath());
+    return false;
+  }
 
+  if (!m_IsDatabaseOpened) {
+    if (mysql_real_connect(m_MySQL, NULL, NULL, NULL, (const char *)name.mb_str(wxConvUTF8), 3309, NULL,
+                           CLIENT_MULTI_STATEMENTS) == NULL) {
+      wxLogError(DataBaseGetLastError());
+      return false;
+    }
+    m_IsDatabaseOpened = true;
+  }
+
+  if (!DataBaseQueryNoResults(wxString::Format("USE %s", name))){
+    return false;
+  }
+  wxLogDebug(_("Opening database : ") + name);
   m_DBName = name;
   m_DBPath = datadir;
-
   return true;
 }
 

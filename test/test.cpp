@@ -33,6 +33,7 @@ TEST_F(TestDatabase, Empty) {
 TEST_F(TestDatabase, DataBaseOpen) {
   ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
   ASSERT_FALSE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj_not_exist"));
+  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
 }
 
 TEST_F(TestDatabase, DataBaseHasResults) {
