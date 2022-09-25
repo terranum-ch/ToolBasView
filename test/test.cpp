@@ -205,7 +205,6 @@ TEST_F(TestDatabase, ResultsDoubleArray) {
   m_db->DataBaseClearResults();
 }
 
-
 TEST_F(TestDatabase, PathName) {
   ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
   ASSERT_TRUE(m_db->DataBaseGetName() == _T("test_prj"));
@@ -220,7 +219,6 @@ TEST_F(TestDatabase, NumberQueries) {
   ASSERT_EQ(m_db->DataBaseQueriesNumber(myQueries), 3);
 }
 
-
 TEST_F(TestDatabase, GetRawRow) {
   ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "test_prj"));
   ASSERT_TRUE(m_db->DataBaseQuery(
@@ -233,22 +231,22 @@ TEST_F(TestDatabase, GetRawRow) {
   ASSERT_FALSE(m_db->DataBaseGetNextRowResult(myRow, myLength));
   ASSERT_TRUE(myRow == NULL);
   ASSERT_TRUE(myLength.GetCount() == 0);
+  m_db->DataBaseClearResults();
 }
 
+TEST_F(TestDatabase, CreateNewDatabase) {
+  // remove database if existing
+  wxFileName my_dirname(UNIT_TESTING_DATA_PATH, "new_db");
+  if (my_dirname.Exists()) {
+    m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, "new_db");
+    m_db->DataBaseDelete();
+    wxLogMessage("Removing: %s", my_dirname.GetFullPath());
+  }
+  ASSERT_FALSE(my_dirname.Exists());
+  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_PATH, "new_db"));
+}
 
 /* DISABLING NEW DATABASE TEST FOR NOW
-TEST_F(TestDatabase, CreateNewDatabase) {
-  ASSERT_TRUE(wxFileName::Exists(UNIT_TESTING_DATA_OUTPUT_PATH));
-  wxFileName db_path(UNIT_TESTING_DATA_OUTPUT_PATH, wxEmptyString);
-  db_path.AppendDir("toolbasview_test_db");
-  if (db_path.Exists()) {
-    ASSERT_TRUE(db_path.Rmdir(wxPATH_RMDIR_RECURSIVE));
-  }
-
-  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_OUTPUT_PATH, _T("toolbasview_test_db")));
-  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_OUTPUT_PATH, _T("toolbasview_test_db")));
-  ASSERT_TRUE(m_db->DataBaseQuery(_T("SHOW TABLES FROM toolbasview_test_db")));
-}
 
 TEST_F(TestDatabase, GetLastInsertID) {
   wxString my_db_name = _("tb_insert_id");

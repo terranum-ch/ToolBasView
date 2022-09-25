@@ -149,17 +149,40 @@ wxString DataBase::DataBaseGetLastError() {
 }
 
 bool DataBase::DataBaseCreateNew(const wxString &datadir, const wxString &name) {
-  if (m_IsLibraryStarted) {
-    DBLibraryEnd();
-    m_IsLibraryStarted = false;
+  m_IsDatabaseConnected = false;
+  m_DBName = wxEmptyString;
+
+  // init the library if needed (only done once in the program lifetime)
+  if (!m_IsLibraryStarted) {
+    m_IsLibraryStarted = DBLibraryInit(datadir);
+    if (!m_IsLibraryStarted) {
+      return false;
+    }
   }
 
-  m_IsLibraryStarted = DBLibraryInit(datadir);
-  if (m_IsLibraryStarted == false) return false;
+  // check that datadir didn't change from the first initialization (MariaDB limitation)
+  if (m_DBPath != wxEmptyString && datadir != m_DBPath){
+    wxLogError(_("Unable to create a database in another path than: '%s'\nrestart the program!"), m_DBPath);
+    return false;
+  }
 
-  m_IsDatabaseOpened = DBUseDataBase(wxEmptyString);
-  if (m_IsDatabaseOpened == false) return false;
+  // check if database path already exists
+  wxFileName mydb_path (datadir, name);
+  if (mydb_path.Exists()){
+    wxLogError(_("Database: '%s' allready exists!"), mydb_path.GetFullPath());
+    return false;
+  }
 
+  if (!m_IsDatabaseOpened) {
+    if (mysql_real_connect(m_MySQL, NULL, NULL, NULL, (const char *) wxEmptyString, 3309, NULL,
+                           CLIENT_MULTI_STATEMENTS) == NULL) {
+      wxLogError(DataBaseGetLastError());
+      return false;
+    }
+    m_IsDatabaseOpened = true;
+  }
+
+  m_IsDatabaseConnected = true;
   wxString myDBNewQuery(name);
   myDBNewQuery.Prepend(_T("CREATE DATABASE "));
   myDBNewQuery.Append(_T(" DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"));
