@@ -7,5 +7,5 @@ cmake-build-*
 CMakeFiles/
 ToolBasView\.dir/
 test/data/aria_*
-test/data/new_db
+test/data/new_*
 

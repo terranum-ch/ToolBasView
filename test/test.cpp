@@ -246,19 +246,15 @@ TEST_F(TestDatabase, CreateNewDatabase) {
   ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_PATH, "new_db"));
 }
 
-/* DISABLING NEW DATABASE TEST FOR NOW
-
 TEST_F(TestDatabase, GetLastInsertID) {
-  wxString my_db_name = _("tb_insert_id");
-  ASSERT_TRUE(wxFileName::Exists(UNIT_TESTING_DATA_OUTPUT_PATH));
-  wxFileName db_path(UNIT_TESTING_DATA_OUTPUT_PATH, wxEmptyString);
-  db_path.AppendDir(my_db_name);
+  wxFileName db_path(UNIT_TESTING_DATA_PATH, "new_insert_id");
   if (db_path.Exists()) {
-    ASSERT_TRUE(db_path.Rmdir(wxPATH_RMDIR_RECURSIVE));
+    m_db->DataBaseOpen(UNIT_TESTING_DATA_PATH, db_path.GetName());
+    m_db->DataBaseDelete();
   }
+  ASSERT_FALSE(db_path.Exists());
 
-  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_OUTPUT_PATH, my_db_name));
-  ASSERT_TRUE(m_db->DataBaseOpen(UNIT_TESTING_DATA_OUTPUT_PATH, my_db_name));
+  ASSERT_TRUE(m_db->DataBaseCreateNew(UNIT_TESTING_DATA_PATH, db_path.GetName()));
   ASSERT_TRUE(m_db->DataBaseQueryNoResults(
       "CREATE TABLE Persons (PersonID int NOT NULL AUTO_INCREMENT, LastName varchar(255), PRIMARY KEY (PersonID));"));
   long myIID = m_db->DataBaseGetLastInsertedID();
@@ -270,5 +266,3 @@ TEST_F(TestDatabase, GetLastInsertID) {
   myIID = m_db->DataBaseGetLastInsertedID();
   ASSERT_TRUE(myIID != wxNOT_FOUND);
 }
-
-*/
