@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None
 
+## [1.5.XXX - 2022-09-26]
+
+### Added
+
+- The software version is now displayed in the statusbar
+- New about box displaying embedded libraries versions
+
+### Changed
+
+- Moving from MySQL 5.6.51 to MariaDB 10.6.10
+- bumping GDAL to 3.5.1
+- Improving toolbar's icons
+- Export button is now working as expected (see #2)
+
+### Removed
+
+- Removing MySQL logo from the main UI
+
+
 ## [1.4.225 - 2022-04-10]
 
 ### Added
