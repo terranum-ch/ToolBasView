@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- None
+### Changed
+
+- Bumping GDAL to 3.5.2
+
 
 ## [1.5.XXX - 2022-09-26]
 
