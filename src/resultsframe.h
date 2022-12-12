@@ -61,6 +61,7 @@ class Results_DLG : public wxFrame {
               const wxString& title = _("Results"), const wxPoint& pos = wxDefaultPosition,
               const wxSize& size = wxSize(600, 480), long style = wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
   ~Results_DLG();
+  void _CreateToolbar();
 };
 
 #endif

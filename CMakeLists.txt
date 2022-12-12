@@ -51,7 +51,6 @@ SET(SRC_FILES
         "src/toolbasapp.cpp"
         "src/toolbaseframe.cpp"
         "src/toolbarbitmaps.cpp"
-        "art/results_bmp.cpp"
         "art/toolbasview_bmp.cpp"
         )
 

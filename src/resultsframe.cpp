@@ -19,7 +19,7 @@
 #include "database.h"
 #include "databaseresult.h"
 #include "gridoperation.h"
-#include "results_bmp.h"
+#include "toolbarbitmaps.h"
 
 BEGIN_EVENT_TABLE(Results_DLG, wxFrame)
 EVT_CLOSE(Results_DLG::OnCloseResults)
@@ -39,7 +39,6 @@ Results_DLG::Results_DLG(wxWindow* parent, DataBase* database, const wxString& q
   m_DB = database;
   m_ResultDisplayed = false;
   wxASSERT(m_DB);
-  results_initialize_images();
   _CreateControls();
   _SetRandomPosition();
 
@@ -50,7 +49,6 @@ Results_DLG::Results_DLG(wxWindow* parent, DataBase* database, const wxString& q
 
 Results_DLG::~Results_DLG() {
   m_mgr.UnInit();
-  results_clean_images();
 }
 
 void Results_DLG::OnCloseResults(wxCloseEvent& event) {
@@ -261,30 +259,32 @@ void Results_DLG::_CreateControls() {
 
   m_mgr.Update();
   // this->Centre( wxBOTH );
+  _CreateToolbar();
 
-  // TOOLBAR
+  m_statusBar1 = this->CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+}
+
+void Results_DLG::_CreateToolbar() {
   long my_toolbar_style = wxTB_DEFAULT_STYLE;
 #ifdef __WXOSX__
   my_toolbar_style = my_toolbar_style | wxTB_TEXT;
 #endif
-  wxToolBar *my_toolbar = Results_DLG::CreateToolBar(my_toolbar_style);
+  wxToolBar *my_toolbar = CreateToolBar(my_toolbar_style);
   wxASSERT(my_toolbar);
 
-  int ids[] = {wxID_COPY, ID_EXPORT_EXCEL, ID_AUTOSIZE_COLUMN, ID_AUTOSIZE_ROW};
-  wxString labels[] = {_("Copy"), _("Export"), _("Resize columns"), _("Resize rows")};
-  std::vector<wxBitmap*> my_bitmaps = {_img_tb_copy, _img_tb_excel, _img_tb_resize,  _img_tb_resize_row};
-
   // support for dark theme
+  wxString str_color = "#000000";
   wxSystemAppearance s = wxSystemSettings::GetAppearance();
   if (s.IsDark()) {
-    my_bitmaps = {_img_tb_w_copy, _img_tb_w_excel, _img_tb_w_resize,  _img_tb_w_resize_row};
+    str_color = "#FFFFFF";
   }
 
-  for (int i = 0; i < (sizeof(ids) / sizeof(int)); ++i) {
-    my_toolbar->AddTool(ids[i], labels[i], *(my_bitmaps[i]));
-  }
+  wxString labels[] = {_("Copy"), _("Export"), _("Resize columns"), _("Resize rows")};
+  my_toolbar->AddTool(wxID_COPY, labels[0], ToolbarBitmaps::GetBitmapFromSVG(TBID_COPY, str_color, wxSize(24,24)), labels[0]);
+  my_toolbar->AddTool(ID_EXPORT_EXCEL, labels[1], ToolbarBitmaps::GetBitmapFromSVG(TBID_EXPORT, str_color, wxSize(24,24)), labels[1]);
+  my_toolbar->AddTool(ID_AUTOSIZE_COLUMN, labels[2], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_COLS, str_color, wxSize(24,24)), labels[2]);
+  my_toolbar->AddTool(ID_AUTOSIZE_ROW, labels[3], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_ROWS, str_color, wxSize(24,24)), labels[3]);
   my_toolbar->Realize();
-  m_statusBar1 = this->CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
 }
 
 void Results_DLG::_SetRandomPosition() {

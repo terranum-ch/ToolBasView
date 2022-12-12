@@ -12,10 +12,10 @@
 #include "exportcsv_dlg.h"
 #include "frameabout.h"
 #include "querylisttree.h"
-#include "results_bmp.h"
 #include "resultsframe.h"
 #include "toolbasview_bmp.h"
 #include "version.h"
+#include "toolbarbitmaps.h"
 
 BEGIN_EVENT_TABLE(TBVFrame, wxFrame)
 EVT_MENU(wxID_EXIT, TBVFrame::OnMenuExit)
@@ -73,7 +73,6 @@ TBVFrame::TBVFrame(wxFrame* frame, const wxString& title, wxPoint pos, wxSize si
 
   wxInitAllImageHandlers();
   initialize_images();
-  results_initialize_images();
 
   // Loading icon
   wxIcon myIcon;
@@ -468,19 +467,19 @@ void TBVFrame::_CreateToolBar() {
   wxToolBar *my_toolbar = TBVFrame::CreateToolBar(my_toolbar_style);
   wxASSERT(my_toolbar);
 
-  int ids[] = {wxID_NEW, wxID_OPEN, ID_MENU_SHOW_QUERYPANEL, ID_MENU_AUTOSIZE_COLUMNS, ID_MENU_EXPORT_TXT};
-  wxString labels[] = {_("New"), _("Open"), _("Query panel"), _("Autosize"), _("Export")};
-  std::vector<wxBitmap*> my_bitmaps = {_img_tb_new, _img_tb_open, _img_tb_query, _img_tb_resize, _img_tb_export};
-
   // support for dark theme
+  wxString str_color = "#000000";
   wxSystemAppearance s = wxSystemSettings::GetAppearance();
   if (s.IsDark()) {
-    my_bitmaps = {_img_tb_w_new, _img_tb_w_open, _img_tb_w_query, _img_tb_w_resize, _img_tb_w_export};
+    str_color = "#FFFFFF";
   }
 
-  for (int i = 0; i < (sizeof(ids) / sizeof(int)); ++i) {
-    my_toolbar->AddTool(ids[i], labels[i], *(my_bitmaps[i]));
-  }
+  wxString labels[] = {_("New"), _("Open"), _("Query panel"), _("Autosize"), _("Export")};
+  my_toolbar->AddTool(wxID_NEW, labels[0], ToolbarBitmaps::GetBitmapFromSVG(TBID_NEW, str_color, wxSize(24,24)), labels[0]);
+  my_toolbar->AddTool(wxID_OPEN, labels[1], ToolbarBitmaps::GetBitmapFromSVG(TBID_OPEN, str_color, wxSize(24,24)), labels[1]);
+  my_toolbar->AddTool(ID_MENU_SHOW_QUERYPANEL, labels[2], ToolbarBitmaps::GetBitmapFromSVG(TBID_QUERY, str_color, wxSize(24,24)), labels[2]);
+  my_toolbar->AddTool(ID_MENU_AUTOSIZE_COLUMNS, labels[3], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_COLS, str_color, wxSize(24,24)), labels[3]);
+  my_toolbar->AddTool(ID_MENU_EXPORT_TXT, labels[4], ToolbarBitmaps::GetBitmapFromSVG(TBID_EXPORT, str_color, wxSize(24,24)), labels[4]);
   my_toolbar->Realize();
 }
 
@@ -506,7 +505,6 @@ TBVFrame::~TBVFrame() {
   }
   myHistoryFile.Write();
   uninitialize_images();
-  results_clean_images();
 
   wxDELETE(m_ImgList);
 
