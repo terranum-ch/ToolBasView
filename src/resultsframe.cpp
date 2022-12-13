@@ -280,10 +280,11 @@ void Results_DLG::_CreateToolbar() {
   }
 
   wxString labels[] = {_("Copy"), _("Export"), _("Resize columns"), _("Resize rows")};
-  my_toolbar->AddTool(wxID_COPY, labels[0], ToolbarBitmaps::GetBitmapFromSVG(TBID_COPY, str_color, wxSize(24,24)), labels[0]);
-  my_toolbar->AddTool(ID_EXPORT_EXCEL, labels[1], ToolbarBitmaps::GetBitmapFromSVG(TBID_EXPORT, str_color, wxSize(24,24)), labels[1]);
-  my_toolbar->AddTool(ID_AUTOSIZE_COLUMN, labels[2], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_COLS, str_color, wxSize(24,24)), labels[2]);
-  my_toolbar->AddTool(ID_AUTOSIZE_ROW, labels[3], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_ROWS, str_color, wxSize(24,24)), labels[3]);
+  my_toolbar->AddTool(wxID_COPY, labels[0], Bitmaps::GetBitmap(Bitmaps::ID::COPY, str_color, wxSize(24, 24)), labels[0]);
+  my_toolbar->AddTool(ID_EXPORT_EXCEL, labels[1], Bitmaps::GetBitmap(Bitmaps::ID::EXPORT, str_color, wxSize(24, 24)), labels[1]);
+  my_toolbar->AddTool(ID_AUTOSIZE_COLUMN, labels[2],
+                      Bitmaps::GetBitmap(Bitmaps::ID::SIZE_COLS, str_color, wxSize(24, 24)), labels[2]);
+  my_toolbar->AddTool(ID_AUTOSIZE_ROW, labels[3], Bitmaps::GetBitmap(Bitmaps::ID::SIZE_ROWS, str_color, wxSize(24, 24)), labels[3]);
   my_toolbar->Realize();
 }
 

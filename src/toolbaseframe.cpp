@@ -475,11 +475,13 @@ void TBVFrame::_CreateToolBar() {
   }
 
   wxString labels[] = {_("New"), _("Open"), _("Query panel"), _("Autosize"), _("Export")};
-  my_toolbar->AddTool(wxID_NEW, labels[0], ToolbarBitmaps::GetBitmapFromSVG(TBID_NEW, str_color, wxSize(24,24)), labels[0]);
-  my_toolbar->AddTool(wxID_OPEN, labels[1], ToolbarBitmaps::GetBitmapFromSVG(TBID_OPEN, str_color, wxSize(24,24)), labels[1]);
-  my_toolbar->AddTool(ID_MENU_SHOW_QUERYPANEL, labels[2], ToolbarBitmaps::GetBitmapFromSVG(TBID_QUERY, str_color, wxSize(24,24)), labels[2]);
-  my_toolbar->AddTool(ID_MENU_AUTOSIZE_COLUMNS, labels[3], ToolbarBitmaps::GetBitmapFromSVG(TBID_SIZE_COLS, str_color, wxSize(24,24)), labels[3]);
-  my_toolbar->AddTool(ID_MENU_EXPORT_TXT, labels[4], ToolbarBitmaps::GetBitmapFromSVG(TBID_EXPORT, str_color, wxSize(24,24)), labels[4]);
+  my_toolbar->AddTool(wxID_NEW, labels[0], Bitmaps::GetBitmap(Bitmaps::ID::NEW, str_color, wxSize(24, 24)), labels[0]);
+  my_toolbar->AddTool(wxID_OPEN, labels[1], Bitmaps::GetBitmap(Bitmaps::ID::OPEN, str_color, wxSize(24, 24)), labels[1]);
+  my_toolbar->AddTool(ID_MENU_SHOW_QUERYPANEL, labels[2],
+                      Bitmaps::GetBitmap(Bitmaps::ID::QUERY, str_color, wxSize(24, 24)), labels[2]);
+  my_toolbar->AddTool(ID_MENU_AUTOSIZE_COLUMNS, labels[3],
+                      Bitmaps::GetBitmap(Bitmaps::ID::SIZE_COLS, str_color, wxSize(24, 24)), labels[3]);
+  my_toolbar->AddTool(ID_MENU_EXPORT_TXT, labels[4], Bitmaps::GetBitmap(Bitmaps::ID::EXPORT, str_color, wxSize(24, 24)), labels[4]);
   my_toolbar->Realize();
 }
 
