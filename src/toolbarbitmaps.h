@@ -13,4 +13,4 @@ class Bitmaps {
   static wxBitmap GetBitmap(Bitmaps::ID id, const wxString& colour = "#000000", const wxSize& size = wxSize(16, 16));
 };
 
-#endif  // TOOLBASVIEW_TOOLBARBITMAPS_H
+#endif
