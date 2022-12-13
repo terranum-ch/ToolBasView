@@ -51,7 +51,6 @@ SET(SRC_FILES
         "src/toolbasapp.cpp"
         "src/toolbaseframe.cpp"
         "src/toolbarbitmaps.cpp"
-        "art/toolbasview_bmp.cpp"
         )
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/src/")

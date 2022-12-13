@@ -15,14 +15,20 @@
  ***************************************************************************/
 
 #include "querylisttree.h"
-
-#include "toolbasview_bmp.h"
+#include "toolbarbitmaps.h"
 
 QueryListTree::QueryListTree(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
     : wxTreeCtrl(parent, id, pos, size, style) {
+
+  // support for dark theme
+  wxString str_color = "#000000";
+  wxSystemAppearance s = wxSystemSettings::GetAppearance();
+  if (s.IsDark()) {
+    str_color = "#FFFFFF";
+  }
   wxImageList *images = new wxImageList(16, 16, true);
-  images->Add(*_img_query_category);
-  images->Add(*_img_query_item);
+  images->Add(Bitmaps::GetBitmap(Bitmaps::ID::GROUP, str_color));
+  images->Add(Bitmaps::GetBitmap(Bitmaps::ID::QUERY, str_color));
   AssignImageList(images);
 
   // QueryListTreeData * myData = new QueryListTreeData();

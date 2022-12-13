@@ -27,9 +27,6 @@
 #include <wx/toolbar.h>
 #include <wx/treectrl.h>
 
-// ICON
-#include "../art/toolbasview_bmp.h"  // the mysql logo
-
 const int ID_TEXTCTRL = 10000;
 const int ID_REQUEST_RESULT = 10001;
 const int ID_BTN_SHOWRESULTS = 10002;

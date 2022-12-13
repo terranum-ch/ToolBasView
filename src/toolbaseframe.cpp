@@ -13,7 +13,6 @@
 #include "frameabout.h"
 #include "querylisttree.h"
 #include "resultsframe.h"
-#include "toolbasview_bmp.h"
 #include "version.h"
 #include "toolbarbitmaps.h"
 
@@ -72,11 +71,10 @@ TBVFrame::TBVFrame(wxFrame* frame, const wxString& title, wxPoint pos, wxSize si
   m_ConfigFile = new wxFileConfig("toolbasview", "TERRANUM");
 
   wxInitAllImageHandlers();
-  initialize_images();
 
   // Loading icon
   wxIcon myIcon;
-  myIcon.CopyFromBitmap(*_img_toolbasview);
+  myIcon.CopyFromBitmap(Bitmaps::GetLogo());
   SetIcon(myIcon);
 
   // adding status bar
@@ -91,9 +89,15 @@ TBVFrame::TBVFrame(wxFrame* frame, const wxString& title, wxPoint pos, wxSize si
   _CreateMenu();
   _CreateToolBar();
 
+  // support for dark theme
+  wxString str_color = "#000000";
+  wxSystemAppearance s = wxSystemSettings::GetAppearance();
+  if (s.IsDark()) {
+    str_color = "#FFFFFF";
+  }
   m_ImgList = new wxImageList(16, 16);
-  m_ImgList->Add(*_img_database_small);
-  m_ImgList->Add(*_img_table_sml);
+  m_ImgList->Add(Bitmaps::GetBitmap(Bitmaps::ID::DATABASE, str_color));
+  m_ImgList->Add(Bitmaps::GetBitmap(Bitmaps::ID::TABLE, str_color));
   m_TreeCtrl->SetImageList(m_ImgList);
 
   // define as log window
@@ -478,7 +482,7 @@ void TBVFrame::_CreateToolBar() {
   my_toolbar->AddTool(wxID_NEW, labels[0], Bitmaps::GetBitmap(Bitmaps::ID::NEW, str_color, wxSize(24, 24)), labels[0]);
   my_toolbar->AddTool(wxID_OPEN, labels[1], Bitmaps::GetBitmap(Bitmaps::ID::OPEN, str_color, wxSize(24, 24)), labels[1]);
   my_toolbar->AddTool(ID_MENU_SHOW_QUERYPANEL, labels[2],
-                      Bitmaps::GetBitmap(Bitmaps::ID::QUERY, str_color, wxSize(24, 24)), labels[2]);
+                      Bitmaps::GetBitmap(Bitmaps::ID::QUERY_PANEL, str_color, wxSize(24, 24)), labels[2]);
   my_toolbar->AddTool(ID_MENU_AUTOSIZE_COLUMNS, labels[3],
                       Bitmaps::GetBitmap(Bitmaps::ID::SIZE_COLS, str_color, wxSize(24, 24)), labels[3]);
   my_toolbar->AddTool(ID_MENU_EXPORT_TXT, labels[4], Bitmaps::GetBitmap(Bitmaps::ID::EXPORT, str_color, wxSize(24, 24)), labels[4]);
@@ -506,8 +510,6 @@ TBVFrame::~TBVFrame() {
     }
   }
   myHistoryFile.Write();
-  uninitialize_images();
-
   wxDELETE(m_ImgList);
 
   // save configuration
