@@ -22,7 +22,7 @@ class ToolbasView(ConanFile):
 
     def requirements(self):
         if self.options.unit_test:
-            self.requires("gtest/cci.20210126")
+            self.requires("gtest/1.12.1")
 
     def configure(self):
         self.options["gdal"].with_curl = True # for xml support
