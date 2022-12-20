@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bumping GDAL to 3.5.2
-
 
 ## [1.5.XXX - 2022-09-26]
 
@@ -21,9 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Moving from MySQL 5.6.51 to MariaDB 10.6.10
-- bumping GDAL to 3.5.1
-- Improving toolbar's icons
+- bumping GDAL to 3.5.2
+- bumping gtest to 1.12.1
+- Using SVG icons instead of bitmaps for the toolbar
 - Export button is now working as expected (see #2)
+- Using new application logo (SVG too).
 
 ### Removed
 
