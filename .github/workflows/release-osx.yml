@@ -1,41 +1,47 @@
-name: Release-OSX
+name: Build MacOS
 
 on:
+  push:
   release:
-    types: [ created ]
+    types:
+      - created
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: '3.12'
+
+      - name: Cache Conan libs
+        id: cache-conan
+        uses: pat-s/always-upload-cache@v3.0.11
+        with:
+          path: /Users/runner/.conan
+          key: conan-osx
 
       - name: Install conan
         run: |
-          pip install conan
-          conan config set general.revisions_enabled=1
+          python -m pip install --upgrade pip
+          pip install conan==1.*
 
-          # gitlab support (wxwidgets, mysql, gdal)
-          conan remote add gitlab https://gitlab.com/api/v4/packages/conan
+          # gitlab support
+          conan config set general.revisions_enabled=1
+          conan remote add gitlab https://gitlab.com/api/v4/packages/conan --force
           conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
 
       - name: Install libraries
         run: |
           mkdir ${{github.workspace}}/bin
           cd ${{github.workspace}}/bin
-          conan install ..
-
-#      - name: Install OpenMP
-#        run: |
-#          brew install libomp
+          conan install .. -o unit_test=True --build=qhull --build=missing
 
       - name: Build
         run: |
@@ -47,11 +53,30 @@ jobs:
           cd ${{github.workspace}}/bin
           cpack -G DragNDrop
 
-      - name: upload file
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          path: |
+              ${{github.workspace}}/bin/*.dmg
+
+  upload_all:
+    name: Upload if release
+    needs: [build]
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release' && github.event.action == 'created'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: dist
+
+      - name: Upload to releases
         uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.dmg;bin/*.dmg"
+          file: "dist/*.dmg"
           tags: true
           draft: true
+          verbose: true
