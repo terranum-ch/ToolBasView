@@ -1,12 +1,13 @@
 # CMAKE BUILD FILE FOR TOOLBASVIEW 
 # (c) Copyright 2022 Terranum
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 PROJECT("ToolBasView")
+ADD_DEFINITIONS(-DEMBEDDED_LIBRARY)
 
 # Use C++11
 if (UNIX)
-    add_definitions(-std=c++11)
+    add_definitions(-std=c++17)
 endif (UNIX)
 
 # using git version
@@ -21,7 +22,12 @@ set(CMAKE_PROJECT_VERSION_PATCH ${GIT_NUMBER})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(KEEP_RPATHS)
+
+if (UNIX AND NOT APPLE)
+    find_package(PNG REQUIRED)
+    message(STATUS "PNG_LIBRARIES: ${PNG_LIBRARY}")
+endif ()
 
 #Export compile commands (for sourcetrail)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -74,6 +80,9 @@ ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
         src/resource.rc
         )
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}_lib" ${CONAN_LIBS})
+if (UNIX AND NOT APPLE)
+    target_link_libraries("${CMAKE_PROJECT_NAME}_lib" ${PNG_LIBRARY} xkbcommon fontconfig)
+endif (UNIX AND NOT APPLE)
 
 # Copy plist to bundle (should be placed after add executable!
 IF (APPLE)

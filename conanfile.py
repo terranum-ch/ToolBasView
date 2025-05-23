@@ -5,14 +5,10 @@ import os
 class ToolbasView(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = [
-        "wxwidgets/3.2.1@terranum-conan+wxwidgets/stable",
-        "mariadb/10.6.10@terranum-conan+mariadb/stable",
-        "gdal/3.5.2@terranum-conan+gdal/stable",
-        "libtiff/4.4.0",
-        "libdeflate/1.12",
-        "proj/9.0.1",
-        "libjpeg/9e",
-        "libpng/1.6.38"
+        "wxwidgets/3.2.8@terranum-conan+wxwidgets/stable",
+        "mariadb/10.6.22@terranum-conan+mariadb/stable",
+        "gdal/3.10.3@terranum-conan+gdal/stable",
+        "libtiff/4.7.0",
     ]
 
     options = {"unit_test": [True, False]}
@@ -22,15 +18,15 @@ class ToolbasView(ConanFile):
 
     def requirements(self):
         if self.options.unit_test:
-            self.requires("gtest/1.12.1")
+            self.requires("gtest/1.15.0")
 
     def configure(self):
         self.options["gdal"].with_curl = True # for xml support
         self.options["gdal"].shared = True
 
-        # this isn't needed anymore with wxWidgets 3.2.1
-        # if self.settings.os == "Linux":
-        #    self.options["wxwidgets"].webview = False  # webview control isn't available on linux.
+        if self.settings.os == "Linux":
+            self.options["wxwidgets"].png = "system"
+            self.options['gdal'].with_png = False # to avoid static linking of libpng
 
     def imports(self):
         # copy libraries

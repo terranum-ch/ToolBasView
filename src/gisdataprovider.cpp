@@ -159,7 +159,7 @@ bool GISOgrProvider::GISGetNextFeatureAsWktBuffer(wxArrayString *featurelist, in
         poGeometry->exportToWkt(&myExport);
 
         featurelist->Add(wxString::FromAscii(myExport));
-        OGRFree(myExport);
+        CPLFree(myExport);
         bReturnValue = TRUE;
       }
 
@@ -389,7 +389,7 @@ bool GISDBProvider::GISComputeBoundingBox(wxString wktstring, OGREnvelope *envel
   char *mypChar = (char *)nomtr.c_str();
 
   OGRErr myErr;
-  myErr = OGRGeometryFactory::createFromWkt(&mypChar, &mySpatRef, (OGRGeometry **)&myGeom);
+  myErr = OGRGeometryFactory::createFromWkt(mypChar, &mySpatRef, (OGRGeometry **)&myGeom);
 
   // check that a geometry was created
   if (myErr == 0) {
