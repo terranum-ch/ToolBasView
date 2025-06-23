@@ -1,38 +1,73 @@
-name: Release-Windows
+name: Build Windows
 
 on:
+  push:
   release:
     types: [created]
 # on: [push]
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
+
+    env:
+      BUILD_TYPE: RelWithDebInfo
+      PROJ_LIB: ${{github.workspace}}/bin/share/proj
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache Conan libs
+        id: cache-conan
+        uses: actions/cache@v4
+        with:
+          path: C:/Users/runneradmin/.conan
+          key: conan-windows
+
       - name: Install conan
         run: |
-          pip install conan
+          python -m pip install --upgrade pip
+          pip install conan==1.*
+  
+          # gitlab support
           conan config set general.revisions_enabled=1
-
-          # gitlab support (wxwidgets, mysql, gdal)
-          conan remote add gitlab https://gitlab.com/api/v4/packages/conan
+          conan remote add gitlab https://gitlab.com/api/v4/packages/conan --force
           conan user gitlab+deploy-token-653038 -r gitlab -p sBwmejFz5Pn-gZPSNFMy
+
+      - name: Remove our conan lib
+        run: |
+          conan remove mariadb/10.6.22 -f
+          conan remove gdal/3.10.3 -f
+          conan remove wxwidgets/3.2.8.1 -f
+          conan remove wxpdfdocument/1.3.1 -f
+          conan remove boost/1.85.0 -f
+          conan remove thrift/0.20.0 -f 
+          conan remove arrow/14.0.2 -f 
 
       - name: Install libraries
         run: |
           mkdir ${{github.workspace}}/bin
           cd ${{github.workspace}}/bin
-          conan install ..
+          conan install .. -o unit_test=True --build=missing
+
+      - name: Configure
+        working-directory: ${{github.workspace}}/bin
+        run: cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DUSE_UNITTEST=1
 
       - name: Build
-        run: |
-          cd ${{github.workspace}}/bin
-          conan build ..
+        working-directory: ${{github.workspace}}/bin
+        run: cmake --build . --config ${{env.BUILD_TYPE}}
+
+      - name: Run tests
+        working-directory: ${{github.workspace}}/bin/bin
+        run: .\UnitTests
 
       - name: Installer ZIP
         run: |
@@ -44,17 +79,33 @@ jobs:
           cd ${{github.workspace}}/bin
           cpack -G NSIS
 
-      - name: upload file
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          path: |
+            ${{github.workspace}}/bin/*.zip
+            ${{github.workspace}}/bin/*.msi
+            ${{github.workspace}}/bin/*.exe
+            ${{github.workspace}}/bin/bin/*.pdb
+
+  upload_all:
+    name: Upload if release
+    needs: [build]
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release' && github.event.action == 'created'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: dist
+
+      - name: Upload to releases
         uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "bin/*.zip;bin/*.exe"
+          file: "dist/*.zip;dist/*.msi;dist/bin/*.pdb"
           tags: true
           draft: true
           verbose: true
-      
-#      - name: Run unit testing
-#        run: |
-#          cd ${{github.workspace}}/bin
-#          ctest -C Release -V
