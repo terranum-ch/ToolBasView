@@ -6,8 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [1.5.266 - 2025-06-27]
+
+### Added
+
+- Adding support for dark mode on Windows 10 and later
+
 ### Changed
 
+- Bumping GDAL to 3.10.3
+- Bumping wxWidgets to 3.3.0
+- Bumping MariaDB to 10.6.22
 
 ## [1.5.260 - 2022-12-20]
 
